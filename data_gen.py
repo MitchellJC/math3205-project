@@ -57,6 +57,7 @@ for num_or in NUM_ORS:
     print(f"Generating data for {num_or} operating rooms")
     for num_patients in NUM_PATIENTS:
         print(f"\tGenerating data for {num_patients} patients")
+        # Create sets
         P = range(num_patients)
         H = range(NUM_HOSPITALS)
         R = range(num_or)
@@ -90,7 +91,7 @@ for num_or in NUM_ORS:
         F = uniform.rvs(loc=OPEN_OR_LOW, scale=OPEN_OR_HIGH, 
                         size=(NUM_HOSPITALS, NUM_DAYS))
         
-        
+        # Create set of mandatory patients
         mandatory_P = [p for p in P if health_status[p, 0] <= -HEALTH_THRESHOLD]
         print("\tPercentage of patients that are mandatory (Expected 6-10%)", 
               f"{100*len(mandatory_P) / num_patients}%")
@@ -102,7 +103,7 @@ for num_or in NUM_ORS:
             writer.writerow(PATIENTS_HEADER)
             for p in P:
                 data = [p, T[p, 0], rho[p, 0], alpha[p, 0], health_status[p, 0], 
-                        1 if p in mandatory_P else 0, ]
+                        1 if p in mandatory_P else 0]
                 writer.writerow(data)
                 
         # Save hospital data
