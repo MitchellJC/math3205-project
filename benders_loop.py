@@ -25,7 +25,7 @@ from gurobipy import GRB, quicksum
 UNDERLINE = "\n" + 80*"="
 
 NUM_ROOMS = 5
-NUM_PATIENTS = 160
+NUM_PATIENTS = 60
 NUM_HOSPITALS = 3
 NUM_DAYS = 5
 
@@ -90,9 +90,9 @@ w = {p: MP.addVar(vtype=GRB.BINARY) for p in P}
 # Objective
 MP.setObjective(quicksum(G[h, d]*u[h, d] for h in H for d in D)
                    + quicksum(F[h, d]*y[h, d] for h in H for d in D)
-                   + quicksum(K_1*rho[p]*(d + alpha[p])*x[h, d, p] 
+                   + quicksum(K_1*rho[p]*(d - alpha[p])*x[h, d, p] 
                               for h in H for d in D for p in P)
-                   + quicksum(K_2*rho[p]*(NUM_DAYS + 1 + alpha[p])*w[p] 
+                   + quicksum(K_2*rho[p]*(NUM_DAYS + 1 - alpha[p])*w[p] 
                               for p in P if p not in mandatory_P), GRB.MINIMIZE)
 
 # Constraints
@@ -118,11 +118,13 @@ num_or_lb = {(h, d): MP.addConstr(y[h, d]*B[h, d]
                                   >= quicksum(T[p]*x[h, d, p] for p in P))
             for h in H for d in D}
 
-MP.setParam('OutputFlag', 0)
+MP.setParam('OutputFlag', 1)
 cuts = []
 
 start_time = time.time()
+iterations = 0
 while True:
+    iterations += 1
     MP.optimize()
     print("Curr objVal", MP.objVal)
     print([(h, d, y[h, d].x) for h in H for d in D])
@@ -180,3 +182,4 @@ end_time = time.time()
 print("\n")
 print("Optimal objective value:", MP.objVal)
 print("Ran in", end_time - start_time, "seconds")
+print(iterations, "iterations")
