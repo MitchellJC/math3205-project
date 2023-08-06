@@ -5,15 +5,6 @@ Created on Fri Aug  4 17:38:39 2023
 Script for prototyping the operating rooms allocation model with 5 ORs and
 20 patients. 
 
-############ Note d is added to alpha in objective which is contrary to paper.
-############ I believe there is some inconsistent notation in the paper.
-############ K_1*rho is supposed to be a fixed daily deterioration cost associated
-############ time until operation occurs. In the paper they have d - alpha
-############ which is negative given their data generation scheme
-############ -- adding alpha seems to make more sense. 
-############ This occurs in data generation aswell for determing health status 
-############ and determining mandatory patients - Mitch
-
 @author: mitch
 """
 import time
@@ -25,7 +16,7 @@ from gurobipy import GRB, quicksum
 UNDERLINE = "\n" + 80*"="
 
 NUM_ROOMS = 5
-NUM_PATIENTS = 60
+NUM_PATIENTS = 20
 NUM_HOSPITALS = 3
 NUM_DAYS = 5
 
@@ -85,7 +76,7 @@ u = {(h, d): MP.addVar(vtype=GRB.BINARY) for h in H for d in D}
 y = {(h, d): MP.addVar(vtype=GRB.INTEGER, lb=0, ub=len(R)) for h in H for d in D}
 
 # 1 if patient does not get surgery within time horizon
-w = {p: MP.addVar(vtype=GRB.BINARY) for p in P}
+w = {p: MP.addVar(vtype=GRB.BINARY) for p in P if p not in mandatory_P}
 
 # Objective
 MP.setObjective(quicksum(G[h, d]*u[h, d] for h in H for d in D)
@@ -104,7 +95,7 @@ turn_on_w = {p: MP.addConstr(
     quicksum(x[h, d, p] for h in H for d in D) + w[p] == 1) 
     for p in P if p not in mandatory_P}
 
-lp_strengthener = {(h, d, p): MP.addConstr(x[h, d, p] <= y[h, d]) 
+lp_strengthener = {(h, d, p): MP.addConstr(x[h, d, p] <= u[h, d]) 
                    for h in H for d in D for p in P}
 
 time_for_ops_in_hosp = {(h, d): MP.addConstr(
@@ -118,25 +109,27 @@ num_or_lb = {(h, d): MP.addConstr(y[h, d]*B[h, d]
                                   >= quicksum(T[p]*x[h, d, p] for p in P))
             for h in H for d in D}
 
-MP.setParam('OutputFlag', 1)
-cuts = []
+MP.setParam('OutputFlag', 0)
+MP.setParam('MIPGap', 0)
 
 start_time = time.time()
 iterations = 0
 while True:
+    print("Iteration", iterations)
     iterations += 1
     MP.optimize()
     print("Curr objVal", MP.objVal)
-    print([(h, d, y[h, d].x) for h in H for d in D])
-    # print([val.x for val in x.values()])
     
     cuts_added = 0
     for h in H:
         for d in D:
+            print("Hospital", h, "Day", d, end=" ")
+            # Set of patients assigned to this hospital and day.
             P_prime = [p for p in P if x[h, d, p].x == 1]
             
             SP = gp.Model()
             SP.setParam('OutputFlag', 0)
+            
             
             # Variables
             y_prime = {r: SP.addVar(vtype=GRB.BINARY) for r in R}
@@ -160,19 +153,25 @@ while True:
             
             SP.optimize()
             
-            num_open_or = sum(y_prime[r].x for r in R)
+            if SP.Status == GRB.OPTIMAL:
+                num_open_or = sum(y_prime[r].x for r in R)
+                
             if SP.Status != GRB.OPTIMAL:
-                print("Infeasible")
+                print("Infeasible, status code:", SP.Status)
+                # TODO Infeasibility cut not working/ master problem becomes too hard
+                # MP.addConstr(quicksum(1 - x[h, d, p] for p in P_prime) >= 1)
+                MP.addConstr(y[h, d] >= len(R) + 1 - quicksum(1 - x[h, d, p] for p in P_prime))
+                
+                cuts_added += 1
             elif num_open_or == y[h, d].x:
                 print("Upper bound = Lower bound")
+                
             else:
-                print("Upper bound != Lower bound")
-                cuts.append(MP.addConstr(y[h, d] >= num_open_or - quicksum(1 - x[h, d, p] 
-                                                               for p in P_prime)))
+                print("Upper bound != Lower bound", num_open_or, "!=", y[h, d].x)
+                MP.addConstr(y[h, d] >= num_open_or - quicksum(1 - x[h, d, p] 
+                                                               for p in P_prime))
                 cuts_added += 1
-            
-            # TODO Add infeasibility cut.
-            
+                        
     print("Cuts added", cuts_added)
     if cuts_added == 0:
         break

@@ -5,15 +5,6 @@ Created on Fri Aug  4 17:38:39 2023
 Script for prototyping the operating rooms allocation model with 5 ORs and
 20 patients. 
 
-############ Note d is added to alpha in objective which is contrary to paper.
-############ I believe there is some inconsistent notation in the paper.
-############ K_1*rho is supposed to be a fixed daily deterioration cost associated
-############ time until operation occurs. In the paper they have d - alpha
-############ which is negative given their data generation scheme
-############ -- adding alpha seems to make more sense. 
-############ This occurs in data generation aswell for determing health status 
-############ and determining mandatory patients - Mitch
-
 @author: mitch
 """
 import time
@@ -25,7 +16,7 @@ from gurobipy import GRB, quicksum
 UNDERLINE = "\n" + 80*"="
 
 NUM_ROOMS = 5
-NUM_PATIENTS = 60
+NUM_PATIENTS = 20
 NUM_HOSPITALS = 3
 NUM_DAYS = 5
 
@@ -73,6 +64,7 @@ alpha = {p: int(patients[patients['id'] == p]['wait_time']) for p in P}
 mandatory_P = [p for p in P if patients.loc[p, 'is_mandatory'] == 1]
 
 model = gp.Model()
+model.setParam('MIPGap', 0)
 
 # Variables
 # 1 if patient p assigned to OR r in hospital h on day d
