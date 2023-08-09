@@ -78,7 +78,7 @@ u = {(h, d): model.addVar(vtype=GRB.BINARY) for h in H for d in D}
 y = {(h, d, r): model.addVar(vtype=GRB.BINARY) for h in H for d in D for r in R}
 
 # 1 if patient does not get surgery within time horizon
-w = {p: model.addVar(vtype=GRB.BINARY) for p in P}
+w = {p: model.addVar(vtype=GRB.BINARY) for p in P if p not in mandatory_P}
 
 # Objective
 model.setObjective(quicksum(G[h, d]*u[h, d] for h in H for d in D)
