@@ -2,8 +2,7 @@
 """
 Created on Fri Aug  4 17:38:39 2023
 
-Script for prototyping the operating rooms allocation model with 5 ORs and
-20 patients. 
+Script for prototyping the operating rooms allocation model with an IP.
 
 @author: mitch
 """
@@ -16,7 +15,7 @@ from gurobipy import GRB, quicksum
 UNDERLINE = "\n" + 80*"="
 
 NUM_ROOMS = 5
-NUM_PATIENTS = 20
+NUM_PATIENTS = 160
 NUM_HOSPITALS = 3
 NUM_DAYS = 5
 
@@ -83,9 +82,9 @@ w = {p: model.addVar(vtype=GRB.BINARY) for p in P}
 # Objective
 model.setObjective(quicksum(G[h, d]*u[h, d] for h in H for d in D)
                    + quicksum(F[h, d]*y[h, d, r] for h in H for d in D for r in R)
-                   + quicksum(K_1*rho[p]*(d - alpha[p])*x[h, d, p, r] 
+                   + quicksum(K_1*rho[p]*(d + alpha[p])*x[h, d, p, r] 
                               for h in H for d in D for p in P for r in R)
-                   + quicksum(K_2*rho[p]*(NUM_DAYS + 1 - alpha[p])*w[p] 
+                   + quicksum(K_2*rho[p]*(NUM_DAYS + 1 + alpha[p])*w[p] 
                               for p in P if p not in mandatory_P), GRB.MINIMIZE)
 
 # Constraints
