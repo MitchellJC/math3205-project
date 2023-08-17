@@ -80,9 +80,9 @@ w = {p: MP.addVar(vtype=GRB.BINARY) for p in P if p not in mandatory_P}
 # Objective
 MP.setObjective(quicksum(G[h, d]*u[h, d] for h in H for d in D)
                    + quicksum(F[h, d]*y[h, d] for h in H for d in D)
-                   + quicksum(K_1*rho[p]*(d + alpha[p])*x[h, d, p] # TODO
+                   + quicksum(K_1*rho[p]*(d - alpha[p])*x[h, d, p] # TODO
                               for h in H for d in D for p in P)
-                   + quicksum(K_2*rho[p]*(NUM_DAYS + 1 + alpha[p])*w[p] # TODO
+                   + quicksum(K_2*rho[p]*(NUM_DAYS + 1 - alpha[p])*w[p] # TODO
                               for p in P if p not in mandatory_P), GRB.MINIMIZE)
 
 # Constraints
