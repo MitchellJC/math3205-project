@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Aug  4 17:38:39 2023
-
-Simple loop for Bender's Decomp.
+Callback for Bender's Decomp.
 
 @author: mitch
 """
@@ -116,78 +114,77 @@ num_or_lb = {(h, d): MP.addConstr(y[h, d]*B[h, d]
             for h in H for d in D}
 
 MP.setParam('OutputFlag', 1)
+MP.setParam('LazyConstraints', 1)
 MP.setParam('MIPGap', 0)
 
+def callback(model, where):
+    if where == GRB.Callback.MIPSOL and model.SolCount > 1:
+        Y_hat = model.cbGetSolution(y)
+        x_hat = model.cbGetSolution(x)
+        
+        cuts_added = 0
+        for h in H:
+            for d in D:
+                print("Hospital", h, "Day", d, end=" ")
+                # Set of patients assigned to this hospital and day.
+                P_prime = [p for p in P if x_hat[h, d, p] == 1]
+                
+                SP = gp.Model()
+                SP.setParam('OutputFlag', 0)
+                
+                
+                # Variables
+                y_prime = {r: SP.addVar(vtype=GRB.BINARY) for r in R}
+                x_prime = {(p, r): SP.addVar(vtype=GRB.BINARY) for p in P_prime for r in R}
+                
+                # Objective
+                SP.setObjective(quicksum(y_prime[r] for r in R), GRB.MINIMIZE)
+                
+                # Constraints
+                patients_assigned_hosp_get_room = {
+                    p: SP.addConstr(quicksum(x_prime[p, r] for r in R) == 1) for p in P_prime}
+                
+                OR_capacity = {r: SP.addConstr(quicksum(T[p]*x_prime[p, r] for p in P_prime) 
+                                               <= B[h, d]*y_prime[r]) for r in R}
+                
+                sub_lp_strengthener = {(p, r): SP.addConstr(x_prime[p, r] <= y_prime[r]) 
+                                   for p in P_prime for r in R}
+                
+                OR_symmetries = {r: SP.addConstr(y_prime[r] <= y_prime[r - 1]) 
+                                 for r in R[1:]}
+                
+                SP.optimize()
+                
+                if SP.Status == GRB.OPTIMAL:
+                    num_open_or = sum(y_prime[r].x for r in R)
+                    
+                if SP.Status != GRB.OPTIMAL:
+                    print("Infeasible, status code:", SP.Status)
+                    if CHOSEN_LBBD == LBBD_1:
+                        MP.cbLazy(quicksum(1 - x[h, d, p] for p in P_prime) >= 1)
+                    if CHOSEN_LBBD == LBBD_2:
+                        MP.cbLazy(y[h, d] >= len(R) + 1 - quicksum(1 - x[h, d, p] for p in P_prime))
+                    
+                    cuts_added += 1
+                elif num_open_or == Y_hat:
+                    print(f"Upper bound = Lower bound, {num_open_or} = {y[h, d].x}")
+                    
+                elif num_open_or > Y_hat:
+                    print(f"Upper bound > Lower bound, {num_open_or} = {y[h, d].x}")
+                    MP.cbLazy(y[h, d] >= num_open_or - quicksum(1 - x[h, d, p] 
+                                                                   for p in P_prime))
+                    cuts_added += 1
+                else:
+                    raise RuntimeError("Sub problem < Master problem!")
+                            
+        print("Cuts added", cuts_added)
+        if cuts_added == 0:
+            return
+        
 start_time = time.time()
-iterations = 0
-while True:
-    print("Iteration", iterations)
-    iterations += 1
-    MP.optimize()
-    print("Curr objVal", MP.objVal)
-    
-    cuts_added = 0
-    for h in H:
-        for d in D:
-            print("Hospital", h, "Day", d, end=" ")
-            # Set of patients assigned to this hospital and day.
-            P_prime = [p for p in P if x[h, d, p].x == 1]
-            
-            SP = gp.Model()
-            SP.setParam('OutputFlag', 0)
-            
-            
-            # Variables
-            y_prime = {r: SP.addVar(vtype=GRB.BINARY) for r in R}
-            x_prime = {(p, r): SP.addVar(vtype=GRB.BINARY) for p in P_prime for r in R}
-            
-            # Objective
-            SP.setObjective(quicksum(y_prime[r] for r in R), GRB.MINIMIZE)
-            
-            # Constraints
-            patients_assigned_hosp_get_room = {
-                p: SP.addConstr(quicksum(x_prime[p, r] for r in R) == 1) for p in P_prime}
-            
-            OR_capacity = {r: SP.addConstr(quicksum(T[p]*x_prime[p, r] for p in P_prime) 
-                                           <= B[h, d]*y_prime[r]) for r in R}
-            
-            sub_lp_strengthener = {(p, r): SP.addConstr(x_prime[p, r] <= y_prime[r]) 
-                               for p in P_prime for r in R}
-            
-            OR_symmetries = {r: SP.addConstr(y_prime[r] <= y_prime[r - 1]) 
-                             for r in R[1:]}
-            
-            SP.optimize()
-            
-            if SP.Status == GRB.OPTIMAL:
-                num_open_or = sum(y_prime[r].x for r in R)
-                
-            if SP.Status != GRB.OPTIMAL:
-                print("Infeasible, status code:", SP.Status)
-                if CHOSEN_LBBD == LBBD_1:
-                    MP.addConstr(quicksum(1 - x[h, d, p] for p in P_prime) >= 1)
-                if CHOSEN_LBBD == LBBD_2:
-                    MP.addConstr(y[h, d] >= len(R) + 1 - quicksum(1 - x[h, d, p] for p in P_prime))
-                
-                cuts_added += 1
-            elif num_open_or == y[h, d].x:
-                print(f"Upper bound = Lower bound, {num_open_or} = {y[h, d].x}")
-                
-            elif num_open_or > y[h, d].x:
-                print(f"Upper bound > Lower bound, {num_open_or} = {y[h, d].x}")
-                MP.addConstr(y[h, d] >= num_open_or - quicksum(1 - x[h, d, p] 
-                                                               for p in P_prime))
-                cuts_added += 1
-            else:
-                raise RuntimeError("Sub problem < Master problem!")
-                        
-    print("Cuts added", cuts_added)
-    if cuts_added == 0:
-        break
-
+MP.optimize(callback)
 end_time = time.time()
 
 print("\n")
 print("Optimal objective value:", MP.objVal)
 print("Ran in", end_time - start_time, "seconds")
-print(iterations, "iterations")

@@ -15,7 +15,7 @@ from gurobipy import GRB, quicksum
 UNDERLINE = "\n" + 80*"="
 
 NUM_ROOMS = 5
-NUM_PATIENTS = 40
+NUM_PATIENTS = 20
 NUM_HOSPITALS = 3
 NUM_DAYS = 5
 
