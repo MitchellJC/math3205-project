@@ -72,7 +72,7 @@ for num_or in NUM_ORS:
                             size=(num_patients, 1))
         
         # Create health status data
-        health_status = np.multiply(rho, NUM_DAYS - alpha) # TODO + or - lol
+        health_status = np.multiply(rho, NUM_DAYS - alpha) 
             
         # Create operating hours time data
         B = np.zeros(shape=(NUM_HOSPITALS, NUM_DAYS))
@@ -85,15 +85,15 @@ for num_or in NUM_ORS:
                           scale=STD_SURG_TIME, size=(num_patients, 1))
         
         # Create cost of opening hospital data
-        G = uniform.rvs(loc=OPEN_HOSP_LOW, scale=OPEN_HOSP_HIGH, 
+        G = uniform.rvs(loc=OPEN_HOSP_LOW, scale=OPEN_HOSP_HIGH - OPEN_HOSP_LOW, 
                         size=(NUM_HOSPITALS, NUM_DAYS))
         
         # Create cost of opening operating room data
-        F = uniform.rvs(loc=OPEN_OR_LOW, scale=OPEN_OR_HIGH, 
+        F = uniform.rvs(loc=OPEN_OR_LOW, scale=OPEN_OR_HIGH - OPEN_OR_LOW, 
                         size=(NUM_HOSPITALS, NUM_DAYS))
         
         # Create set of mandatory patients
-        mandatory_P = [p for p in P if health_status[p, 0] <= -HEALTH_THRESHOLD] # TODO <= or >= lol
+        mandatory_P = [p for p in P if health_status[p, 0] <= -HEALTH_THRESHOLD]
         print("\tPercentage of patients that are mandatory (Expected 6-10%)", 
               f"{100*len(mandatory_P) / num_patients}%")
         

@@ -11,16 +11,23 @@ import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB, quicksum
 
+# General constants
+LBBD_1 = "LBBD_1"
+LBBD_2 = "LBBD_2"
+
 # Formatting
 UNDERLINE = "\n" + 80*"="
 
+# Script parameters
 NUM_ROOMS = 5
-NUM_PATIENTS = 160
+NUM_PATIENTS = 60
 NUM_HOSPITALS = 3
 NUM_DAYS = 5
 
 K_1 = 50
 K_2 = 5
+
+CHOSEN_LBBD = LBBD_2
 
 # Load csv files
 patients = pd.read_csv(f'data/patients-{NUM_ROOMS}-{NUM_PATIENTS}.csv')
@@ -80,9 +87,9 @@ w = {p: MP.addVar(vtype=GRB.BINARY) for p in P if p not in mandatory_P}
 # Objective
 MP.setObjective(quicksum(G[h, d]*u[h, d] for h in H for d in D)
                    + quicksum(F[h, d]*y[h, d] for h in H for d in D)
-                   + quicksum(K_1*rho[p]*(d - alpha[p])*x[h, d, p] # TODO
+                   + quicksum(K_1*rho[p]*(d - alpha[p])*x[h, d, p] 
                               for h in H for d in D for p in P)
-                   + quicksum(K_2*rho[p]*(NUM_DAYS + 1 - alpha[p])*w[p] # TODO
+                   + quicksum(K_2*rho[p]*(NUM_DAYS + 1 - alpha[p])*w[p]
                               for p in P if p not in mandatory_P), GRB.MINIMIZE)
 
 # Constraints
@@ -108,7 +115,7 @@ num_or_lb = {(h, d): MP.addConstr(y[h, d]*B[h, d]
                                   >= quicksum(T[p]*x[h, d, p] for p in P))
             for h in H for d in D}
 
-MP.setParam('OutputFlag', 0)
+MP.setParam('OutputFlag', 1)
 MP.setParam('MIPGap', 0)
 
 start_time = time.time()
@@ -157,19 +164,22 @@ while True:
                 
             if SP.Status != GRB.OPTIMAL:
                 print("Infeasible, status code:", SP.Status)
-                # TODO Infeasibility cut not working/ master problem becomes too hard
-                # MP.addConstr(quicksum(1 - x[h, d, p] for p in P_prime) >= 1)
-                MP.addConstr(y[h, d] >= len(R) + 1 - quicksum(1 - x[h, d, p] for p in P_prime))
+                if CHOSEN_LBBD == LBBD_1:
+                    MP.addConstr(quicksum(1 - x[h, d, p] for p in P_prime) >= 1)
+                if CHOSEN_LBBD == LBBD_2:
+                    MP.addConstr(y[h, d] >= len(R) + 1 - quicksum(1 - x[h, d, p] for p in P_prime))
                 
                 cuts_added += 1
             elif num_open_or == y[h, d].x:
                 print("Upper bound = Lower bound")
                 
-            else:
+            elif num_open_or > y[h, d].x:
                 print("Upper bound != Lower bound", num_open_or, "!=", y[h, d].x)
                 MP.addConstr(y[h, d] >= num_open_or - quicksum(1 - x[h, d, p] 
                                                                for p in P_prime))
                 cuts_added += 1
+            else:
+                raise RuntimeError("Sub problem < Master problem!")
                         
     print("Cuts added", cuts_added)
     if cuts_added == 0:
