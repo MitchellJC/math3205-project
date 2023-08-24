@@ -118,7 +118,7 @@ MP.setParam('LazyConstraints', 1)
 MP.setParam('MIPGap', 0)
 
 def callback(model, where):
-    if where == GRB.Callback.MIPSOL and model.SolCount > 0:
+    if where == GRB.Callback.MIPSOL:
         Y_hat = model.cbGetSolution(y)
         x_hat = model.cbGetSolution(x)
         
@@ -167,10 +167,10 @@ def callback(model, where):
                     
                     cuts_added += 1
                 elif num_open_or == Y_hat[h, d]:
-                    print(f"Upper bound = Lower bound, {num_open_or} = {y[h, d].x}")
+                    print(f"Upper bound = Lower bound, {num_open_or} = {Y_hat[h, d]}")
                     
                 elif num_open_or > Y_hat[h, d]:
-                    print(f"Upper bound > Lower bound, {num_open_or} = {y[h, d].x}")
+                    print(f"Upper bound > Lower bound, {num_open_or} = {Y_hat[h, d]}")
                     MP.cbLazy(y[h, d] >= num_open_or - quicksum(1 - x[h, d, p] 
                                                                    for p in P_prime))
                     cuts_added += 1
