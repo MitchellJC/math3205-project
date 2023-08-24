@@ -135,6 +135,7 @@ while True:
             
             SP = gp.Model()
             SP.setParam('OutputFlag', 0)
+            SP.setParam('MIPGap', 0)
             
             
             # Variables

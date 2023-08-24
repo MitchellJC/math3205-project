@@ -13,10 +13,14 @@ from gurobipy import GRB, quicksum
 LBBD_1 = "LBBD_1"
 LBBD_2 = "LBBD_2"
 
+EPS = 1e-14
+
 # Formatting
 UNDERLINE = "\n" + 80*"="
 
 # Script parameters
+VERBOSE = False
+
 NUM_ROOMS = 5
 NUM_PATIENTS = 20
 NUM_HOSPITALS = 3
@@ -125,12 +129,14 @@ def callback(model, where):
         cuts_added = 0
         for h in H:
             for d in D:
-                print("Hospital", h, "Day", d, end=" ")
+                if VERBOSE:
+                    print("Hospital", h, "Day", d, end=" ")
                 # Set of patients assigned to this hospital and day.
                 P_prime = [p for p in P if x_hat[h, d, p] == 1]
                 
                 SP = gp.Model()
                 SP.setParam('OutputFlag', 0)
+                SP.setParam('MIPGap', 0)
                 
                 
                 # Variables
@@ -159,27 +165,30 @@ def callback(model, where):
                     num_open_or = sum(y_prime[r].x for r in R)
                     
                 if SP.Status != GRB.OPTIMAL:
-                    print("Infeasible, status code:", SP.Status)
+                    if VERBOSE:
+                        print("Infeasible, status code:", SP.Status)
                     if CHOSEN_LBBD == LBBD_1:
-                        MP.cbLazy(quicksum(1 - x[h, d, p] for p in P_prime) >= 1)
+                        model.cbLazy(quicksum(1 - x[h, d, p] for p in P_prime) >= 1)
                     if CHOSEN_LBBD == LBBD_2:
-                        MP.cbLazy(y[h, d] >= len(R) + 1 - quicksum(1 - x[h, d, p] for p in P_prime))
+                        model.cbLazy(y[h, d] >= len(R) + 1 - quicksum(1 - x[h, d, p] for p in P_prime))
                     
                     cuts_added += 1
                 elif num_open_or == Y_hat[h, d]:
-                    print(f"Upper bound = Lower bound, {num_open_or} = {Y_hat[h, d]}")
+                    if VERBOSE:
+                        print(f"Upper bound = Lower bound, {num_open_or} = {Y_hat[h, d]}")
                     
                 elif num_open_or > Y_hat[h, d]:
-                    print(f"Upper bound > Lower bound, {num_open_or} = {Y_hat[h, d]}")
-                    MP.cbLazy(y[h, d] >= num_open_or - quicksum(1 - x[h, d, p] 
+                    if VERBOSE:
+                        print(f"Upper bound > Lower bound, {num_open_or} > {Y_hat[h, d]}")
+                    model.cbLazy(y[h, d] >= num_open_or - quicksum(1 - x[h, d, p] 
                                                                    for p in P_prime))
                     cuts_added += 1
                 else:
                     raise RuntimeError("Sub problem < Master problem!")
-                            
-        print("Cuts added", cuts_added)
-        if cuts_added == 0:
-            return
+        
+        if VERBOSE:
+            print("Cuts added", cuts_added)
+
         
 start_time = time.time()
 MP.optimize(callback)
