@@ -19,6 +19,8 @@ LBBD_2 = "LBBD_2"
 UNDERLINE = "\n" + 80*"="
 
 # Script parameters
+EPS = 1e6
+
 NUM_ROOMS = 5
 NUM_PATIENTS = 20
 NUM_HOSPITALS = 3
@@ -140,19 +142,23 @@ while True:
             
             # Variables
             y_prime = {r: SP.addVar(vtype=GRB.BINARY) for r in R}
-            x_prime = {(p, r): SP.addVar(vtype=GRB.BINARY) for p in P_prime for r in R}
+            x_prime = {(p, r): SP.addVar(vtype=GRB.BINARY) for p in P_prime 
+                       for r in R}
             
             # Objective
             SP.setObjective(quicksum(y_prime[r] for r in R), GRB.MINIMIZE)
             
             # Constraints
             patients_assigned_hosp_get_room = {
-                p: SP.addConstr(quicksum(x_prime[p, r] for r in R) == 1) for p in P_prime}
+                p: SP.addConstr(quicksum(x_prime[p, r] for r in R) == 1) 
+                for p in P_prime}
             
-            OR_capacity = {r: SP.addConstr(quicksum(T[p]*x_prime[p, r] for p in P_prime) 
+            OR_capacity = {r: SP.addConstr(quicksum(T[p]*x_prime[p, r] 
+                                                    for p in P_prime) 
                                            <= B[h, d]*y_prime[r]) for r in R}
             
-            sub_lp_strengthener = {(p, r): SP.addConstr(x_prime[p, r] <= y_prime[r]) 
+            sub_lp_strengthener = {(p, r): SP.addConstr(x_prime[p, r] 
+                                                        <= y_prime[r]) 
                                for p in P_prime for r in R}
             
             OR_symmetries = {r: SP.addConstr(y_prime[r] <= y_prime[r - 1]) 
@@ -168,19 +174,20 @@ while True:
                 if CHOSEN_LBBD == LBBD_1:
                     MP.addConstr(quicksum(1 - x[h, d, p] for p in P_prime) >= 1)
                 if CHOSEN_LBBD == LBBD_2:
-                    MP.addConstr(y[h, d] >= len(R) + 1 - quicksum(1 - x[h, d, p] for p in P_prime))
+                    MP.addConstr(y[h, d] >= len(R) + 1 - quicksum(1 - x[h, d, p] 
+                                                                  for p in P_prime))
                 
                 cuts_added += 1
             elif num_open_or == y[h, d].x:
                 print(f"Upper bound = Lower bound, {num_open_or} = {y[h, d].x}")
                 
             elif num_open_or > y[h, d].x:
-                print(f"Upper bound > Lower bound, {num_open_or} = {y[h, d].x}")
+                print(f"Upper bound > Lower bound, {num_open_or} > {y[h, d].x}")
                 MP.addConstr(y[h, d] >= num_open_or - quicksum(1 - x[h, d, p] 
                                                                for p in P_prime))
                 cuts_added += 1
-            else:
-                raise RuntimeError("Sub problem < Master problem!")
+            elif num_open_or < y[h, d].x - EPS:
+                raise RuntimeError(f"Sub problem < Master problem!, {num_open_or} < {y[h, d].x}")
                         
     print("Cuts added", cuts_added)
     if cuts_added == 0:

@@ -13,7 +13,7 @@ from gurobipy import GRB, quicksum
 LBBD_1 = "LBBD_1"
 LBBD_2 = "LBBD_2"
 
-EPS = 1e-14
+EPS = 1e-6
 
 # Formatting
 UNDERLINE = "\n" + 80*"="
@@ -74,7 +74,7 @@ mandatory_P = [p for p in P if patients.loc[p, 'is_mandatory'] == 1]
 MP = gp.Model()
 
 # Variables
-# 1 if patient p assigned to OR r in hospital h on day d
+# 1 if patient p assigned to hospital h on day d
 x = {(h, d, p): MP.addVar(vtype=GRB.BINARY) for h in H for d in D for p in P}
 
 # 1 if surgical suite in hospital h is opened on day d
@@ -120,6 +120,8 @@ num_or_lb = {(h, d): MP.addConstr(y[h, d]*B[h, d]
 MP.setParam('OutputFlag', 1)
 MP.setParam('LazyConstraints', 1)
 MP.setParam('MIPGap', 0)
+MP.setParam('MIPFocus',2)
+MP.setParam('Heuristic', 0)
 
 def callback(model, where):
     if where == GRB.Callback.MIPSOL:
@@ -132,7 +134,7 @@ def callback(model, where):
                 if VERBOSE:
                     print("Hospital", h, "Day", d, end=" ")
                 # Set of patients assigned to this hospital and day.
-                P_prime = [p for p in P if x_hat[h, d, p] == 1]
+                P_prime = [p for p in P if x_hat[h, d, p] > 0.5]
                 
                 SP = gp.Model()
                 SP.setParam('OutputFlag', 0)
@@ -141,20 +143,24 @@ def callback(model, where):
                 
                 # Variables
                 y_prime = {r: SP.addVar(vtype=GRB.BINARY) for r in R}
-                x_prime = {(p, r): SP.addVar(vtype=GRB.BINARY) for p in P_prime for r in R}
+                x_prime = {(p, r): SP.addVar(vtype=GRB.BINARY) for p in P_prime 
+                           for r in R}
                 
                 # Objective
                 SP.setObjective(quicksum(y_prime[r] for r in R), GRB.MINIMIZE)
                 
                 # Constraints
                 patients_assigned_hosp_get_room = {
-                    p: SP.addConstr(quicksum(x_prime[p, r] for r in R) == 1) for p in P_prime}
+                    p: SP.addConstr(quicksum(x_prime[p, r] for r in R) == 1) 
+                    for p in P_prime}
                 
-                OR_capacity = {r: SP.addConstr(quicksum(T[p]*x_prime[p, r] for p in P_prime) 
+                OR_capacity = {r: SP.addConstr(quicksum(T[p]*x_prime[p, r] 
+                                                        for p in P_prime) 
                                                <= B[h, d]*y_prime[r]) for r in R}
                 
-                sub_lp_strengthener = {(p, r): SP.addConstr(x_prime[p, r] <= y_prime[r]) 
-                                   for p in P_prime for r in R}
+                sub_lp_strengthener = {(p, r): SP.addConstr(x_prime[p, r] 
+                                                            <= y_prime[r]) 
+                                    for p in P_prime for r in R}
                 
                 OR_symmetries = {r: SP.addConstr(y_prime[r] <= y_prime[r - 1]) 
                                  for r in R[1:]}
@@ -165,26 +171,37 @@ def callback(model, where):
                     num_open_or = sum(y_prime[r].x for r in R)
                     
                 if SP.Status != GRB.OPTIMAL:
+                    cuts_added += 1
+                    
                     if VERBOSE:
                         print("Infeasible, status code:", SP.Status)
                     if CHOSEN_LBBD == LBBD_1:
-                        model.cbLazy(quicksum(1 - x[h, d, p] for p in P_prime) >= 1)
+                        model.cbLazy(quicksum(1 - x[h, d, p] for p in P_prime) 
+                                     >= 1)
                     if CHOSEN_LBBD == LBBD_2:
-                        model.cbLazy(y[h, d] >= len(R) + 1 - quicksum(1 - x[h, d, p] for p in P_prime))
+                        model.cbLazy(y[h, d] >= len(R) + 1 
+                                     - quicksum(1 - x[h, d, p] for p in P_prime))
                     
-                    cuts_added += 1
-                elif num_open_or == Y_hat[h, d]:
+                    
+                elif abs(num_open_or - Y_hat[h, d]) < EPS:
                     if VERBOSE:
                         print(f"Upper bound = Lower bound, {num_open_or} = {Y_hat[h, d]}")
                     
-                elif num_open_or > Y_hat[h, d]:
+                        
+                    
+                elif num_open_or > Y_hat[h, d] + EPS:
+                    cuts_added += 1
                     if VERBOSE:
                         print(f"Upper bound > Lower bound, {num_open_or} > {Y_hat[h, d]}")
-                    model.cbLazy(y[h, d] >= num_open_or - quicksum(1 - x[h, d, p] 
-                                                                   for p in P_prime))
-                    cuts_added += 1
-                else:
-                    raise RuntimeError("Sub problem < Master problem!")
+                    
+                    model.cbLazy(y[h, d] >= round(num_open_or) 
+                                 - quicksum(1 - x[h, d, p] for p in P_prime))
+                    
+                elif num_open_or < Y_hat[h, d] - EPS:
+                    # This branch is allowed to happen!
+                    # MIPSOL is just a new incumbent but not necessarily optimal.
+                    if VERBOSE:
+                        print(f"Upper bound > Lower bound, {num_open_or} < {Y_hat[h, d]}")
         
         if VERBOSE:
             print("Cuts added", cuts_added)
@@ -197,3 +214,27 @@ end_time = time.time()
 print("\n")
 print("Optimal objective value:", MP.objVal)
 print("Ran in", end_time - start_time, "seconds")
+
+
+hospitals = []
+days = []
+num_opened = []
+num_patients = []
+max_times = []
+total_surg_times = []
+
+# Collect output summary
+for h in H:
+    for d in D:
+        hospitals.append(h)
+        days.append(d)
+        num_opened.append(y[h, d].x)
+        num_patients.append(sum(x[h, d, p].x for p in P))
+        max_times.append(B[h, d]*len(R))
+        total_surg_times.append(sum(x[h, d, p].x*T[p] for p in P))
+
+# Format and display output summary
+columns = {'h': hospitals, 'd': days, 'num_opened': num_opened, 
+           'num_patients': num_patients, 'total_surg_time': total_surg_times,'max_time': max_times}
+results = pd.DataFrame(columns)
+print(results)
