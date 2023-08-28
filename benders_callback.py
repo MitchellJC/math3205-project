@@ -22,9 +22,10 @@ UNDERLINE = "\n" + 80*"="
 
 # Script parameters
 VERBOSE = False
+TIME_LIMIT = 7200
 
 NUM_ROOMS = 5
-NUM_PATIENTS = 20
+NUM_PATIENTS = 40
 NUM_HOSPITALS = 3
 NUM_DAYS = 5
 
@@ -123,8 +124,9 @@ num_or_lb = {(h, d): MP.addConstr(y[h, d]*B[h, d]
 MP.setParam('OutputFlag', 1)
 MP.setParam('LazyConstraints', 1)
 MP.setParam('MIPGap', 0)
-MP.setParam('MIPFocus',2)
+MP.setParam('MIPFocus', 3)
 MP.setParam('Heuristic', 0)
+MP.setParam('TimeLimit', TIME_LIMIT)
 
 def precompute_ffd(Y_hat: dict, P_prime: list, h: int, d: int) -> (
         tuple[bool, Union[int, None]]):

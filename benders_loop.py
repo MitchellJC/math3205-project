@@ -21,6 +21,7 @@ UNDERLINE = "\n" + 80*"="
 
 # Script parameters
 EPS = 1e6
+TIME_LIMIT = 7200
 
 NUM_ROOMS = 5
 NUM_PATIENTS = 20
@@ -120,6 +121,9 @@ num_or_lb = {(h, d): MP.addConstr(y[h, d]*B[h, d]
 
 MP.setParam('OutputFlag', 1)
 MP.setParam('MIPGap', 0)
+MP.setParam('MIPFocus', 3)
+MP.setParam('Heuristics', 0)
+MP.setParam('TimeLimit', TIME_LIMIT)
 
 start_time = time.time()
 iterations = 0

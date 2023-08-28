@@ -14,8 +14,11 @@ from gurobipy import GRB, quicksum
 # Formatting
 UNDERLINE = "\n" + 80*"="
 
+# Script parameters
+TIME_LIMIT = 7200
+
 NUM_ROOMS = 5
-NUM_PATIENTS = 40
+NUM_PATIENTS = 20
 NUM_HOSPITALS = 3
 NUM_DAYS = 5
 
@@ -64,6 +67,9 @@ mandatory_P = [p for p in P if patients.loc[p, 'is_mandatory'] == 1]
 
 model = gp.Model()
 model.setParam('MIPGap', 0)
+model.setParam('MIPFocus', 2)
+model.setParam('Heuristics', 0)
+model.setParam('TimeLimit', TIME_LIMIT)
 
 # Variables
 # 1 if patient p assigned to OR r in hospital h on day d
@@ -77,7 +83,7 @@ u = {(h, d): model.addVar(vtype=GRB.BINARY) for h in H for d in D}
 y = {(h, d, r): model.addVar(vtype=GRB.BINARY) for h in H for d in D for r in R}
 
 # 1 if patient does not get surgery within time horizon
-w = {p: model.addVar(vtype=GRB.BINARY) for p in P}
+w = {p: model.addVar(vtype=GRB.BINARY) for p in P if p not in mandatory_P}
 
 # Objective
 model.setObjective(quicksum(G[h, d]*u[h, d] for h in H for d in D)
