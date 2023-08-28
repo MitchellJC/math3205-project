@@ -11,6 +11,7 @@ import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB, quicksum
 
+
 # General constants
 LBBD_1 = "LBBD_1"
 LBBD_2 = "LBBD_2"

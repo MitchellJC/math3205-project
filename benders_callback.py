@@ -8,6 +8,7 @@ import time
 import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB, quicksum
+from utilities import ffd, Bin
 
 # General constants
 LBBD_1 = "LBBD_1"
@@ -22,7 +23,7 @@ UNDERLINE = "\n" + 80*"="
 VERBOSE = False
 
 NUM_ROOMS = 5
-NUM_PATIENTS = 20
+NUM_PATIENTS = 40
 NUM_HOSPITALS = 3
 NUM_DAYS = 5
 
@@ -55,7 +56,7 @@ F = {(h, d): float(hospitals[(hospitals['hospital_id'] == h)
                              & (hospitals['day'] == d)]['or_open_cost']) 
      for h in H for d in D}
 
-# Operating minutes of hospital
+# Operating minutes of hospital day
 B = {(h, d): float(hospitals[(hospitals['hospital_id'] == h) 
                              & (hospitals['day'] == d)]['open_minutes']) 
      for h in H for d in D}
@@ -128,6 +129,8 @@ def callback(model, where):
         Y_hat = model.cbGetSolution(y)
         x_hat = model.cbGetSolution(x)
         
+        
+        
         cuts_added = 0
         for h in H:
             for d in D:
@@ -135,6 +138,25 @@ def callback(model, where):
                     print("Hospital", h, "Day", d, end=" ")
                 # Set of patients assigned to this hospital and day.
                 P_prime = [p for p in P if x_hat[h, d, p] > 0.5]
+                
+                # Get heuristic solution
+                items = [(p, T[p]) for p in P_prime]
+                heur_open_rooms = ffd(items, len(R), B[h, d])
+                
+                FFD_upperbound = None
+                if heur_open_rooms:
+                    if abs(len(heur_open_rooms) - Y_hat[h, d]) < EPS:
+                        if VERBOSE:
+                            print("FFD soln same as master problem.")
+                        return
+                    elif len(heur_open_rooms) < Y_hat[h, d] - EPS:
+                        if VERBOSE:
+                            print("FFD soln better than master problem. (Non-optimal master soln)")
+                        return
+                    elif len(heur_open_rooms) > Y_hat[h, d] + EPS:
+                        if VERBOSE:
+                            print("FFD soln worst as master problem.")
+                        FFD_upperbound = len(heur_open_rooms)
                 
                 SP = gp.Model()
                 SP.setParam('OutputFlag', 0)
@@ -164,6 +186,10 @@ def callback(model, where):
                 
                 OR_symmetries = {r: SP.addConstr(y_prime[r] <= y_prime[r - 1]) 
                                  for r in R[1:]}
+                
+                if FFD_upperbound:
+                    FFD_tightener = SP.addConstr(quicksum(y_prime[r] for r in R)
+                                                 <= FFD_upperbound)
                 
                 SP.optimize()
                 
