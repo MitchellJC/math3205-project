@@ -85,11 +85,11 @@ for num_or in NUM_ORS:
                           scale=STD_SURG_TIME, size=(num_patients, 1))
         
         # Create cost of opening hospital data
-        G = uniform.rvs(loc=OPEN_HOSP_LOW, scale=OPEN_HOSP_HIGH - OPEN_HOSP_LOW, 
+        G = randint.rvs(OPEN_HOSP_LOW, OPEN_HOSP_HIGH + 1, 
                         size=(NUM_HOSPITALS, NUM_DAYS))
         
         # Create cost of opening operating room data
-        F = uniform.rvs(loc=OPEN_OR_LOW, scale=OPEN_OR_HIGH - OPEN_OR_LOW, 
+        F = randint.rvs(OPEN_OR_LOW, OPEN_OR_HIGH + 1, 
                         size=(NUM_HOSPITALS, NUM_DAYS))
         
         # Create set of mandatory patients

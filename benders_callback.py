@@ -25,7 +25,7 @@ VERBOSE = False
 TIME_LIMIT = 7200
 
 NUM_ROOMS = 5
-NUM_PATIENTS = 20
+NUM_PATIENTS = 40
 NUM_HOSPITALS = 3
 NUM_DAYS = 5
 
@@ -33,7 +33,7 @@ K_1 = 50
 K_2 = 5
 
 CHOSEN_LBBD = LBBD_2
-USE_PROPAGATION = True
+USE_PROPAGATION = False
 
 # Load csv files
 patients = pd.read_csv(f'data/patients-{NUM_ROOMS}-{NUM_PATIENTS}.csv')
