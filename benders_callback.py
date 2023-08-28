@@ -8,7 +8,7 @@ import time
 import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB, quicksum
-from utilities import ffd, Bin
+from utilities import ffd
 
 # General constants
 LBBD_1 = "LBBD_1"
@@ -23,7 +23,7 @@ UNDERLINE = "\n" + 80*"="
 VERBOSE = False
 
 NUM_ROOMS = 5
-NUM_PATIENTS = 40
+NUM_PATIENTS = 20
 NUM_HOSPITALS = 3
 NUM_DAYS = 5
 
@@ -31,6 +31,7 @@ K_1 = 50
 K_2 = 5
 
 CHOSEN_LBBD = LBBD_2
+USE_PROPAGATION = True
 
 # Load csv files
 patients = pd.read_csv(f'data/patients-{NUM_ROOMS}-{NUM_PATIENTS}.csv')
@@ -129,8 +130,6 @@ def callback(model, where):
         Y_hat = model.cbGetSolution(y)
         x_hat = model.cbGetSolution(x)
         
-        
-        
         cuts_added = 0
         for h in H:
             for d in D:
@@ -143,6 +142,7 @@ def callback(model, where):
                 items = [(p, T[p]) for p in P_prime]
                 heur_open_rooms = ffd(items, len(R), B[h, d])
                 
+                # Continue sub problem based on heuristic solution
                 FFD_upperbound = None
                 if heur_open_rooms:
                     if abs(len(heur_open_rooms) - Y_hat[h, d]) < EPS:
@@ -151,7 +151,8 @@ def callback(model, where):
                         return
                     elif len(heur_open_rooms) < Y_hat[h, d] - EPS:
                         if VERBOSE:
-                            print("FFD soln better than master problem. (Non-optimal master soln)")
+                            print("FFD soln better than master problem."
+                                  +" (Non-optimal master soln)")
                         return
                     elif len(heur_open_rooms) > Y_hat[h, d] + EPS:
                         if VERBOSE:
@@ -161,7 +162,6 @@ def callback(model, where):
                 SP = gp.Model()
                 SP.setParam('OutputFlag', 0)
                 SP.setParam('MIPGap', 0)
-                
                 
                 # Variables
                 y_prime = {r: SP.addVar(vtype=GRB.BINARY) for r in R}
@@ -175,7 +175,7 @@ def callback(model, where):
                 patients_assigned_hosp_get_room = {
                     p: SP.addConstr(quicksum(x_prime[p, r] for r in R) == 1) 
                     for p in P_prime}
-                
+
                 OR_capacity = {r: SP.addConstr(quicksum(T[p]*x_prime[p, r] 
                                                         for p in P_prime) 
                                                <= B[h, d]*y_prime[r]) for r in R}
@@ -195,39 +195,58 @@ def callback(model, where):
                 
                 if SP.Status == GRB.OPTIMAL:
                     num_open_or = sum(y_prime[r].x for r in R)
-                    
+                
+                # Feasbility cut
                 if SP.Status != GRB.OPTIMAL:
                     cuts_added += 1
                     
                     if VERBOSE:
                         print("Infeasible, status code:", SP.Status)
+                        
+                        
                     if CHOSEN_LBBD == LBBD_1:
-                        model.cbLazy(quicksum(1 - x[h, d, p] for p in P_prime) 
-                                     >= 1)
-                    if CHOSEN_LBBD == LBBD_2:
-                        model.cbLazy(y[h, d] >= len(R) + 1 
-                                     - quicksum(1 - x[h, d, p] for p in P_prime))
-                    
-                    
+                        if USE_PROPAGATION:
+                            [model.cbLazy(quicksum(1 - x[h_prime, d_prime, p] 
+                                                   for p in P_prime) 
+                                         >= 1) for h_prime in H for d_prime in D 
+                             if B[h_prime, d_prime] <= B[h, d]]
+                        else:
+                            model.cbLazy(quicksum(1 - x[h, d, p] for p in P_prime) 
+                                         >= 1) 
+                    elif CHOSEN_LBBD == LBBD_2:
+                        if USE_PROPAGATION:
+                            [model.cbLazy(y[h_prime, d_prime] >= len(R) + 1 
+                                         - quicksum(1 - x[h_prime, d_prime, p] 
+                                                    for p in P_prime))
+                             for h_prime in H for d_prime in D 
+                             if B[h_prime, d_prime] <= B[h, d]]
+                        else:
+                            model.cbLazy(y[h, d] >= len(R) + 1 
+                                         - quicksum(1 - x[h, d, p] 
+                                                    for p in P_prime))
+                # Optimal, no cuts required
                 elif abs(num_open_or - Y_hat[h, d]) < EPS:
                     if VERBOSE:
-                        print(f"Upper bound = Lower bound, {num_open_or} = {Y_hat[h, d]}")
+                        print(f"Upper bound = Lower bound, {num_open_or}" 
+                              + f" = {Y_hat[h, d]}")
                     
-                        
-                    
+                # Optimality cut
                 elif num_open_or > Y_hat[h, d] + EPS:
                     cuts_added += 1
                     if VERBOSE:
-                        print(f"Upper bound > Lower bound, {num_open_or} > {Y_hat[h, d]}")
+                        print(f"Upper bound > Lower bound, {num_open_or}" 
+                              + f" > {Y_hat[h, d]}")
                     
                     model.cbLazy(y[h, d] >= round(num_open_or) 
                                  - quicksum(1 - x[h, d, p] for p in P_prime))
-                    
+                
+                # Ignore, no cut needed
                 elif num_open_or < Y_hat[h, d] - EPS:
                     # This branch is allowed to happen!
                     # MIPSOL is just a new incumbent but not necessarily optimal.
                     if VERBOSE:
-                        print(f"Upper bound > Lower bound, {num_open_or} < {Y_hat[h, d]}")
+                        print(f"Upper bound > Lower bound, {num_open_or}" 
+                              + f" < {Y_hat[h, d]}")
         
         if VERBOSE:
             print("Cuts added", cuts_added)
@@ -241,15 +260,13 @@ print("\n")
 print("Optimal objective value:", MP.objVal)
 print("Ran in", end_time - start_time, "seconds")
 
-
+# Collect output summary
 hospitals = []
 days = []
 num_opened = []
 num_patients = []
 max_times = []
 total_surg_times = []
-
-# Collect output summary
 for h in H:
     for d in D:
         hospitals.append(h)
@@ -261,6 +278,7 @@ for h in H:
 
 # Format and display output summary
 columns = {'h': hospitals, 'd': days, 'num_opened': num_opened, 
-           'num_patients': num_patients, 'total_surg_time': total_surg_times,'max_time': max_times}
+           'num_patients': num_patients, 'total_surg_time': total_surg_times,
+           'max_time': max_times}
 results = pd.DataFrame(columns)
 print(results)
