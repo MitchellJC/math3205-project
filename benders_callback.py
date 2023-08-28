@@ -25,7 +25,7 @@ VERBOSE = False
 TIME_LIMIT = 7200
 
 NUM_ROOMS = 5
-NUM_PATIENTS = 40
+NUM_PATIENTS = 20
 NUM_HOSPITALS = 3
 NUM_DAYS = 5
 
@@ -125,7 +125,7 @@ MP.setParam('OutputFlag', 1)
 MP.setParam('LazyConstraints', 1)
 MP.setParam('MIPGap', 0)
 MP.setParam('MIPFocus', 3)
-MP.setParam('Heuristic', 0)
+MP.setParam('Heuristics', 0)
 MP.setParam('TimeLimit', TIME_LIMIT)
 
 def precompute_ffd(Y_hat: dict, P_prime: list, h: int, d: int) -> (
@@ -324,18 +324,20 @@ num_opened = []
 num_patients = []
 max_times = []
 total_surg_times = []
+avail_times = []
 for h in H:
     for d in D:
         hospitals.append(h)
         days.append(d)
         num_opened.append(y[h, d].x)
         num_patients.append(sum(x[h, d, p].x for p in P))
+        avail_times.append(B[h, d]*y[h, d].x)
         max_times.append(B[h, d]*len(R))
         total_surg_times.append(sum(x[h, d, p].x*T[p] for p in P))
 
 # Format and display output summary
 columns = {'h': hospitals, 'd': days, 'num_opened': num_opened, 
            'num_patients': num_patients, 'total_surg_time': total_surg_times,
-           'max_time': max_times}
+           'avail_time': avail_times, 'max_time': max_times}
 results = pd.DataFrame(columns)
 print(results)
