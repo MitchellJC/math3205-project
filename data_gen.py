@@ -83,7 +83,7 @@ def generate_data(num_patients, num_or, output_dict=False, seed=None):
     
     # Create surgery times data
     T = truncnorm.rvs(LEFT_TIME_CLIP, RIGHT_TIME_CLIP, loc=AVG_SURG_TIME,
-                      scale=STD_SURG_TIME, size=(num_patients, 1))
+                      scale=STD_SURG_TIME, size=(num_patients, 1)).astype(int)
     
     # Create cost of opening hospital data
     G = randint.rvs(OPEN_HOSP_LOW, OPEN_HOSP_HIGH + 1, 

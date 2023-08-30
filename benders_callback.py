@@ -50,22 +50,22 @@ D = range(NUM_DAYS)
 
 # Data
 # Cost of opening hospital operating suite
-G = {(h, d): float(hospitals[(hospitals['hospital_id'] == h) 
+G = {(h, d): int(hospitals[(hospitals['hospital_id'] == h) 
                              & (hospitals['day'] == d)]['hospital_open_cost']) 
      for h in H for d in D}
 
 # Cost of opening operating room
-F = {(h, d): float(hospitals[(hospitals['hospital_id'] == h) 
+F = {(h, d): int(hospitals[(hospitals['hospital_id'] == h) 
                              & (hospitals['day'] == d)]['or_open_cost']) 
      for h in H for d in D}
 
 # Operating minutes of hospital day
-B = {(h, d): float(hospitals[(hospitals['hospital_id'] == h) 
+B = {(h, d): int(hospitals[(hospitals['hospital_id'] == h) 
                              & (hospitals['day'] == d)]['open_minutes']) 
      for h in H for d in D}
 
 # Surgery times
-T = {p: float(patients[patients['id'] == p]['surgery_time']) for p in P}
+T = {p: int(patients[patients['id'] == p]['surgery_time']) for p in P}
 
 # Urgency
 rho = {p: int(patients[patients['id'] == p]['urgency']) for p in P}
