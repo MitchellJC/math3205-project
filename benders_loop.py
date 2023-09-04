@@ -10,26 +10,12 @@ import time
 import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB, quicksum
-
-
-# General constants
-LBBD_1 = "LBBD_1"
-LBBD_2 = "LBBD_2"
-
-# Formatting
-UNDERLINE = "\n" + 80*"="
-
-# Script parameters
-EPS = 1e6
-TIME_LIMIT = 7200
+from constants import UNDERLINE, LBBD_1, LBBD_2, EPS, TIME_LIMIT, K_1, K_2
 
 NUM_ROOMS = 5
 NUM_PATIENTS = 20
 NUM_HOSPITALS = 3
 NUM_DAYS = 5
-
-K_1 = 50
-K_2 = 5
 
 CHOSEN_LBBD = LBBD_2
 

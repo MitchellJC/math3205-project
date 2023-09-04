@@ -54,7 +54,8 @@ HOSPITAL_HEADER = ('hospital_id', 'day', 'open_minutes', 'hospital_open_cost',
 random.seed(SEED)
 np.random.seed(SEED)
 
-def generate_data(num_patients, num_or, output_dict=False, seed=None):
+def generate_data(num_patients, num_or, output_dict=False, seed=None, 
+                  verbose=False):
     if seed:
         random.seed(seed)
         np.random.seed(seed)
@@ -95,8 +96,9 @@ def generate_data(num_patients, num_or, output_dict=False, seed=None):
     
     # Create set of mandatory patients
     mandatory_P = [p for p in P if health_status[p, 0] <= -HEALTH_THRESHOLD]
-    print("\tPercentage of patients that are mandatory (Expected 6-10%)", 
-          f"{100*len(mandatory_P) / num_patients}%")
+    if verbose:
+        print("\tPercentage of patients that are mandatory (Expected 6-10%)", 
+              f"{100*len(mandatory_P) / num_patients}%")
     
     if output_dict:
         G = {(h, d): int(G[h, d]) for h in H for d in D}
