@@ -10,20 +10,15 @@ import time
 import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB, quicksum
+from constants import UNDERLINE, TIME_LIMIT, K_1, K_2
 
-# Formatting
-UNDERLINE = "\n" + 80*"="
 
 # Script parameters
-TIME_LIMIT = 7200
-
 NUM_ROOMS = 5
-NUM_PATIENTS = 40
+NUM_PATIENTS = 20
 NUM_HOSPITALS = 3
 NUM_DAYS = 5
 
-K_1 = 50
-K_2 = 5
 
 # Load csv files
 patients = pd.read_csv(f'data/patients-{NUM_ROOMS}-{NUM_PATIENTS}.csv')

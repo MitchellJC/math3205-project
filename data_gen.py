@@ -99,10 +99,10 @@ def generate_data(num_patients, num_or, output_dict=False, seed=None):
           f"{100*len(mandatory_P) / num_patients}%")
     
     if output_dict:
-        G = {(h, d): G[h, d] for h in H for d in D}
-        F = {(h, d): F[h, d] for h in H for d in D}
-        B = {(h, d): B[h, d] for h in H for d in D}
-        T = {p: T[p] for p in P}
+        G = {(h, d): int(G[h, d]) for h in H for d in D}
+        F = {(h, d): int(F[h, d]) for h in H for d in D}
+        B = {(h, d): int(B[h, d]) for h in H for d in D}
+        T = {p: int(T[p]) for p in P}
         rho = {p: int(rho[p]) for p in P}
         alpha = {p: int(alpha[p]) for p in P}
     
