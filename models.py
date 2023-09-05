@@ -67,9 +67,30 @@ class ORScheduler:
         
 class BendersORScheduler(ORScheduler):
     """Abstract class for OR schedulers using Benders' Decomposition."""
-    def __init__(self, P, H, R, D, G, F, B, T, rho, alpha, mand_P, 
-                 chosen_lbbd=LBBD_2, use_propagation=False, 
-                 tol=EPS, verbose=True, **kwargs):
+    def __init__(self, P: range, H: range, R: range, D: range, G: dict, F: dict, 
+                 B: dict, T: dict, rho: dict, alpha: dict, mand_P: list, 
+                 chosen_lbbd: str = LBBD_2, use_propagation: bool = False, 
+                 tol: float = EPS, verbose: bool = True, **kwargs):
+        """Initialise new object instance.
+        
+        Parameters:
+            P - Range of patients
+            H - Range of hospitals
+            R - Range of operating rooms.
+            D - Range of days.
+            G - Dictionary of hospital opening costs.
+            F - Dictionary of operating room opening costs.
+            B - Dictionary of open minutes of hospital-days.
+            T - Dictionary of operating times for each patient.
+            rho - Dictionary of patient urgencies.
+            alpha - Dictionary of patient wait times.
+            mand_P - List of mandatory patients.
+            chosen_lbbd - Variant of Benders' cuts apply.
+            use_propagation - True to use cut propagation.
+            tol - Numerical tolerance.
+            verbose - True to output algorithm logs.
+            gurobi_log - True to show Gurobi log.
+        """
         self.chosen_lbbd = chosen_lbbd
         self.use_propagation = use_propagation
         self.tol = tol
@@ -128,6 +149,7 @@ class BendersORScheduler(ORScheduler):
                     for h in self.H for d in self.D}
 
 class MIPScheduler(ORScheduler):
+    """OR scheduler that uses a pure mixed integer programming routine."""
     def _define_model(self):
         super()._define_model()
         
@@ -184,7 +206,8 @@ class MIPScheduler(ORScheduler):
     def run_model(self):
         self.model.optimize()
         
-class BendersLoopScheduler(BendersORScheduler):    
+class BendersLoopScheduler(BendersORScheduler):
+    """OR scheduler that uses Benders' decomposition in a loop."""    
     def run_model(self):
         iterations = 0
         while True:
@@ -274,6 +297,7 @@ class BendersLoopScheduler(BendersORScheduler):
                 break
             
 class BendersCallbackScheduler(BendersORScheduler):
+    """OR scheduler that uses Benders' decomposition in a callback."""
     def _define_model(self):
         super()._define_model()
         self.model.setParam('LazyConstraints', 1)
@@ -338,7 +362,8 @@ class BendersCallbackScheduler(BendersORScheduler):
             
             # Variables
             y_prime = {r: SP.addVar(vtype=GRB.BINARY) for r in self.R}
-            x_prime = {(p, r): SP.addVar(vtype=GRB.BINARY) for p in P_prime for r in self.R}
+            x_prime = {(p, r): SP.addVar(vtype=GRB.BINARY) for p in P_prime 
+                       for r in self.R}
             
             # Objective
             SP.setObjective(quicksum(y_prime[r] for r in self.R), GRB.MINIMIZE)
@@ -348,13 +373,17 @@ class BendersCallbackScheduler(BendersORScheduler):
                 p: SP.addConstr(quicksum(x_prime[p, r] for r in self.R) == 1) 
                 for p in P_prime}
 
-            OR_capacity = {r: SP.addConstr(quicksum(self.T[p]*x_prime[p, r] for p in P_prime) 
-                                           <= self.B[h, d]*y_prime[r]) for r in self.R}
+            OR_capacity = {r: SP.addConstr(quicksum(self.T[p]*x_prime[p, r] 
+                                                    for p in P_prime) 
+                                           <= self.B[h, d]*y_prime[r]) 
+                           for r in self.R}
             
-            sub_lp_strengthener = {(p, r): SP.addConstr(x_prime[p, r] <= y_prime[r]) 
+            sub_lp_strengthener = {(p, r): SP.addConstr(x_prime[p, r] 
+                                                        <= y_prime[r]) 
                                    for p in P_prime for r in self.R}
             
-            OR_symmetries = {r: SP.addConstr(y_prime[r] <= y_prime[r - 1]) for r in self.R[1:]}
+            OR_symmetries = {r: SP.addConstr(y_prime[r] <= y_prime[r - 1]) 
+                             for r in self.R[1:]}
             
             if FFD_upperbound:
                 FFD_tightener = SP.addConstr(quicksum(y_prime[r] for r in self.R)
@@ -461,7 +490,5 @@ class BendersCallbackScheduler(BendersORScheduler):
                 if self.verbose:
                     print("Cuts added", cuts_added[0])
                     
-        
-        
         self.model.optimize(callback)
         
