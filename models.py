@@ -8,7 +8,7 @@ import gurobipy as gp
 from gurobipy import GRB, quicksum
 from constants import K_1, K_2, TIME_LIMIT, LBBD_1, LBBD_2, EPS
 from typing import Union
-from utilities import ffd
+from utilities import ffd, Bin
 
 class ORScheduler:
     """Abstract class for OR scheduler methods."""
@@ -305,7 +305,7 @@ class BendersCallbackScheduler(BendersORScheduler):
         
     def run_model(self):
         def precompute_ffd(Y_hat: dict, P_prime: list, h: int, d: int) -> (
-                tuple[bool, Union[int, None]]):
+                tuple[bool, Union[int, None], Union[None, list[Bin]]]):
             """Use first-fit decreasing algorithm to prove feasible upperbound for sub
             problem. 
             
@@ -330,25 +330,28 @@ class BendersCallbackScheduler(BendersORScheduler):
                 if abs(len(heur_open_rooms) - Y_hat[h, d]) < self.tol:
                     if self.verbose:
                         print("FFD soln same as master problem.")
-                    return False, None
+                    return False, None, heur_open_rooms
                 elif len(heur_open_rooms) < Y_hat[h, d] - self.tol:
                     if self.verbose:
                         print("FFD soln better than master problem."
                               +" (Non-optimal master soln)")
-                    return False, None
+                    return False, None, heur_open_rooms
                 elif len(heur_open_rooms) > Y_hat[h, d] + self.tol:
                     if self.verbose:
-                        print("FFD soln worst as master problem.")
+                        print("FFD soln worst than master problem.")
                     FFD_upperbound = len(heur_open_rooms)
                     
-            return True, FFD_upperbound
+            return True, FFD_upperbound, heur_open_rooms
 
-        def solve_sub_ip(P_prime: list, FFD_upperbound: Union[int, None], h: int, 
+        def solve_sub_ip(P_prime: list, FFD_upperbound: Union[int, None],
+                         FFD_soln: list[Bin], h: int, 
                          d: int) -> tuple[gp.Model, dict]:
             """Defines ands solves to sub problem to optimality as an IP.
             
             Parameters:
                 P_prime - List of patients assigned to hospital h
+                FFD_upperbound - Heuristic upperbound on number of rooms needed
+                FFD_soln - Heuristic solution to use as warm start to sub-problem.
                 h - Hospital
                 d - day
                 
@@ -365,6 +368,12 @@ class BendersCallbackScheduler(BendersORScheduler):
             y_prime = {r: SP.addVar(vtype=GRB.BINARY) for r in self.R}
             x_prime = {(p, r): SP.addVar(vtype=GRB.BINARY) for p in P_prime 
                        for r in self.R}
+            
+            # Use heuristic soln as warm start
+            FFD_soln = [] if FFD_soln == None else FFD_soln
+            for r, room in enumerate(FFD_soln):
+                for p, _ in room.items:
+                    x_prime[p, r].Start = 1
             
             # Objective
             SP.setObjective(quicksum(y_prime[r] for r in self.R), GRB.MINIMIZE)
@@ -416,11 +425,12 @@ class BendersCallbackScheduler(BendersORScheduler):
             # Set of patients assigned to this hospital and day.
             P_prime = [p for p in self.P if x_hat[h, d, p] > 0.5]
             
-            need_to_continue, FFD_upperbound = precompute_ffd(Y_hat, P_prime, h, d)
+            need_to_continue, FFD_upperbound, FFD_soln = \
+                precompute_ffd(Y_hat, P_prime, h, d)
             if not need_to_continue:
                 return
             
-            SP, y_prime = solve_sub_ip(P_prime, FFD_upperbound, h, d)
+            SP, y_prime = solve_sub_ip(P_prime, FFD_upperbound, FFD_soln, h, d)
             
             if SP.Status == GRB.OPTIMAL:
                 num_open_or = sum(y_prime[r].x for r in self.R)

@@ -12,7 +12,7 @@ from data_gen import generate_data
 SEEDS = (42, 831, 316, 542)
 NUM_PATIENTS = (20,)
 NUM_OR = 5
-GAP = 0.01
+GAP = 0.00
 
 
 mip_obj_vals = []
@@ -61,9 +61,17 @@ for i in range(len(NUM_PATIENTS)):
     run_time = time.time() - start_time
     callback_obj_vals.append(benders_callback.model.objVal)
     callback_times.append(run_time)
-    
+
+# Time output
 columns = {'seed': SEEDS[:len(NUM_PATIENTS)], 'num_patients': NUM_PATIENTS, 
            'MIP': mip_times, 
            'loop': loop_times, 'callback': callback_times}
+df = pd.DataFrame(columns)
+print(df)
+
+# Obj val output
+columns = {'seed': SEEDS[:len(NUM_PATIENTS)], 'num_patients': NUM_PATIENTS, 
+           'MIP': mip_obj_vals, 
+           'loop': loop_obj_vals, 'callback': callback_obj_vals}
 df = pd.DataFrame(columns)
 print(df)

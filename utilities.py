@@ -6,7 +6,7 @@ class Bin:
         """Initialise new bin."""
         self._size = size
         self._size_used = 0
-        self._items = []
+        self.items = []
     
     def can_fit(self, item_size):
         """Returns True if the item can fit in the bin, False otherwise."""
@@ -16,7 +16,7 @@ class Bin:
         """Put the item with the given item size in the bin."""
         if not self.can_fit(item_size):
             raise ValueError("Item does not fit in bin.")
-        self._items.append(item_size)
+        self.items.append(item)
         self._size_used += item_size
 
 def ffd(items: list[tuple], max_bins: int, bin_size: int) -> list['Bin'] | None:
