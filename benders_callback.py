@@ -64,6 +64,12 @@ alpha = {p: int(patients[patients['id'] == p]['wait_time']) for p in P}
 mandatory_P = [p for p in P if patients.loc[p, 'is_mandatory'] == 1]
 
 MP = gp.Model()
+MP.setParam('OutputFlag', 1)
+MP.setParam('LazyConstraints', 1)
+MP.setParam('MIPGap', 0)
+MP.setParam('MIPFocus', 3)
+MP.setParam('Heuristics', 0)
+MP.setParam('TimeLimit', TIME_LIMIT)
 
 # Variables
 # 1 if patient p assigned to hospital h on day d
@@ -108,13 +114,6 @@ no_single_long_op = {(h, d, p): MP.addConstr(T[p]*x[h, d, p] <= B[h, d])
 num_or_lb = {(h, d): MP.addConstr(y[h, d]*B[h, d] 
                                   >= quicksum(T[p]*x[h, d, p] for p in P))
             for h in H for d in D}
-
-MP.setParam('OutputFlag', 1)
-MP.setParam('LazyConstraints', 1)
-MP.setParam('MIPGap', 0)
-MP.setParam('MIPFocus', 3)
-MP.setParam('Heuristics', 0)
-MP.setParam('TimeLimit', TIME_LIMIT)
 
 def precompute_ffd(Y_hat: dict, P_prime: list, h: int, d: int) -> (
         tuple[bool, Union[int, None]]):

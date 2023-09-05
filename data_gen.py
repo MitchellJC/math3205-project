@@ -9,12 +9,9 @@ Generates data for the operation room scheduling problem.
 import csv
 import random
 import numpy as np
-from scipy.stats import randint, uniform, truncnorm
+from scipy.stats import randint, truncnorm
 
 SEED = 42
-
-K_1 = 50
-K_2 = 5
 
 NUM_HOSPITALS = 3
 NUM_PATIENTS = (20, 40, 60, 80, 100, 120, 140, 160)
