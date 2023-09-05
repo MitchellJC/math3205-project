@@ -13,8 +13,8 @@ from utilities import ffd
 class ORScheduler:
     """Abstract class for OR scheduler methods."""
     def __init__(self, P: range, H: range, R: range, D: range, G: dict, F: dict, 
-                 B: dict, T: dict, rho: dict, alpha: dict, mand_P: list, 
-                 gurobi_log=True) -> None:
+                 B: dict, T: dict, rho: dict, alpha: dict, mand_P: list,
+                 gap: int = 0, gurobi_log: bool = True) -> None:
         """Initialise new object instance.
         
         Parameters:
@@ -43,12 +43,13 @@ class ORScheduler:
         self.alpha = alpha
         self.mand_P = mand_P
         self.gurobi_log = gurobi_log
+        self.gap = gap
         self._define_model()
         
     def _define_model(self):
         # Model and parameters
         self.model = gp.Model()
-        self.model.setParam('MIPGap', 0)
+        self.model.setParam('MIPGap', self.gap)
         # self.model.setParam('MIPFocus', 2)
         # self.model.setParam('Heuristics', 0)
         self.model.setParam('TimeLimit', TIME_LIMIT)
