@@ -56,7 +56,7 @@ for i in range(len(NUM_PATIENTS)):
     callback_obj_vals.append(benders_callback.model.objVal)
     callback_times.append(run_time)
     
-columns = {'seed': SEEDS, 'num_patients': NUM_PATIENTS, 'MIP': mip_times, 
+columns = {'seed': SEEDS[:len(NUM_PATIENTS)], 'num_patients': NUM_PATIENTS, 'MIP': mip_times, 
            'loop': loop_times, 'callback': callback_times}
 df = pd.DataFrame(columns)
 print(df)
