@@ -30,7 +30,7 @@ callback_obj_vals = []
 callback_times = []
 
 for instance, seed in enumerate(SEEDS):
-    print("Instance", instance, UNDERLINE)
+    print(UNDERLINE, "\nInstance", instance, UNDERLINE)
     for num_patients in NUM_PATIENTS:
         instance_nums.append(instance)
         seeds.append(seed)
