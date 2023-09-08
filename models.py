@@ -278,15 +278,16 @@ class BendersORScheduler(ORScheduler):
         
         # Decisions for if called from loop or callback
         if lazy:
+            add_constr = model.cbLazy
+            
             Y_hat = model.cbGetSolution(self.y)
             x_hat = model.cbGetSolution(self.x)
-            add_constr = model.cbLazy
         else:
             add_constr = model.addConstr
             
-            x_hat = {(h, d, p): self.x[h, d, p].x for h in self.H for d in self.D 
-                     for p in self.P}
             Y_hat = {(h, d): self.y[h, d].x for h in self.H for d in self.D}
+            x_hat = {(h, d, p): self.x[h, d, p].x for h in self.H for d in self.D 
+                     for p in self.P}            
                 
         # Set of patients assigned to this hospital and day.
         P_prime = [p for p in self.P if x_hat[h, d, p] > 0.5]
@@ -297,14 +298,6 @@ class BendersORScheduler(ORScheduler):
             return
         
         SP, y_prime = self.solve_sub_ip(P_prime, FFD_upperbound, FFD_soln, h, d)
-        obj_val = (
-            sum(self.G[h, d]*self.u[h, d] for h in self.H for d in self.D) 
-            + sum(self.F[h, d]*self.y[h, d] for h in self.H for d in self.D)
-            + sum(K_1*self.rho[p]*(d - self.alpha[p])*self.x[h, d, p] 
-                     for h in self.H for d in self.D for p in self.P)
-            + sum(K_2*self.rho[p]*(len(self.D) + 1 - self.alpha[p])*self.w[p]
-                     for p in self.P if p not in self.mand_P)
-        )
         
         if SP.Status == GRB.OPTIMAL:
             num_open_or = sum(y_prime[r].x for r in self.R)
@@ -462,11 +455,11 @@ class BendersCallbackScheduler(BendersORScheduler):
                 and model.cbGet(GRB.Callback.MIPNODE_STATUS) == GRB.OPTIMAL 
                 and model._best_found 
                 < model.cbGet(GRB.Callback.MIPNODE_OBJBST) - self.tol):
-                
-                model.cbSetSolution([Y[i] for i in I], 
-                                    [model._BestY[i] for i in I])
-                model.cbSetSolution([Theta[j] for j in J], 
-                                    [model._BestTheta[j] for j in J])
+                # TODO Can only suggest solution if all sub problems are 
+                # feasible
+                pass
+                model.cbSetSolution()
+                model.cbSetSolution()
                     
         self.model._best_found = GRB.INFINITY
         self.model.optimize(callback)
