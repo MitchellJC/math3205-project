@@ -12,7 +12,7 @@ from data_gen import generate_data
 from constants import UNDERLINE
 
 SEEDS = (42, 831, 306, 542, 1)
-NUM_PATIENTS = (20, 15)
+NUM_PATIENTS = (20,)
 NUM_OR = 5
 GAP = 0.01 # 0.01
 
@@ -51,17 +51,17 @@ for num_patients in NUM_PATIENTS:
         mip_obj_vals.append(mip.model.objVal)
         mip_times.append(run_time)
         
-        # # Benders' Loop
-        # print(f"Solving with Benders' loop")
-        # benders_loop = BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P,
-        #                                     verbose=False, gurobi_log=False, gap=GAP)
-        # start_time = time.time()
-        # benders_loop.run_model()
-        # run_time = time.time() - start_time
-        # loop_obj_vals.append(benders_loop.model.objVal)
-        # loop_times.append(run_time)
-        loop_obj_vals.append(0)
-        loop_times.append(0)
+        # Benders' Loop
+        print(f"Solving with Benders' loop")
+        benders_loop = BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P,
+                                            verbose=False, gurobi_log=False, gap=GAP)
+        start_time = time.time()
+        benders_loop.run_model()
+        run_time = time.time() - start_time
+        loop_obj_vals.append(benders_loop.model.objVal)
+        loop_times.append(run_time)
+        # loop_obj_vals.append(0)
+        # loop_times.append(0)
         
         # Benders' Callback
         print(f"Solving with Benders' callback")
@@ -97,10 +97,3 @@ columns = {'num_patients': NUM_PATIENTS, 'MIP': statistics.mean(mip_times),
            'callback': statistics.mean(callback_times)}
 df = pd.DataFrame(columns)
 print(df)
-
-# # Obj val output
-# columns = {'seed': SEEDS[:len(NUM_PATIENTS)], 'num_patients': NUM_PATIENTS, 
-#            'MIP': mip_obj_vals, 
-#            'loop': loop_obj_vals, 'callback': callback_obj_vals}
-# df = pd.DataFrame(columns)
-# print(df)

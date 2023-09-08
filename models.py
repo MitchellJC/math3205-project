@@ -200,8 +200,8 @@ class BendersORScheduler(ORScheduler):
         return True, FFD_upperbound, heur_open_rooms
 
     def solve_sub_ip(self, P_prime: list, FFD_upperbound: Union[int, None],
-                     FFD_soln: list[Bin], h: int, 
-                     d: int) -> tuple[gp.Model, dict]:
+                     FFD_soln: list[Bin], h: int, d: int
+                     ) -> tuple[gp.Model, dict]:
         """Defines ands solves to sub problem to optimality as an IP.
         
         Parameters:
@@ -259,17 +259,13 @@ class BendersORScheduler(ORScheduler):
         
         return SP, y_prime
 
-    def solve_sub_problem(self, model: gp.Model, x_hat: dict, Y_hat: dict, 
-                          cuts_container: list, h: int, d: int, 
-                          lazy: bool = True) -> None:
+    def solve_sub_problem(self, model: gp.Model, cuts_container: list, h: int, 
+                          d: int, lazy: bool = True) -> None:
         """Solve the hospital-day sub-problem. Adds Bender's cuts to master problem
         as required.
         
         Parameters:
             model - Master problem Gurobi model.
-            x_hat - Dictionary containing binary variables indicating patient 
-                assignments.
-            Y_hat - Dictionary containing number of operating rooms to open.
             cuts_container - List containing one element, the number of cuts added
             h - Hospital
             d - day
@@ -282,13 +278,15 @@ class BendersORScheduler(ORScheduler):
         
         # Decisions for if called from loop or callback
         if lazy:
+            Y_hat = model.cbGetSolution(self.y)
+            x_hat = model.cbGetSolution(self.x)
             add_constr = model.cbLazy
         else:
             add_constr = model.addConstr
             
-            x_hat = {(h, d, p): x_hat[h, d, p].x for h in self.H for d in self.D 
+            x_hat = {(h, d, p): self.x[h, d, p].x for h in self.H for d in self.D 
                      for p in self.P}
-            Y_hat = {(h, d): Y_hat[h, d].x for h in self.H for d in self.D}
+            Y_hat = {(h, d): self.y[h, d].x for h in self.H for d in self.D}
                 
         # Set of patients assigned to this hospital and day.
         P_prime = [p for p in self.P if x_hat[h, d, p] > 0.5]
@@ -299,6 +297,14 @@ class BendersORScheduler(ORScheduler):
             return
         
         SP, y_prime = self.solve_sub_ip(P_prime, FFD_upperbound, FFD_soln, h, d)
+        obj_val = (
+            sum(self.G[h, d]*self.u[h, d] for h in self.H for d in self.D) 
+            + sum(self.F[h, d]*self.y[h, d] for h in self.H for d in self.D)
+            + sum(K_1*self.rho[p]*(d - self.alpha[p])*self.x[h, d, p] 
+                     for h in self.H for d in self.D for p in self.P)
+            + sum(K_2*self.rho[p]*(len(self.D) + 1 - self.alpha[p])*self.w[p]
+                     for p in self.P if p not in self.mand_P)
+        )
         
         if SP.Status == GRB.OPTIMAL:
             num_open_or = sum(y_prime[r].x for r in self.R)
@@ -426,8 +432,7 @@ class BendersLoopScheduler(BendersORScheduler):
             cuts_added = [0]
             for h in self.H:
                 for d in self.D:
-                    self.solve_sub_problem(self.model, self.x, self.y, 
-                                           cuts_added, h, d, lazy=False)
+                    self.solve_sub_problem(self.model, cuts_added, h, d, lazy=False)
                     
             if self.verbose:            
                 print("Cuts added", cuts_added[0])
@@ -444,17 +449,25 @@ class BendersCallbackScheduler(BendersORScheduler):
     def run_model(self):
         def callback(model, where):
             if where == GRB.Callback.MIPSOL:
-                Y_hat = model.cbGetSolution(self.y)
-                x_hat = model.cbGetSolution(self.x)
-                
                 cuts_added = [0]
                 for h in self.H:
                     for d in self.D:
-                        self.solve_sub_problem(model, x_hat, Y_hat, cuts_added, 
-                                               h, d, lazy=True)
+                        self.solve_sub_problem(model, cuts_added, h, d, lazy=True)
                 
                 if self.verbose:
                     print("Cuts added", cuts_added[0])
                     
+            # Suggest solution.
+            if (where == GRB.Callback.MIPNODE 
+                and model.cbGet(GRB.Callback.MIPNODE_STATUS) == GRB.OPTIMAL 
+                and model._best_found 
+                < model.cbGet(GRB.Callback.MIPNODE_OBJBST) - self.tol):
+                
+                model.cbSetSolution([Y[i] for i in I], 
+                                    [model._BestY[i] for i in I])
+                model.cbSetSolution([Theta[j] for j in J], 
+                                    [model._BestTheta[j] for j in J])
+                    
+        self.model._best_found = GRB.INFINITY
         self.model.optimize(callback)
         
