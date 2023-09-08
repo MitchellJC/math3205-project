@@ -11,8 +11,8 @@ from models import MIPScheduler, BendersLoopScheduler, BendersCallbackScheduler
 from data_gen import generate_data
 from constants import UNDERLINE
 
-SEEDS = (42, 831, 316, 542, 1)
-NUM_PATIENTS = (20,)
+SEEDS = (42, 831, 306, 542, 1)
+NUM_PATIENTS = (20, 15)
 NUM_OR = 5
 GAP = 0.01 # 0.01
 
@@ -29,9 +29,11 @@ loop_times = []
 callback_obj_vals = []
 callback_times = []
 
-for instance, seed in enumerate(SEEDS):
-    print(UNDERLINE, "\nInstance", instance, UNDERLINE)
-    for num_patients in NUM_PATIENTS:
+for num_patients in NUM_PATIENTS:
+    print(UNDERLINE, "\n Num patients", num_patients, UNDERLINE)
+    for instance, seed in enumerate(SEEDS):
+        print(UNDERLINE, "\nInstance", instance, UNDERLINE)
+    
         instance_nums.append(instance)
         seeds.append(seed)
         num_patients_full.append(num_patients)
@@ -40,7 +42,7 @@ for instance, seed in enumerate(SEEDS):
             num_patients, NUM_OR, output_dict=True, verbose=False, seed=seed)
         
         # MIP
-        print(f"Solving with pure MIP for {num_patients} patients")
+        print(f"Solving with pure MIP")
         mip = MIPScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P, 
                            gurobi_log=False, gap=GAP)
         start_time = time.time()
@@ -49,18 +51,20 @@ for instance, seed in enumerate(SEEDS):
         mip_obj_vals.append(mip.model.objVal)
         mip_times.append(run_time)
         
-        # Benders' Loop
-        print(f"Solving with Benders' loop for {num_patients} patients")
-        benders_loop = BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P,
-                                            verbose=False, gurobi_log=False, gap=GAP)
-        start_time = time.time()
-        benders_loop.run_model()
-        run_time = time.time() - start_time
-        loop_obj_vals.append(benders_loop.model.objVal)
-        loop_times.append(run_time)
+        # # Benders' Loop
+        # print(f"Solving with Benders' loop")
+        # benders_loop = BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P,
+        #                                     verbose=False, gurobi_log=False, gap=GAP)
+        # start_time = time.time()
+        # benders_loop.run_model()
+        # run_time = time.time() - start_time
+        # loop_obj_vals.append(benders_loop.model.objVal)
+        # loop_times.append(run_time)
+        loop_obj_vals.append(0)
+        loop_times.append(0)
         
         # Benders' Callback
-        print(f"Solving with Benders' callback for {num_patients} patients")
+        print(f"Solving with Benders' callback")
         benders_callback = BendersCallbackScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
                                                     mand_P, verbose=False, 
                                                     gurobi_log=False, gap=GAP)
@@ -75,6 +79,14 @@ print("\nTime Output", UNDERLINE)
 columns = {'instance': instance_nums, 'seed': seeds, 'num_patients': num_patients_full, 
            'MIP': mip_times, 
            'loop': loop_times, 'callback': callback_times}
+df = pd.DataFrame(columns)
+print(df)
+
+# Objective output
+print("\nObjective Output", UNDERLINE)
+columns = {'instance': instance_nums, 'seed': seeds, 'num_patients': num_patients_full, 
+           'MIP': mip_obj_vals, 
+           'loop': loop_obj_vals, 'callback': callback_obj_vals}
 df = pd.DataFrame(columns)
 print(df)
 

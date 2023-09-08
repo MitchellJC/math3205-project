@@ -185,11 +185,13 @@ class BendersORScheduler(ORScheduler):
                 if self.verbose:
                     print("FFD soln same as master problem.")
                 return False, None, heur_open_rooms
+            
             elif len(heur_open_rooms) < Y_hat[h, d] - self.tol:
                 if self.verbose:
                     print("FFD soln better than master problem."
                           +" (Non-optimal master soln)")
                 return False, None, heur_open_rooms
+            
             elif len(heur_open_rooms) > Y_hat[h, d] + self.tol:
                 if self.verbose:
                     print("FFD soln worst than master problem.")
@@ -351,9 +353,9 @@ class BendersORScheduler(ORScheduler):
             if self.verbose:
                 print(f"Upper bound > Lower bound, {num_open_or}" 
                       + f" < {Y_hat[h, d]}")
-                
-            raise RuntimeError("Sub problem < Master problem!, "
-                                    + f"{num_open_or} < {self.y[h, d]}")
+            if not lazy:
+                raise RuntimeError("Sub problem < Master problem!, "
+                                        + f"{num_open_or} < {self.y[h, d].x}")
                 
         cuts_container[0] = cuts_added
         
