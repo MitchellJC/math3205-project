@@ -257,9 +257,6 @@ class BendersORScheduler(ORScheduler):
         
         SP.optimize()
         
-        if SP.Status == GRB.OPTIMAL:
-            self.sub_solns[h, d] = (x_prime, y_prime)
-        
         return SP, y_prime
 
     def solve_sub_problem(self, model: gp.Model, cuts_container: list, h: int, 
@@ -304,6 +301,7 @@ class BendersORScheduler(ORScheduler):
         
         if SP.Status == GRB.OPTIMAL:
             num_open_or = sum(y_prime[r].x for r in self.R)      
+            self.sub_solns[h, d] = num_open_or
         
         # Feasbility cut
         if SP.Status != GRB.OPTIMAL:
@@ -453,6 +451,30 @@ class BendersCallbackScheduler(BendersORScheduler):
                 if self.verbose:
                     print("Feasibility cuts added", cuts_added[0])
                     print("Optimality cuts added", cuts_added[1])
+                
+                # Check gap and store solution suggestion
+                if cuts_added[0] == 0 and cuts_added[1] != 0:
+                    x_hat = model.cbGetSolution(self.x)
+                    u_hat = model.cbGetSolution(self.u)
+                    w_hat = model.cbGetSolution(self.w)
+                    
+                    sub_obj_val = (
+                        sum(self.G[h, d]*u_hat[h, d] 
+                             for h in self.H for d in self.D) 
+                        + sum(self.F[h, d]*self.sub_solns[h, d] 
+                              for h in self.H for d in self.D)
+                        + sum(K_1*self.rho[p]*(d - self.alpha[p])*x_hat[h, d, p] 
+                             for h in self.H for d in self.D for p in self.P)
+                        + sum(K_2*self.rho[p]*(len(self.D) + 1 - self.alpha[p])*w_hat[p]
+                             for p in self.P if p not in self.mand_P)
+                    )
+                    master_obj_val = model.cbGet(GRB.Callback.MIPSOL_OBJ)
+                    
+                    if self.verbose:
+                        print(master_obj_val, sub_obj_val)
+                        print("Gap", 100*abs(master_obj_val 
+                                             - sub_obj_val)
+                              /abs(sub_obj_val), "%")
                     
             # Suggest solution.
             if (where == GRB.Callback.MIPNODE 
