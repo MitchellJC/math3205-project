@@ -257,6 +257,9 @@ class BendersORScheduler(ORScheduler):
         
         SP.optimize()
         
+        if SP.Status == GRB.OPTIMAL:
+            self.sub_solns[h, d] = (x_prime, y_prime)
+        
         return SP, y_prime
 
     def solve_sub_problem(self, model: gp.Model, cuts_container: list, h: int, 
@@ -300,11 +303,11 @@ class BendersORScheduler(ORScheduler):
         SP, y_prime = self.solve_sub_ip(P_prime, FFD_upperbound, FFD_soln, h, d)
         
         if SP.Status == GRB.OPTIMAL:
-            num_open_or = sum(y_prime[r].x for r in self.R)
+            num_open_or = sum(y_prime[r].x for r in self.R)      
         
         # Feasbility cut
         if SP.Status != GRB.OPTIMAL:
-            cuts_added += 1
+            cuts_container[0] += 1
             
             if self.verbose:
                 print("Infeasible, status code:", SP.Status)
@@ -337,7 +340,7 @@ class BendersORScheduler(ORScheduler):
             
         # Optimality cut
         elif num_open_or > Y_hat[h, d] + self.tol:
-            cuts_added += 1
+            cuts_container[1] += 1
             if self.verbose:
                 print(f"Upper bound > Lower bound, {num_open_or}" 
                       + f" > {Y_hat[h, d]}")
@@ -356,7 +359,6 @@ class BendersORScheduler(ORScheduler):
                 raise RuntimeError("Sub problem < Master problem!, "
                                         + f"{num_open_or} < {self.y[h, d].x}")
                 
-        cuts_container[0] = cuts_added
         
     def _define_model(self):
         super()._define_model()
@@ -412,6 +414,7 @@ class BendersORScheduler(ORScheduler):
 class BendersLoopScheduler(BendersORScheduler):
     """OR scheduler that uses Benders' decomposition in a loop."""    
     def run_model(self):
+        self.sub_solns = {}
         iterations = 0
         while True:
             if self.verbose:
@@ -422,7 +425,7 @@ class BendersLoopScheduler(BendersORScheduler):
             if self.verbose:
                 print("Curr objVal", self.model.objVal)
             
-            cuts_added = [0]
+            cuts_added = [0, 0]
             for h in self.H:
                 for d in self.D:
                     self.solve_sub_problem(self.model, cuts_added, h, d, lazy=False)
@@ -430,7 +433,7 @@ class BendersLoopScheduler(BendersORScheduler):
             if self.verbose:            
                 print("Cuts added", cuts_added[0])
                 
-            if cuts_added[0] == 0:
+            if cuts_added[0] + cuts_added[1] == 0:
                 break
             
 class BendersCallbackScheduler(BendersORScheduler):
@@ -442,13 +445,14 @@ class BendersCallbackScheduler(BendersORScheduler):
     def run_model(self):
         def callback(model, where):
             if where == GRB.Callback.MIPSOL:
-                cuts_added = [0]
+                cuts_added = [0, 0]
                 for h in self.H:
                     for d in self.D:
                         self.solve_sub_problem(model, cuts_added, h, d, lazy=True)
                 
                 if self.verbose:
-                    print("Cuts added", cuts_added[0])
+                    print("Feasibility cuts added", cuts_added[0])
+                    print("Optimality cuts added", cuts_added[1])
                     
             # Suggest solution.
             if (where == GRB.Callback.MIPNODE 
@@ -462,5 +466,6 @@ class BendersCallbackScheduler(BendersORScheduler):
                 model.cbSetSolution()
                     
         self.model._best_found = GRB.INFINITY
+        self.sub_solns = {}
         self.model.optimize(callback)
         

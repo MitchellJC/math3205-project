@@ -12,9 +12,9 @@ from data_gen import generate_data
 from constants import UNDERLINE
 
 SEEDS = (42, 831, 306, 542, 1)
-NUM_PATIENTS = (20,)
+NUM_PATIENTS = (10,)
 NUM_OR = 5
-GAP = 0.01 # 0.01
+GAP = 0.00 # 0.01
 
 instance_nums = []
 seeds = []
