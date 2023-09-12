@@ -95,7 +95,6 @@
 
 % For breaking equations across multiple pages
 % \allowdisplaybreaks[1]
-
 \usepackage[colorinlistoftodos]{todonotes}
 \setlength\marginparwidth{1in}
 \newcommand{\ethan}[1]{\todo[size=\tiny,color=red!30]{#1 \\ \hfill --- Travis}}
@@ -107,6 +106,8 @@
 \newcommand{\benjamin}[1]{\todo[size=\tiny,color=green!30]{#1 \\ \hfill --- Benjamin}}
 \newcommand{\Benjamin}[1]{\todo[size=\tiny,inline,color=green!30]{#1
 		\\ \hfill --- Benjamin}}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -127,16 +128,43 @@
 	
 	\begin{abstract}
     this is an abstract about some dope OR problem
+	change
 	\end{abstract}
 	
 	\maketitle
 	
 	\setcounter{tocdepth}{1}
 	\tableofcontents
-	\section{Introduction}
-	\input{Intro.tex}
 
-	\subsection{introduction 2}
+	\section{Introduction}
+	%
+	\input{introduction.tex}
+
+	\section{Model Formulation}
+	%main math from existing problem to define model
+	\input{model_formulation.tex}
+
+	\section{Data}
+	% talk about data generation and accuracy
+	\input{data.tex}
+
+	\section{Implementation}
+	%
+	\input{implementation.tex}
+
+	\section{Results}
+	%
+	\input{results.tex}
+
+	\section{Discussion}
+	%
+	\input{improvements.tex}
+	
+	\section{Conclusion}
+	%
+	\input{conclusion.tex}
+
+
 
 	%=====================================================================
 	
