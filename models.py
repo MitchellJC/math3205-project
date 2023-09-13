@@ -474,7 +474,7 @@ class BendersLoopScheduler(BendersORScheduler):
                     print(master_obj_val, sub_obj_val)
                     print("Gap", 100*abs(master_obj_val 
                                          - ub)
-                          /abs(sub_obj_val), "%")
+                          /abs(ub), "%")
                
             if cuts_added[0] + cuts_added[1] == 0:
                 break
