@@ -132,7 +132,8 @@ class BendersORScheduler(ORScheduler):
     def __init__(self, P: range, H: range, R: range, D: range, G: dict, F: dict, 
                  B: dict, T: dict, rho: dict, alpha: dict, mand_P: list, 
                  chosen_lbbd: str = LBBD_2, use_propagation: bool = False, 
-                 tol: float = EPS, verbose: bool = True, **kwargs):
+                 tol: float = EPS, verbose: bool = True, bend_gap: bool = True, 
+                 **kwargs):
         """Initialise new object instance.
         
         Parameters:
@@ -157,6 +158,7 @@ class BendersORScheduler(ORScheduler):
         self.use_propagation = use_propagation
         self.tol = tol
         self.verbose = verbose
+        self.bend_gap = bend_gap
         super().__init__(P, H, R, D, G, F, B, T, rho, alpha, mand_P, **kwargs)
         
     def precompute_ffd(self, Y_hat: dict, P_prime: list, h: int, d: int) -> (
@@ -303,6 +305,9 @@ class BendersORScheduler(ORScheduler):
         if SP.Status == GRB.OPTIMAL:
             num_open_or = sum(y_prime[r].x for r in self.R)      
             self.sub_solns[h, d] = num_open_or
+        
+        if self.verbose:
+            print()
         
         # Feasbility cut
         if SP.Status != GRB.OPTIMAL:
@@ -465,7 +470,7 @@ class BendersLoopScheduler(BendersORScheduler):
                 ub = min(ub, sub_obj_val)
                 master_obj_val = self.model.objVal
                 
-                if self.verbose:
+                if self.bend_gap:
                     print(master_obj_val, sub_obj_val)
                     print("Gap", 100*abs(master_obj_val 
                                          - ub)
@@ -482,6 +487,7 @@ class BendersCallbackScheduler(BendersORScheduler):
         
     def run_model(self):
         def callback(model, where):
+            
             if where == GRB.Callback.MIPSOL:
                 cuts_added = [0, 0]
                 for h in self.H:
@@ -508,12 +514,13 @@ class BendersCallbackScheduler(BendersORScheduler):
                         + sum(K_2*self.rho[p]*(len(self.D) + 1 - self.alpha[p])*w_hat[p]
                              for p in self.P if p not in self.mand_P)
                     )
+                    self.ub = min(self.ub, sub_obj_val)
                     master_obj_val = model.cbGet(GRB.Callback.MIPSOL_OBJ)
                     
-                    if self.verbose:
+                    if self.bend_gap:
                         print(master_obj_val, sub_obj_val)
                         print("Gap", 100*abs(master_obj_val 
-                                             - sub_obj_val)
+                                             - self.ub)
                               /abs(sub_obj_val), "%")
                     
             # Suggest solution.
@@ -526,8 +533,9 @@ class BendersCallbackScheduler(BendersORScheduler):
                 pass
                 model.cbSetSolution()
                 model.cbSetSolution()
-                    
+        
         self.model._best_found = GRB.INFINITY
         self.sub_solns = {}
+        self.ub = GRB.INFINITY
         self.model.optimize(callback)
         
