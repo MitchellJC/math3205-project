@@ -329,6 +329,16 @@ class BendersORScheduler(ORScheduler):
                 else:
                     add_constr(self.y[h, d] >= len(self.R) + 1 
                                  - quicksum(1 - self.x[h, d, p] for p in P_prime))
+            elif self.chosen_lbbd == LBBD_PLUS:
+                max_dur = max(self.T[curr_p] for curr_p in P_prime)
+                P_longer = [p for p in self.P if p not in P_prime and
+                            self.T[p] >= max_dur]
+                if self.use_propagation:
+                    raise NotImplementedError()
+                else:
+                    add_constr(self.y[h, d] >= len(self.R) + 1 
+                                 - quicksum(1 - self.x[h, d, p] for p in P_prime)
+                                 + quicksum(self.x[h, d, p] for p in P_longer))
                     
         # Optimal, no cuts required
         elif abs(num_open_or - Y_hat[h, d]) < self.tol:
