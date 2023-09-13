@@ -17,3 +17,4 @@ K_2 = 5
 
 LBBD_1 = 'LBBD_1'
 LBBD_2 = 'LBBD_2'
+LBBD_PLUS = 'LBBD_PLUS'

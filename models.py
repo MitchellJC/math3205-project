@@ -6,7 +6,8 @@ Created on Mon Sep  4 10:36:14 2023
 """
 import gurobipy as gp
 from gurobipy import GRB, quicksum
-from constants import K_1, K_2, TIME_LIMIT, LBBD_1, LBBD_2, EPS
+from constants import (K_1, K_2, TIME_LIMIT, LBBD_1, LBBD_2, LBBD_PLUS, EPS, 
+                       UNDERLINE)
 from typing import Union
 from utilities import ffd, Bin
 
@@ -423,13 +424,16 @@ class BendersLoopScheduler(BendersORScheduler):
     """OR scheduler that uses Benders' decomposition in a loop."""    
     def run_model(self):
         self.sub_solns = {}
+        ub = GRB.INFINITY
         iterations = 0
         while True:
             if self.verbose:
                 print("Iteration", iterations)
             iterations += 1
             
+            print(UNDERLINE)
             self.model.optimize()
+            print(UNDERLINE)
             if self.verbose:
                 print("Curr objVal", self.model.objVal)
             
@@ -439,8 +443,34 @@ class BendersLoopScheduler(BendersORScheduler):
                     self.solve_sub_problem(self.model, cuts_added, h, d, lazy=False)
                     
             if self.verbose:            
-                print("Cuts added", cuts_added[0])
+                print("Feasibility cuts added", cuts_added[0])
+                print("Optimality cuts added", cuts_added[1])
                 
+            # Check gap and store solution suggestion
+            if cuts_added[0] == 0 and cuts_added[1] != 0:
+                x_hat = self.x
+                u_hat = self.u
+                w_hat = self.w
+                
+                sub_obj_val = (
+                    sum(self.G[h, d]*u_hat[h, d].x 
+                         for h in self.H for d in self.D) 
+                    + sum(self.F[h, d]*self.sub_solns[h, d] 
+                          for h in self.H for d in self.D)
+                    + sum(K_1*self.rho[p]*(d - self.alpha[p])*x_hat[h, d, p].x 
+                         for h in self.H for d in self.D for p in self.P)
+                    + sum(K_2*self.rho[p]*(len(self.D) + 1 - self.alpha[p])*w_hat[p].x
+                         for p in self.P if p not in self.mand_P)
+                )
+                ub = min(ub, sub_obj_val)
+                master_obj_val = self.model.objVal
+                
+                if self.verbose:
+                    print(master_obj_val, sub_obj_val)
+                    print("Gap", 100*abs(master_obj_val 
+                                         - ub)
+                          /abs(sub_obj_val), "%")
+               
             if cuts_added[0] + cuts_added[1] == 0:
                 break
             
