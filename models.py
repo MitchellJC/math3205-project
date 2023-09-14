@@ -438,7 +438,9 @@ class BendersLoopScheduler(BendersORScheduler):
             
             if self.verbose:
                 print(UNDERLINE)
+                
             self.model.optimize()
+            
             if self.verbose:
                 print(UNDERLINE)
             if self.verbose:
