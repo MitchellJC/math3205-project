@@ -38,6 +38,17 @@ D = range(NUM_DAYS)
 
 #data
 
+# Data
+# Cost of opening hospital operating suite
+G = {(h, d): int(hospitals[(hospitals['hospital_id'] == h) 
+                              & (hospitals['day'] == d)]['hospital_open_cost']) 
+      for h in H for d in D}
+
+# Cost of opening operating room
+F = {(h, d): int(hospitals[(hospitals['hospital_id'] == h) 
+                              & (hospitals['day'] == d)]['or_open_cost']) 
+      for h in H for d in D}
+
 # Operating minutes of hospital
 B = {(h, d): int(hospitals[(hospitals['hospital_id'] == h) 
                              & (hospitals['day'] == d)]['open_minutes'])
@@ -46,7 +57,14 @@ B = {(h, d): int(hospitals[(hospitals['hospital_id'] == h)
 # Surgery times
 T = {p: int((patients[patients['id'] == p]['surgery_time'])) for p in P}
 
-print(T.values())
+# Urgency
+rho = {p: int(patients[patients['id'] == p]['urgency']) for p in P}
+
+# Days elapsed since referral
+alpha = {p: int(patients[patients['id'] == p]['wait_time']) for p in P}
+
+mandatory_P = [p for p in P if patients.loc[p, 'is_mandatory'] == 1]
+
 minDuration = min(T.values())
 
 Nodes = set()
@@ -59,7 +77,7 @@ for h in H:
         #intermediate node (add a node for each possible arc start time which must be after the
         #the time required to do the quickest operation and before the time where the is not enough
         #time to complete the quickest operation):
-        for t in range(minDuration,int(B[h,d]) - minDuration + 1):
+        for t in range(minDuration,B[h,d] - minDuration + 1):
             Nodes.add((h,d,t))
 
 #arc are of the form((from node), (to node), surgery we did/wait)
@@ -81,34 +99,58 @@ for h in H:
                 #to the minimum surgery duration up to the opening hours of the hospital less the surgery time
                 #of that patient, and then create arcs from the possible start times to the end times
                 for t in range(minDuration,B[h,d] - T[p]):
-                    Arcs.add(((h,d,t), (h,d,t+T[p]), p))
+                    if (h,d,t+T[p]) in Nodes:
+                        Arcs.add(((h,d,t), (h,d,t+T[p]), p))
  
 #checking code
 for a in Arcs:
     if a[0] not in Nodes or a[1] not in Nodes:
         print("missing node", a)
 
+m = gp.Model()
 
-# #make all the arcs
-# Arcs = set()
-# for d in Days:
-#     #waiting arcs
-#     for t in Times[minDuration: nTime - minDuration]:
-#         Arcs.add(((d,t,0),(d,t+1,0),-1))
-#         Arcs.add(((d,t,1),(d,t+1,1),-1))
-#     #cleaning arcs
-#     for t in Times[minDuration:nTime - minDuration - OCT+1]:
-#         Arcs.add(((d,t,1),(d,t+OCT,0),-1))
-#     for i in Ops:
-#         if d<=Due[i] and SurgeonHours[d][Surgeon[i]] >= Duration[i]:
-#                 Arcs.add(((d,0,0),(d,Duration[i],Infectious[i]), i))
-#                 for t in Times[minDuration:]:
-#                     if (d,t+Duration[i],0) in Nodes:
-#                         Arcs.add(((d,t,0),(d,t+Duration[i],Infectious[i]),i))
-#                         if Infectious[i]:
-#                             Arcs.add(((d,t,1),(d,t+Duration[i], Infectious[i]),i))
+#add a variable to select which arcs are used
+z = {a: m.addVar(vtype = gp.GRB.BINARY) for a in Arcs}
+y = {(h,d): m.addVar(vtype = gp.GRB.INTEGER) for h in H for d in D}
+x = {(h,d,p): m.addVar(vtype = gp.GRB.BINARY) for h in H for d in D for p in P}
+u = {(h,d): m.addVar(vtype = gp.GRB.BINARY) for h in H for d in D}
 
 
+    
+# Objective
+m.setObjective(quicksum(G[h, d]*u[h, d] for h in H for d in D)
+                    + quicksum(F[h, d]*y[h, d] for h in H for d in D)
+                    + quicksum(K_1*rho[p]*(d - alpha[p])*x[h, d, p] 
+                              for h in H for d in D for p in P)
+                    # + quicksum(K_2*rho[p]*(NUM_DAYS + 1 - alpha[p])*w[p] 
+                              # for p in P if p not in mandatory_P)
+                                , GRB.MINIMIZE)
+
+
+
+#turn on operating theatres
+TurnOnOperatingTheatres = {(h,d):
+                  m.addConstr(quicksum(z[a] for a in Arcs if a[0] == (h,d,0)) <= y[h,d])
+                  for d in D for h in H}    
+
+#Maximum number of rooms in a hospital
+MaxNumRooms = {(h,d):
+               m.addConstr(y[h,d] <= NUM_ROOMS)
+               for d in D for h in H}
+
+#turn on hospitals
+TurnOnHospitals = {(h,d):
+                   m.addConstr(NUM_ROOMS * u[h,d] >= 
+                               quicksum(z[a] for a in Arcs if a[0] == (h,d,0)))
+                   for h in H for d in D}
+    
+#assign patients from network to problem
+PatientAssignmentFromNetwork = {(h,d,p):
+                                m.addConstr(x[h,d,p] == quicksum(z[a] for a in Arcs if a[0][:1] 
+                                            == (h,d) and a[2] == p))
+                                for h in H for d in D for p in P}
+    
+m.optimize()
 
 
 
