@@ -436,9 +436,11 @@ class BendersLoopScheduler(BendersORScheduler):
                 print("Iteration", iterations)
             iterations += 1
             
-            print(UNDERLINE)
+            if self.verbose:
+                print(UNDERLINE)
             self.model.optimize()
-            print(UNDERLINE)
+            if self.verbose:
+                print(UNDERLINE)
             if self.verbose:
                 print("Curr objVal", self.model.objVal)
             
@@ -471,7 +473,7 @@ class BendersLoopScheduler(BendersORScheduler):
                 master_obj_val = self.model.objVal
                 
                 if self.bend_gap:
-                    print(master_obj_val, sub_obj_val)
+                    print(master_obj_val, ub)
                     print("Gap", 100*abs(master_obj_val 
                                          - ub)
                           /abs(ub), "%")
@@ -518,7 +520,7 @@ class BendersCallbackScheduler(BendersORScheduler):
                     master_obj_val = model.cbGet(GRB.Callback.MIPSOL_OBJ)
                     
                     if self.bend_gap:
-                        print(master_obj_val, sub_obj_val)
+                        print(master_obj_val, self.ub)
                         print("Gap", 100*abs(master_obj_val 
                                              - self.ub)
                               /abs(sub_obj_val), "%")

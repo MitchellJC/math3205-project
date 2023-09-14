@@ -20,10 +20,11 @@ GAP = 0.00
 P, mand_P, H, R, D, rho, alpha, health_status, B, T, G, F = generate_data(
     NUM_PATIENTS, NUM_OR, output_dict=True, verbose=False, seed=SEEDS[0])
 
-mip = BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P, 
-                   gurobi_log=False, gap=GAP, verbose=True, chosen_lbbd=LBBD_2)
+loop = BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P, 
+                   gurobi_log=False, gap=GAP, verbose=False, chosen_lbbd=LBBD_2,
+                   bend_gap=True)
 
-mip.run_model()
+loop.run_model()
 
 # print("Mand patients", mand_P)
 # for d in D:
