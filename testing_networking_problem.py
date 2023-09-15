@@ -21,7 +21,7 @@ Data:
     
     
 
-@author: Ethan & Mitch
+@author: Ethan, Mitch & Ben
 """
 import time
 from gurobipy import GRB, quicksum, Model
@@ -32,7 +32,7 @@ from itertools import count
 from collections import defaultdict
 
 NUM_ROOMS = 5
-NUM_PATIENTS = 5
+NUM_PATIENTS = 20
 NUM_HOSPITALS = 3
 NUM_DAYS = 5
 
@@ -59,7 +59,6 @@ P, mandatory_P, H, R, D, rho, alpha, health_status, B, T, G, F = generate_data(
     NUM_PATIENTS, NUM_ROOMS, output_dict=True, verbose=True, seed=SEED)
 
 min_dur = min(T.values())
-
 # Define nodes
 print("Constructing nodes...")
 nodes = set()
@@ -74,7 +73,7 @@ for h in H:
         for t in range(min_dur, B[h,d] - min_dur + 1):
             nodes.add(Node(h, d, t))
 print("Done constructing nodes.")
-
+print("Number of Nodes: ", len(nodes))
 # Define arcs
 print("Constructing arcs...")
 arcs = set()
@@ -88,7 +87,6 @@ for h in H:
                 arcs.add(arc)
                 from_arcs[h, d, t].add(arc)
                 to_arcs[h, d, t + 1].add(arc)
-                
             # Add operating arcs
             for p in P:
                 # Can operate at start of the day
@@ -98,14 +96,15 @@ for h in H:
                 to_arcs[h, d, T[p]].add(arc)
                
                 # Add arcs in intermediate gap.
-                for t in range(min_dur, B[h, d]): # TODO Not sure about this - Mitch
+                for t in range(min_dur, B[h, d]):   # TODO Not sure about this - Mitch
+                                                    # This looks correct to me - Hart
                     if Node(h, d, t + T[p]) in nodes:
                         arc = Arc(h, d, t, t + T[p], p)
                         arcs.add(arc)
                         from_arcs[h, d, t].add(arc)
                         to_arcs[h, d, t + T[p]].add(arc)
 print("Done constructing arcs.")
- 
+print("Number of Arcs: ", len(arcs))
 # Checking code
 for a in arcs:
     if (Node(a.hosp, a.day, a.start_time) not in nodes 
@@ -166,7 +165,7 @@ patient_once = {p: m.addConstr(quicksum(x[h, d, p] for h in H for d in D) <= 1)
 must_do_mandatory = {p: m.addConstr(
     quicksum(x[h, d, p] for h in H for d in D) == 1) for p in mandatory_P}
     
-turn_on_w = {p: m.addConstr(w[p] >= 1 - quicksum(x[h, d, p] for h in H for d in D)) 
+turn_on_w = {p: m.addConstr(w[p] <= 1 - quicksum(x[h, d, p] for h in H for d in D)) 
               for p in P if p not in mandatory_P}
 
 start_t = time.time()
