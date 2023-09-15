@@ -1,140 +1,116 @@
-\documentclass[reqno]{amsart}
-\usepackage[foot]{amsaddr}
-\usepackage[centertableaux]{ytableau}
-\usepackage{setspace,tikz,xcolor,mathrsfs,listings,multicol}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Journal Article
+% LaTeX Template
+% Version 2.0 (February 7, 2023)
+%
+% This template originates from:
+% https://www.LaTeXTemplates.com
+%
+% Author:
+% Vel (vel@latextemplates.com)
+%
+% License:
+% CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
+%
+% NOTE: The bibliography needs to be compiled using the biber engine.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[
+	a4paper, % Paper size, use either a4paper or letterpaper
+	10pt, % Default font size, can also use 11pt or 12pt, although this is not recommended
+	unnumberedsections, % Comment to enable section numbering
+	twoside, % Two side traditional mode where headers and footers change between odd and even pages, comment this option to make them fixed
+]{LTJournalArticle}
+
+\addbibresource{ref.bib} % BibLaTeX bibliography file
+
+\runninghead{Shortened Running Article Title} % A shortened article title to appear in the running head, leave this command empty for no running head
+
+\footertext{\textit{Journal of Biological Sampling} (2024) 12:533-684} % Text to appear in the footer, leave this command empty for no footer text
+
+\setcounter{page}{1} % The page number of the first page, set this to a higher number if the article is to be part of an issue or larger work
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\title{Operating Room Scheduling} % Article title, use manual lines breaks (\\) to beautify the layout
+
+% Authors are listed in a comma-separated list with superscript numbers indicating affiliations
+% \thanks{} is used for any text that should be placed in a footnote on the first page, such as the corresponding author's email, journal acceptance dates, a copyright/license notice, keywords, etc
+\author{%
+	Ethan Merrick\textsuperscript{1}, Benjamin Solomon\textsuperscript{1} and Mitchell Clark\textsuperscript{1}\thanks{Corresponding author: \href{mailto:jane@smith.com}{jane@smith.com}\\ \textbf{Received:} October 20, 2023, \textbf{Published:} December 14, 2023}
+}
+
+% Affiliations are output in the \date{} command
+\date{\footnotesize\textsuperscript{\textbf{1}}The University of Queensland}
+
+% Full-width abstract
+\renewcommand{\maketitlehookd}{%
+	\begin{abstract}
+		\noindent dope OR abstract
+	\end{abstract}
+}
+
+% \documentclass[10pt, reqno]{amsart}
+% % \documentclass[aps,twocolumn,secnumarabic,balancelastpage,amsmath,amssymb,nofootinbib,floatfix]{article}
+\usepackage{setspace,tikz,xcolor,mathrsfs,listings,multicol, amsmath, amssymb}
 \usepackage{rotating}
-\usepackage{booktabs, afterpage}
-\usepackage[vcentermath]{youngtab}
+
 %\usepackage{subcaption}
 %\usepackage{fullpage}
-\usepackage[inline]{enumitem}
-\usepackage[all,cmtip]{xy}
-\usetikzlibrary{arrows,matrix}
-\usepackage[margin=1.25in]{geometry}
-\usetikzlibrary{shapes.misc}
-\tikzset{cross/.style={cross out, draw=black, minimum size=2*(#1-\pgflinewidth), inner sep=0pt, outer sep=0pt},
-	%default radius will be 1pt. 
-	cross/.default={0.4 cm},
-	dynkinnode/.style={circle, draw, fill=white, inner sep = 0pt, minimum width=0.35cm}
-}
-\onehalfspacing
+% \usepackage[all,cmtip]{xy}
+% \usetikzlibrary{arrows,matrix}
+% \usepackage[margin=1.25in]{geometry}
 
-\usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue, citecolor=blue, urlcolor=blue]{hyperref}
+% % \onehalfspacing
 
-% use these commands for typesetting doi and arXiv references in the bibliography
-\newcommand{\doi}[1]{\href{http://dx.doi.org/#1}{\texttt{doi:#1}}}
-\newcommand{\arxiv}[1]{\href{http://arxiv.org/abs/#1}{\texttt{arXiv:#1}}}
+% \usepackage[colorlinks=true, pdfstartview=FitV, linkcolor=blue, citecolor=blue, urlcolor=blue]{hyperref}
 
-\newcommand{\g}{\mathfrak{g}}
-\newcommand{\gl}{\mathfrak{gl}}
-\newcommand{\fsl}{\mathfrak{sl}}
-\newcommand{\agl}{\widehat{\gl}}
-\newcommand{\asl}{\widehat{\fsl}}
-\newcommand{\dcrys}{\mathcal{B}_{\bze,\overline{m-r}}} %U_q(\agl(m|n)) crystal with \bze and \overline{m-r} removed
-\newcommand{\tab}{\mathcal{T}}	%tableau
-\newcommand{\up}[1]{{#1_\uparrow}}
-\newcommand{\down}[1]{{#1_\downarrow}}
-\newcommand{\inlinetab}[1]{\begin{array}{|c|} \hline #1 \\\hline \end{array}} % inline tableau with one node
-\newcommand{\fundrep}{\mathbf{V}} % fundamental representation
-\newcommand{\card}[1]{\left\lvert #1 \right\lvert} %cardinality
-
-\DeclareMathOperator{\id}{id} % identity
-
-\DeclareMathOperator{\col}{col} % word obtained from a tableau
-\DeclareMathOperator{\sg}{sg} % signature of a word
-\DeclareMathOperator{\rsg}{rsg} % reduced signature of a word
-\newcommand{\Ieven}{I_{\text{even}}}
-\newcommand{\Iodd}{I_{\text{odd}}}
-
-\newcommand{\ZZ}{\mathbb{Z}}
-\newcommand{\QQ}{\mathbb{Q}}
-\newcommand{\RR}{\mathbb{R}}
-\newcommand{\CC}{\mathbb{C}}
-
-\newcommand{\bze}{\overline{0}}
-\newcommand{\bon}{\overline{1}}
-\newcommand{\btw}{\overline{2}}
-\newcommand{\bth}{\overline{3}}
-\newcommand{\bfo}{\overline{4}}
-\newcommand{\bfive}{\overline{5}}
-\newcommand{\bsix}{\overline{6}}
-\newcommand{\bseven}{\overline{7}}
-\newcommand{\beight}{\overline{8}}
-\newcommand{\bi}{\overline\imath}
-\newcommand{\bk}{\overline{k}}
-\newcommand{\brr}{\overline{r}}
-\newcommand{\bn}{\overline{n}}
-\newcommand{\bm}{\overline{m}}
-\newcommand{\ellbar}{\overline{\ell}}
-
-\newcommand{\bfze}{\mathbf{0}}
-\newcommand{\bfon}{\mathbf{1}}
-\newcommand{\bftw}{\mathbf{2}}
-\newcommand{\bfth}{\mathbf{3}}
-\newcommand{\bfX}{\mathbf{X}}
-
-% Dark red emphasis
-\definecolor{darkred}{rgb}{0.7,0,0} % darkred color
-\newcommand{\defn}[1]{{\color{darkred}\emph{#1}}} % emphasis of a definition
-
-\theoremstyle{plain}
-\newtheorem{thm}{Theorem}[section]
-\newtheorem{lemma}[thm]{Lemma}
-\newtheorem{conj}[thm]{Conjecture}
-\newtheorem{prop}[thm]{Proposition}
-\newtheorem{cor}[thm]{Corollary}
-\theoremstyle{definition}
-\newtheorem{dfn}[thm]{Definition}
-\newtheorem{ex}[thm]{Example}
-\newtheorem{remark}[thm]{Remark}
-\newtheorem{obs}[thm]{Observation}
-\numberwithin{equation}{section}
-%\numberwithin{figure}{section}
-%\numberwithin{table}{section}
-%\setcounter{section}{-1}
-
-% For breaking equations across multiple pages
-% \allowdisplaybreaks[1]
-\usepackage[colorinlistoftodos]{todonotes}
-\setlength\marginparwidth{1in}
-\newcommand{\ethan}[1]{\todo[size=\tiny,color=red!30]{#1 \\ \hfill --- Travis}}
-\newcommand{\Ethan}[1]{\todo[size=\tiny,inline,color=red!30]{#1
-		\\ \hfill --- Travis}}
-\newcommand{\mitchell}[1]{\todo[size=\tiny,color=blue!30]{#1 \\ \hfill --- Mitchell}}
-\newcommand{\Mitchell}[1]{\todo[size=\tiny,inline,color=blue!30]{#1
-		\\ \hfill --- Mitchell}}
-\newcommand{\benjamin}[1]{\todo[size=\tiny,color=green!30]{#1 \\ \hfill --- Benjamin}}
-\newcommand{\Benjamin}[1]{\todo[size=\tiny,inline,color=green!30]{#1
-		\\ \hfill --- Benjamin}}
+% % For breaking equations across multiple pages
+% % \allowdisplaybreaks[1]
+% \usepackage[colorinlistoftodos]{todonotes}
+% \setlength\marginparwidth{1in}
+% \newcommand{\ethan}[1]{\todo[size=\tiny,color=red!30]{#1 \\ \hfill --- Travis}}
+% \newcommand{\Ethan}[1]{\todo[size=\tiny,inline,color=red!30]{#1
+% 		\\ \hfill --- Travis}}
+% \newcommand{\mitchell}[1]{\todo[size=\tiny,color=blue!30]{#1 \\ \hfill --- Mitchell}}
+% \newcommand{\Mitchell}[1]{\todo[size=\tiny,inline,color=blue!30]{#1
+% 		\\ \hfill --- Mitchell}}
+% \newcommand{\benjamin}[1]{\todo[size=\tiny,color=green!30]{#1 \\ \hfill --- Benjamin}}
+% \newcommand{\Benjamin}[1]{\todo[size=\tiny,inline,color=green!30]{#1
+% 		\\ \hfill --- Benjamin}}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
-	\title[]{The Proj}
+	% \title[]{The Proj}
 	
-	\author[M.~Clark]{Mitchell Clark}
-	\author[B.~Solomon]{Benjamin Solomon}
-    \author[E.~Merrick]{Ethan Merrick}
-	%\urladdr{https://people.smp.uq.edu.au/TravisScrimshaw/}
+	% \author[M.~Clark]{Mitchell Clark}
+	% \author[B.~Solomon]{Benjamin Solomon}
+    % \author[E.~Merrick]{Ethan Merrick}
 	
-	\keywords{operations research}
-	\subjclass[2010]{}
-	% 37B15 - Cellular automata
-	% 68Q80 - Cellular automata (CS)
-	% 17B80 - Applications to integrable systems
+	% \keywords{operations research}
+	% \subjclass[2010]{}
+
 	
 	
-	\begin{abstract}
-    this is an abstract about some dope OR problem
-	change
-	\end{abstract}
-	
+	% \begin{abstract}
+    % this is an abstract about some dope OR problem
+	% change
+	% \end{abstract}
+
 	\maketitle
-	
-	\setcounter{tocdepth}{1}
-	\tableofcontents
+	% % \twocolumn
+	% \setcounter{tocdepth}{1}
+	% \tableofcontents
 
 	\section{Introduction}
 	%
@@ -142,7 +118,7 @@
 
 	\section{Model Formulation}
 	%main math from existing problem to define model
-	\input{model_formulation.tex}
+	 \input{model_formulation.tex}
 
 	\section{Data}
 	% talk about data generation and accuracy
@@ -167,9 +143,5 @@
 
 
 	%=====================================================================
-	
-	\appendix
-	
-	\bibliographystyle{alpha}
-	\bibliography{ref}{}
+	\printbibliography % Output the bibliography
 \end{document}

@@ -1,0 +1,90 @@
+\subsection*{Master Problem} 
+
+The following is a LBBD formulation of the problem.
+For a pure IP formulation refer to \cite{roshanaei2017propagating}. We will first outline
+the formulation of the master problem.
+
+\subsubsection*{Sets}
+\leavevmode
+\newline
+%setting up the sets parameters and variables
+\begin{table}[h!]
+\resizebox{\linewidth}{!}{
+\begin{tabular}{ll}
+    $\mathcal{P}$ &  Set of patients $p \in \mathcal{P}$\\
+    $\mathcal{P}{'} $ & Set of mandatory patients, $\mathcal{P}{'} = \lbrace p|\rho_{p}(|\mathcal{D}|-\alpha_{p})\leq-\Gamma\rbrace$\\
+    $\mathcal{H} $ & Set of hospitals, $h \in \mathcal{H}$\\
+    $\mathcal{D} $ & Set of days in the planning horizon, $d \in \mathcal{D}$\\
+    $\mathcal{R}_{h} $ & Set of ORs in each hospital's surgical suite, $r \in \mathcal{R}_{h}$\\
+\end{tabular}
+}
+\end{table}
+
+\subsubsection*{Data}
+\leavevmode
+\newline
+\begin{table}[h!]
+\resizebox{\linewidth}{!}{
+\begin{tabular}{ll}
+    $G_{hd}$ & Cost of opening the surgical suite in hosptial h on\\
+    &  day d.\\
+    $F_{hd} $ & Cost of opening and OR in hospital h on day d. \\
+    $B_{hd} $ & Regular operating hours of each OR on day d. \\
+                & in hospital h.\\
+    $T_{hp} $ & Total booked time (preparation time + surgery time\\
+               &  + cleaning time) of patient p.\\
+    $\rho_{p} $ & Health status score assigned to patient p.\\
+    $\alpha_{p} $ & Number of days elapsed from the referal date of \\
+    & patient p.\\
+    $\kappa_{1} $ & Waiting cost for scheduled patients.\\
+    $\kappa_{2} $ & Waiting cost for unscheduled patients.\\
+    $\Gamma $ & Health status threshold above which patients have to\\
+    &  be operated.
+\end{tabular}
+}
+\end{table}
+\subsubsection*{Variables}
+\leavevmode
+\newline
+\resizebox{\linewidth}{!}{
+\begin{tabular}{rl}
+    $x_{hdp} $ & 1 if patient p is assigned to hospital h on day d, 0 otherwise\\
+    $u_{hd} $ & 1 if the surgical suite in hospital h is opened on day d, 0 otherwise\\
+    $y_{hd} $ & $\in \mathbb{Z}$,  lower bound on number of operating rooms open in hospital h on day d \\
+    $w_{p}$ & 1 if patient p is not scheduled this horizon, 0 otherwise\\ 
+\end{tabular}
+}
+% %setting up the master problem
+\subsubsection*{Objective}
+
+The objective of the master problem is given as follows.
+\begin{align*}
+\operatorname{minimize} \left( \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} G_{hd} U_{hd} 
++ \sum\limits_{h \in \mathcal{H}}\sum\limits_{d \in \mathcal{D}} F_{hd} y_{hd}
++ \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} \sum\limits_{p \in \mathcal{P}} 
+\kappa_{1} [\rho_{p} (d - \alpha_{p}) x_{hdp}]
++ \sum\limits_{p \in \mathcal{P} \setminus \lbrace \mathcal{P}{'} \rbrace } \kappa_{2} [\rho_{p}( \mathcal{D} + 1 -\alpha_{p} ) w_{p}]
+\right)
+\end{align*}
+
+\subsubsection*{Constraints} The constraints for the MP are formulated as follows.
+\begin{align}
+    \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}}x_{hdp} = 1 
+        && \forall p \in \mathcal{P}'\\
+    \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} x_{hdp} + w_p = 1
+        && \forall p \in \mathcal{P} \backslash \{\mathcal{P}'\}\\
+    x_{hdp} \leq u_{hd}
+        && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\\
+    \sum\limits_{p \in \mathcal{P}}T_px_{hdp} \leq |\mathcal{R}_h|B_{hd}u_{hd}
+        && \forall h \in \mathcal{H}, d \in \mathcal{D} \\
+    T_px_hdp \leq B_{hd} 
+        && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\\
+    y_{hd} \geq \frac{\sum_{p \in \mathcal{P}}T_px_{hdp}}{B_{hd}}
+        && \forall h \in \mathcal{H}, d \in \mathcal{D} \\
+    y_{hd} \geq |\mathcal{R}_h|
+        && \forall h \in \mathcal{H}, d\in \mathcal{D} \\
+        y_{hd}
+\end{align}
+
+
+
