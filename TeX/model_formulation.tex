@@ -1,15 +1,15 @@
 \subsection*{Master Problem} 
 
-The following is a LBBD formulation of the problem.
+The following is the LBBD formulation of the problem.
 For a pure IP formulation refer to \cite{roshanaei2017propagating}. We will first outline
-the formulation of the master problem.
+the formulation of the master problem. The master problem handles assignment of patients
+to hospital-days.
 
-\subsubsection*{Sets}
+\subsubsection*{Sets:}
 \leavevmode
 \newline
-%setting up the sets parameters and variables
 \begin{table}[h!]
-\resizebox{\linewidth}{!}{
+\resizebox{0.45\textwidth}{!}{
 \begin{tabular}{ll}
     $\mathcal{P}$ &  Set of patients $p \in \mathcal{P}$\\
     $\mathcal{P}{'} $ & Set of mandatory patients, $\mathcal{P}{'} = \lbrace p|\rho_{p}(|\mathcal{D}|-\alpha_{p})\leq-\Gamma\rbrace$\\
@@ -20,71 +20,125 @@ the formulation of the master problem.
 }
 \end{table}
 
-\subsubsection*{Data}
+\subsubsection*{Data:}
 \leavevmode
 \newline
 \begin{table}[h!]
-\resizebox{\linewidth}{!}{
+\resizebox{0.45\textwidth}{!}{
 \begin{tabular}{ll}
     $G_{hd}$ & Cost of opening the surgical suite in hosptial h on\\
-    &  day d.\\
+    &  $\quad$ day d.\\
     $F_{hd} $ & Cost of opening and OR in hospital h on day d. \\
     $B_{hd} $ & Regular operating hours of each OR on day d. \\
-                & in hospital h.\\
+                & $\quad$ in hospital h.\\
     $T_{hp} $ & Total booked time (preparation time + surgery time\\
-               &  + cleaning time) of patient p.\\
+               & $\quad$ + cleaning time) of patient p.\\
     $\rho_{p} $ & Health status score assigned to patient p.\\
     $\alpha_{p} $ & Number of days elapsed from the referal date of \\
-    & patient p.\\
+    & $\quad$ patient p.\\
     $\kappa_{1} $ & Waiting cost for scheduled patients.\\
     $\kappa_{2} $ & Waiting cost for unscheduled patients.\\
     $\Gamma $ & Health status threshold above which patients have to\\
-    &  be operated.
+    & $\quad$ be operated.
 \end{tabular}
 }
 \end{table}
-\subsubsection*{Variables}
+\subsubsection*{Variables:}
 \leavevmode
 \newline
-\resizebox{\linewidth}{!}{
-\begin{tabular}{rl}
-    $x_{hdp} $ & 1 if patient p is assigned to hospital h on day d, 0 otherwise\\
-    $u_{hd} $ & 1 if the surgical suite in hospital h is opened on day d, 0 otherwise\\
-    $y_{hd} $ & $\in \mathbb{Z}$,  lower bound on number of operating rooms open in hospital h on day d \\
-    $w_{p}$ & 1 if patient p is not scheduled this horizon, 0 otherwise\\ 
+\begin{table}[h!]
+
+\resizebox{0.45\textwidth}{!}{
+\begin{tabular}{ll}
+    $x_{hdp} $ & 1 if patient p is assigned to hospital h on day d\\
+    & $\quad$, 0 otherwise\\
+    $u_{hd} $ & 1 if the surgical suite in hospital h is opened\\
+    & $\quad$ on day d, 0 otherwise\\
+    $y_{hd} $ & $\in \mathbb{Z}^+$,  lower bound on number of operating rooms \\
+    & $\quad$ open in hospital h on day d \\
+    $w_{p}$ & 1 if patient p is not scheduled this horizon,\\
+    & $\quad$ 0 otherwise\\ 
 \end{tabular}
 }
+\end{table}
+\leavevmode
+\newline
 % %setting up the master problem
 \subsubsection*{Objective}
 
-The objective of the master problem is given as follows.
-\begin{align*}
-\operatorname{minimize} \left( \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} G_{hd} U_{hd} 
-+ \sum\limits_{h \in \mathcal{H}}\sum\limits_{d \in \mathcal{D}} F_{hd} y_{hd}
-+ \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} \sum\limits_{p \in \mathcal{P}} 
+The objective function balances the minimisation of costs associated with opening hospitals
+ and ORs and maximising the reward of assigning patients to surgeries. 
+\begin{align}
+\operatorname{minimize} \bigg( &\sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} G_{hd} U_{hd} 
+ + \sum\limits_{h \in \mathcal{H}}\sum\limits_{d \in \mathcal{D}} F_{hd} y_{hd}
+\\ &+ \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} \sum\limits_{p \in \mathcal{P}} \notag
 \kappa_{1} [\rho_{p} (d - \alpha_{p}) x_{hdp}]
-+ \sum\limits_{p \in \mathcal{P} \setminus \lbrace \mathcal{P}{'} \rbrace } \kappa_{2} [\rho_{p}( \mathcal{D} + 1 -\alpha_{p} ) w_{p}]
-\right)
-\end{align*}
+\\ &+ \sum\limits_{p \in \mathcal{P} \setminus \lbrace \mathcal{P}{'} \rbrace } \kappa_{2} [\rho_{p}( \mathcal{D} + 1 -\alpha_{p} ) w_{p}]
+\bigg)\notag
+\end{align}
 
 \subsubsection*{Constraints} The constraints for the MP are formulated as follows.
 \begin{align}
     \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}}x_{hdp} = 1 
-        && \forall p \in \mathcal{P}'\\
-    \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} x_{hdp} + w_p = 1
-        && \forall p \in \mathcal{P} \backslash \{\mathcal{P}'\}\\
+        && \forall p \in \mathcal{P}' \label{con1}\\
+    \sum\limits_{h \in athcal{H}} \sum\limits_{d \in \mathcal{D}} x_{hdp} + w_p = 1
+        && \forall p \in \mathcal{P} \backslash \{\mathcal{P}'\}\label{con2}\\
     x_{hdp} \leq u_{hd}
-        && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\\
+        && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{con3}\\
     \sum\limits_{p \in \mathcal{P}}T_px_{hdp} \leq |\mathcal{R}_h|B_{hd}u_{hd}
-        && \forall h \in \mathcal{H}, d \in \mathcal{D} \\
-    T_px_hdp \leq B_{hd} 
-        && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\\
-    y_{hd} \geq \frac{\sum_{p \in \mathcal{P}}T_px_{hdp}}{B_{hd}}
-        && \forall h \in \mathcal{H}, d \in \mathcal{D} \\
-    y_{hd} \geq |\mathcal{R}_h|
-        && \forall h \in \mathcal{H}, d\in \mathcal{D} \\
-        y_{hd}
+        && \forall h \in \mathcal{H}, d \in \mathcal{D} \label{con4}\\
+    T_p\,x_{hdp} \leq B_{hd} 
+        && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{con5}\\
+     \frac{\sum_{p \in \mathcal{P}}T_px_{hdp}}{B_{hd}} \leq y_{hd}
+        && \forall h \in \mathcal{H}, d\in \mathcal{D} \label{con6}\\
+        y_{hd} \leq |\mathcal{R}_h|
+        && \forall h\in\mathcal{H}, d \in \mathcal{D} \label{con7}\\
+        u_{hd}, x_{hdp} \in \{ 0,1\}
+        && \forall h\in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{con8}\\
+        w_p \in \{0,1\}
+        && \forall p \in \mathcal{P} \backslash\{\mathcal{P}'\}\label{con9}
+\end{align}
+Constraint (\ref{con1}) ensures all mandatory patients are assigned in the planning 
+horizon. Constraint (\ref{con2}) ensures that variables $x_{hdp}$ and $u_{hd}$ are not
+turned on simultaneously. Constraint (\ref{con3}) ensures that if a patient is assigned
+a hospital-day then that hospital-day is open. (\ref*{con4}) ensures that surgery time 
+of patients assigned to a hospital-day does not exceed the available surgery time in
+that hospital day. (\ref*{con5}) ensures an individuals surgery time does not exceed 
+the hospital-day's available time. (\ref*{con6}) ensures $y_{hd}$ gives a lower bound 
+on the number of operating rooms. (\ref*{con7}) ensures $y_{hd}$ does not exceed the
+number of operating rooms available on a hospital-day. Constraints (\ref*{con8}) -- (\ref*{con9}) simply restrict
+variables to binary.
+
+\subsection{Subproblems}
+Given a solution to the master problem $(\widehat{Y}^{(i)}_{hd}, \widehat{\mathcal{P}}^{(i)}_{hd})$ the 
+subproblem minimises the number of ORs to open for a given hospital day. Each subproblem is
+formulated as follows. 
+\subsubsection*{Additional Variables}
+\leavevmode
+\newline
+\begin{table}[h!]
+    \resizebox{0.45\textwidth}{!}{
+        \begin{tabular}{ll}
+            $y_r$ & $\in \mathbb{Z}^+$, number of open operating rooms. \\
+            $x_{pr}$ & 1 if patient p is assigned to operating room r,\\
+            &   $\quad$ 0 otherwise.
+        \end{tabular}
+    }
+\end{table}
+\begin{align}
+    \operatorname*{minimise} \quad \overline{Y}_{hd} = \sum\limits_{r \in \mathcal{R}_h}y_r
 \end{align}
 
-
-
+With constraints given as follows:
+\begin{align}
+    \sum\limits_{r\in\mathcal{R}_h}x_{pr} = 1 && \forall p \in \widehat{\mathcal{P}}^{(i)}_{hd}\label{SPcon1}\\
+    \sum\limits_{p \in \widehat{\mathcal{P}}^{(i)}_{hd}} T_px_{pr} \leq B_{hd}y_r 
+    && \forall r \in \mathcal{R}_h \label{SPcon2}\\
+    x_{pr} \leq y_r && \forall p \in \widehat{\mathcal{P}}^{(i)}_{hd}, r \in \mathcal{R}_h \label{SPcon3}\\
+    y_r \leq y_{r-1} && \forall r \in \mathcal{R}_h \backslash \{1\}\label{SPcon4}\\
+    x_{pr},\,y_r\in\{0,1\} && \forall p \in \widehat{\mathcal{P}}^{(i)}_{hd}, r \in \mathcal{R}_h\label{SPcon5}
+\end{align}
+Constraint (\ref*{SPcon1}) ensures that each patient is assigned to only one operating room.
+Constraint (\ref*{SPcon2}) ensures that no OR is overcapacitated. Constraint (\ref*{SPcon3})
+ensures that patients are assigned to open ORs. Constraint (\ref*{SPcon4}) breaks symmtry
+among ORs.
