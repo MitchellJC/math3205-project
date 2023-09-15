@@ -166,7 +166,7 @@ patient_once = {p: m.addConstr(quicksum(x[h, d, p] for h in H for d in D) <= 1)
 must_do_mandatory = {p: m.addConstr(
     quicksum(x[h, d, p] for h in H for d in D) == 1) for p in mandatory_P}
     
-turn_on_w = {p: m.addConstr(w[p] >= 1 - quicksum(x[h, d, p] for h in H for d in D)) 
+turn_on_w = {p: m.addConstr(w[p] <= 1 - quicksum(x[h, d, p] for h in H for d in D)) 
               for p in P if p not in mandatory_P}
 
 start_t = time.time()
