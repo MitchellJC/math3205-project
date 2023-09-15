@@ -1,2 +1,31 @@
 reiteration of the existing problem from the paper as well as include the implementations that we have made/
 in here as well.
+
+%setting up the sets parameters and variables
+Sets:\\
+$\mathcal{P} \qquad$ Set of patients $p \in \mathcal{P}$\\
+$\mathcal{P}{'} \qquad$ Set of mandatory patients, $\mathcal{P}{'} = \lbrace p|\rho_{p}(|\mathcal{D}|-\alpha_{p})\leq-\Gamma\rbrace$\\
+$\mathcal{H} \qquad$ Set of hospitals, $h \in \mathcal{H}$\\
+$\mathcal{D} \qquad$ Set of days in the planning horizon, $d \in \mathcal{D}$\\
+$\mathcal{R}_{h} \qquad$ Set of ORs in each hospital's surgical suite, $r \in \mathcal{R}_{h}$\\
+Parameters:\\
+$G_{hd} \qquad$ Cost of opening the surgical suite in hosptial h on day d\\
+$F_{hd} \qquad$ Cost of opening and OR in hospital h on day d\\
+$B_{hd} \qquad$ Regular oeprating hours of each OR on day d in hospital h\\
+$T_{hp} \qquad$ Total booked time (preparation time + surgery time + cleaning time) of patient p\\
+$\rho_{p} \qquad$ Health status score assigned to patient p\\
+$\alpha_{p} \qquad$ Number of days elapsed from the referal date of patient p\\
+$\kappa_{1} \qquad$ Waiting cost for scheduled patients\\
+$\kappa_{2} \qquad$ Waiting cost for unscheduled patients\\
+$\Gamma \qquad$ Health status threshold above which patients have to be operated\\
+Variables:\\
+$x_{hdp} \qquad$ 1 if patient p is assigned to hospital h on day d, 0 otherwise\\
+$u_{hd} \qquad$ 1 if the surgical suite  in hospital h is opened on day d, 0 otherwise\\
+$y_{hd} \qquad$ 1 if OR r of surgical suite of hopsital h is opened on day d, 0 otherwise\\
+$x_{hdpr} \qquad$ 1 if patient p is assigned to OR r of hospital h on day d, 0 otherwise\\
+$w_{p} \qquad$ 1 if patient p is not scheduled this horizon, 0 otherwise\\ 
+
+%setting up the master problem
+minimize $\sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} G_{hd} U_{hd} + \sum\limits_{h \in \mathcal{H} \sum\limits_{d \in \mathcal{D}}} F_{hd} y_{hd} \\
++ \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} \sum\limits_{p \in \mathcal{P}} \kappa_{1} [\rho_{p} (d - \alpha_{p}) x_{hdp}]\\
++ \sum\limits_{p \in \mathcal{P} \setminus \lbrace \mathcal{P}{'} \rbrace } \kappa_{2} [\rho_{p}( mathcal{D} + 1 -\alpha_{p} ) w_{p}]$
