@@ -1,0 +1,3 @@
+% Specs and general overview
+Models were run on a Windows 11 computer with a AMD Ryzen 5 5625U 2.3GHz processor with 16 GB of RAM\@. Gurobi version 10.0.1 was used with Python version 3.9.16. We implemented two different models for LBBD, one following\cite{roshanaei2017propagating} which solves the master problem iteratively in a loop, rebuilding the master problem branch-and-bound tree on every iteration. The other model leveraged lazy constraints in Gurobi to perform a branch and check routine\cite{LBBDBible}, building the branch-and-bound tree once while applying Benders' cuts as lazy constraints at each new incumbent solution. The pure MIP and network model were solved using standard Gurobi routines. 
+
