@@ -1,0 +1,18 @@
+
+================================================================================ 
+ Num patients 40 
+================================================================================
+
+================================================================================ 
+Instance 0 
+================================================================================
+Solving with MIP
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 938386
+Academic license - for non-commercial use only - registered to mitchell.clark1@uq.net.au
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200

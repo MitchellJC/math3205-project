@@ -4,6 +4,7 @@ Created on Mon Sep  4 10:36:14 2023
 
 @author: mitch
 """
+import time
 import gurobipy as gp
 from gurobipy import GRB, quicksum
 from constants import (K_1, K_2, TIME_LIMIT, LBBD_1, LBBD_2, LBBD_PLUS, EPS, 
@@ -435,7 +436,8 @@ class BendersLoopScheduler(BendersORScheduler):
         self.sub_solns = {}
         ub = GRB.INFINITY
         iterations = 0
-        while True:
+        start_time = time.time()
+        while time.time() - start_time <= TIME_LIMIT:
             if self.verbose:
                 print("Iteration", iterations)
             iterations += 1
