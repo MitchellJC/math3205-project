@@ -9,10 +9,10 @@ import pandas as pd
 import statistics
 from models import MIPScheduler, BendersLoopScheduler, BendersCallbackScheduler
 from data_gen import generate_data
-from constants import UNDERLINE, LBBD_PLUS
+from constants import UNDERLINE, LBBD_PLUS, LBBD_1
 
 SEEDS = (42, 831, 306, 542, 1)
-NUM_PATIENTS = (20,)
+NUM_PATIENTS = (40,)
 NUM_OR = 5
 GAP = 0.00 # 0.01
 
@@ -55,7 +55,8 @@ for num_patients in NUM_PATIENTS:
         print(f"Solving with Benders' loop")
         benders_loop = BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P,
                                             verbose=False, gurobi_log=False, gap=GAP,
-                                            chosen_lbbd=LBBD_PLUS)
+                                            chosen_lbbd=LBBD_1,
+                                            use_propagation=False)
         start_time = time.time()
         benders_loop.run_model()
         run_time = time.time() - start_time
@@ -68,7 +69,9 @@ for num_patients in NUM_PATIENTS:
         print(f"Solving with Benders' callback")
         benders_callback = BendersCallbackScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
                                                     mand_P, verbose=False, 
-                                                    gurobi_log=False, gap=GAP)
+                                                    gurobi_log=False, gap=GAP,
+                                                    chosen_lbbd=LBBD_1,
+                                                    use_propagation=False)
         start_time = time.time()
         benders_callback.run_model()
         run_time = time.time() - start_time

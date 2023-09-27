@@ -38,6 +38,7 @@ NUM_DAYS = 5
 
 SEED = 42
 GAP = 0.00
+TIME_LIMIT = 7200
 
 @dataclass(eq=True, frozen=True)
 class Node:
@@ -112,6 +113,8 @@ for a in arcs:
         print("missing node", a)
 
 m = Model()
+m.setParam('MIPGap', GAP)
+m.setParam('TimeLimit', TIME_LIMIT)
 
 # 1 if arc a turned on
 z = {a.id_: m.addVar(vtype=GRB.BINARY) for a in arcs}
