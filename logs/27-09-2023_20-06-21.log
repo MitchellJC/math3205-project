@@ -1,0 +1,115 @@
+
+================================================================================ 
+ Num patients 5 
+================================================================================
+
+================================================================================ 
+Instance 0 
+================================================================================
+Solving with pure MIP
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 938386
+Academic license - for non-commercial use only - registered to mitchell.clark1@uq.net.au
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with Benders' loop
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with Benders' callback
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+
+================================================================================ 
+Instance 1 
+================================================================================
+Solving with pure MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with Benders' loop
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+-46620.0 -43858.0
+Gap 6.29759678963929 %
+Solving with Benders' callback
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-46620.0 -41884.0
+Gap 11.307420494699647 %
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+
+================================================================================ 
+Instance 2 
+================================================================================
+Solving with pure MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with Benders' loop
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with Benders' callback
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+
+================================================================================ 
+Instance 3 
+================================================================================
+Solving with pure MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with Benders' loop
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.665653297784136 %
+Solving with Benders' callback
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.766430604275597 %
+
+================================================================================ 
+Instance 4 
+================================================================================
+Solving with pure MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with Benders' loop
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with Benders' callback
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+
+Time Output 
+================================================================================
+   instance  seed  num_patients       MIP      loop  callback
+0         0    42             5  0.335088  0.028079  0.062537
+1         1   831             5  0.135170  0.087558  0.068558
+2         2   306             5  0.134723  0.017246  0.041255
+3         3   542             5  0.112836  0.070054  0.067057
+4         4     1             5  0.079948  0.010007  0.033368
+
+Objective Output 
+================================================================================
+   instance  seed  num_patients      MIP     loop  callback
+0         0    42             5 -86823.0 -86823.0  -86823.0
+1         1   831             5 -46441.0 -46441.0  -46441.0
+2         2   306             5 -31393.0 -31393.0  -31393.0
+3         3   542             5 -63600.0 -63600.0  -63600.0
+4         4     1             5 -43744.0 -43744.0  -43744.0
+
+Gap Output 
+================================================================================
+
+Average Time Output 
+================================================================================
+   num_patients       MIP      loop  callback
+0             5  0.159553  0.042589  0.054555
