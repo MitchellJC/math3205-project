@@ -1,0 +1,500 @@
+
+================================================================================ 
+ Num patients 5 
+================================================================================
+
+================================================================================ 
+Instance 0 
+================================================================================
+Solving with MIP
+[4;33mReloaded modules[24m: constants, utilities, models, data_gen[0m
+
+================================================================================ 
+ Num patients 5 
+================================================================================
+
+================================================================================ 
+Instance 0 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD4p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+
+================================================================================ 
+Instance 1 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+-46620.0 -43858.0
+Gap 6.29759678963929 %
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-46620.0 -41884.0
+Gap 11.307420494699647 %
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+-46620.0 -43858.0
+Gap 6.29759678963929 %
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-46620.0 -41884.0
+Gap 11.307420494699647 %
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+Solving with cLBBD4p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-46620.0 -41884.0
+Gap 11.307420494699647 %
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+
+================================================================================ 
+Instance 2 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD4p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+
+================================================================================ 
+Instance 3 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.665653297784136 %
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.766430604275597 %
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.665653297784136 %
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.766430604275597 %
+Solving with cLBBD4p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.766430604275597 %
+
+================================================================================ 
+Instance 4 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD4p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+
+Time Output 
+================================================================================
+[4;33mReloaded modules[24m: constants, utilities, models, data_gen[0m
+
+================================================================================ 
+ Num patients 5 
+================================================================================
+
+================================================================================ 
+Instance 0 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD4p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+
+================================================================================ 
+Instance 1 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+-46620.0 -43858.0
+Gap 6.29759678963929 %
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-46620.0 -41884.0
+Gap 11.307420494699647 %
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+-46620.0 -43858.0
+Gap 6.29759678963929 %
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-46620.0 -41884.0
+Gap 11.307420494699647 %
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+Solving with cLBBD4p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-46620.0 -41884.0
+Gap 11.307420494699647 %
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+
+================================================================================ 
+Instance 2 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD4p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+
+================================================================================ 
+Instance 3 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.665653297784136 %
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.766430604275597 %
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.665653297784136 %
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.766430604275597 %
+Solving with cLBBD4p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.766430604275597 %
+
+================================================================================ 
+Instance 4 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD4p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+
+Time Output 
+================================================================================
+   instance  seed  num_patients  ...   iLBBD2p   cLBBD2p   cLBBD4p
+0         0    42             5  ...  0.037572  0.062847  0.065137
+1         1   831             5  ...  0.070378  0.055354  0.062956
+2         2   306             5  ...  0.008459  0.046894  0.039678
+3         3   542             5  ...  0.069776  0.076041  0.065397
+4         4     1             5  ...  0.015648  0.033718  0.020502
+
+[5 rows x 9 columns]
+[4;33mReloaded modules[24m: constants, utilities, models, data_gen[0m
+
+================================================================================ 
+ Num patients 5 
+================================================================================
+
+================================================================================ 
+Instance 0 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD4p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+
+================================================================================ 
+Instance 1 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+-46620.0 -43858.0
+Gap 6.29759678963929 %
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-46620.0 -41884.0
+Gap 11.307420494699647 %
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+-46620.0 -43858.0
+Gap 6.29759678963929 %
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-46620.0 -41884.0
+Gap 11.307420494699647 %
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+Solving with cLBBD4p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-46620.0 -41884.0
+Gap 11.307420494699647 %
+-48192.0 -43858.0
+Gap 9.881891559122623 %
+
+================================================================================ 
+Instance 2 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD4p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+
+================================================================================ 
+Instance 3 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.665653297784136 %
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.766430604275597 %
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.665653297784136 %
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.766430604275597 %
+Solving with cLBBD4p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+-65749.0 -61511.0
+Gap 6.889824584220708 %
+-64996.0 -61511.0
+Gap 5.766430604275597 %
+
+================================================================================ 
+Instance 4 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+Solving with cLBBD4p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 7200
+
+Time Output 
+================================================================================
+   instance  seed  num_patients  ...   iLBBD2p   cLBBD2p   cLBBD4p
+0         0    42             5  ...  0.043181  0.079094  0.083706
+1         1   831             5  ...  0.062550  0.048291  0.062881
+2         2   306             5  ...  0.016835  0.048565  0.045400
+3         3   542             5  ...  0.071898  0.068576  0.064555
+4         4     1             5  ...  0.017273  0.014016  0.017033
+
+[5 rows x 9 columns]
+Warning: environment still referenced so free is deferred (Continue to use WLS)

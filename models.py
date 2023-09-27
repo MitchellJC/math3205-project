@@ -340,7 +340,11 @@ class BendersORScheduler(ORScheduler):
                 P_longer = [p for p in self.P if p not in P_prime and
                             self.T[p] >= max_dur]
                 if self.use_propagation:
-                    raise NotImplementedError()
+                    [add_constr(self.y[h, d] >= len(self.R) + 1 
+                                 - quicksum(1 - self.x[h, d, p] for p in P_prime)
+                                 + quicksum(self.x[h, d, p] for p in P_longer))
+                     for h_prime in self.H for d_prime in self.D 
+                     if self.B[h_prime, d_prime] <= self.B[h, d]]
                 else:
                     add_constr(self.y[h, d] >= len(self.R) + 1 
                                  - quicksum(1 - self.x[h, d, p] for p in P_prime)
