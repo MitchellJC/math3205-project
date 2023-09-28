@@ -9,7 +9,7 @@ UNDERLINE = "\n" + 80*"="
 
 # Parameters
 EPS = 1e-6
-TIME_LIMIT = 7200
+TIME_LIMIT = 900 # Paper: 7200
 
 # Data
 K_1 = 50

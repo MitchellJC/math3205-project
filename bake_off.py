@@ -14,10 +14,10 @@ from data_gen import generate_data
 from constants import UNDERLINE, LBBD_PLUS, LBBD_1, LBBD_2, TIME_LIMIT
 
 SEEDS = (42, 831, 306, 542, 1)
-NUM_PATIENTS = (40,)
+NUM_PATIENTS = (5,)
 NUM_OR = 5
 GAP = 0.00 # 0.01
-FILE_OUTPUT = True # WARNING! Set to false for use in IPython console (Spyder)
+FILE_OUTPUT = False # WARNING! Set to false for use in IPython console (Spyder)
 
 def run_model(model, obj_vals, times, gaps):
     start_time = time.time()
@@ -129,8 +129,9 @@ print(df.to_string())
 print("\nAverage Time Output", UNDERLINE)
 columns = {'num_patients': NUM_PATIENTS}
 for model_name in model_names:
-    columns[model_name] = statistics.mean([t for t in data[model_name]['times'] 
-                                           if t <= TIME_LIMIT])
+    qual_times = [t for t in data[model_name]['times'] if t <= TIME_LIMIT]
+    columns[model_name] = None if len(qual_times) == 0 else statistics.mean(qual_times)
+        
 df = pd.DataFrame(columns)
 print(df.to_string())
 
