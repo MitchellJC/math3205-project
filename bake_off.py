@@ -40,31 +40,26 @@ model_names = ('MIP', 'iLBBD1', 'cLBBD1', 'iLBBD2p', 'cLBBD2p', 'cLBBD4p')
 models = lambda P, H, R, D, G, F, B, T, rho, alpha, mand_P: {
     'MIP': lambda: MIPScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P, 
                                 gurobi_log=False, gap=GAP),
-          
     'iLBBD1': lambda: BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
                                            mand_P, verbose=False, 
                                            gurobi_log=False, gap=GAP, 
                                            chosen_lbbd=LBBD_1, 
                                            use_propagation=False),
-              
     'cLBBD1': lambda: BendersCallbackScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
                                                mand_P, verbose=False, 
                                                gurobi_log=False, gap=GAP,
                                                chosen_lbbd=LBBD_1,
                                                use_propagation=True),
-    
     'iLBBD2p': lambda: BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
                                             mand_P, verbose=False, 
                                             gurobi_log=False, gap=GAP, 
                                             chosen_lbbd=LBBD_2, 
                                             use_propagation=True),
-    
     'cLBBD2p': lambda: BendersCallbackScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
                                                mand_P, verbose=False, 
                                                gurobi_log=False, gap=GAP,
                                                chosen_lbbd=LBBD_2,
                                                use_propagation=True),
-    
     'cLBBD4p': lambda: BendersCallbackScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
                                                mand_P, verbose=False, 
                                                gurobi_log=False, gap=GAP,
@@ -76,7 +71,7 @@ data = {}
 for model_name in model_names:
     data[model_name] = {'obj_vals': [], 'times': [], 'gaps': []}
 
-
+# Run models
 for num_patients in NUM_PATIENTS:
     print(UNDERLINE, "\n Num patients", num_patients, UNDERLINE)
     for instance, seed in enumerate(SEEDS):
@@ -119,6 +114,14 @@ columns = {'instance': instance_nums, 'seed': seeds,
            'num_patients': num_patients_full}
 for model_name in model_names:
     columns[model_name] = data[model_name]['gaps']
+df = pd.DataFrame(columns)
+print(df.to_string())
+
+# Average gap output
+print("\nAverage Gap Output", UNDERLINE)
+columns = {'num_patients': NUM_PATIENTS}
+for model_name in model_names:
+    columns[model_name] = statistics.mean(data[model_name]['gaps'])
 df = pd.DataFrame(columns)
 print(df.to_string())
 
