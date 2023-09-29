@@ -49,7 +49,7 @@ models = lambda P, H, R, D, G, F, B, T, rho, alpha, mand_P: {
                                                mand_P, verbose=False, 
                                                gurobi_log=False, gap=GAP,
                                                chosen_lbbd=LBBD_1,
-                                               use_propagation=True),
+                                               use_propagation=False),
     'iLBBD2p': lambda: BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
                                             mand_P, verbose=False, 
                                             gurobi_log=False, gap=GAP, 
