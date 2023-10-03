@@ -4,7 +4,6 @@ Created on Mon Sep  4 11:19:35 2023
 
 @author: mitch
 """
-import os
 import sys
 import time
 import pandas as pd

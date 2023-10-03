@@ -469,3 +469,28 @@ Best objective -8.326240000000e+05, best bound -8.335610000000e+05, gap 0.1125%
 Solving with iLBBD1
 Set parameter MIPGap to value 0
 Set parameter TimeLimit to value 900
+Solving with cLBBD1
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 900
+-824214.0 -815173.0
+Gap 1.1090897269659323 %
+-827251.0 -817955.0
+Gap 1.1364928388481028 %
+-822442.0 -817955.0
+Gap 0.5486248919440053 %
+-823402.0 -817955.0
+Gap 0.6687316688090144 %
+-824268.0 -824161.0
+Gap 0.012982900185764675 %
+-828457.0 -824161.0
+Gap 0.5214680734328039 %
+-829343.0 -824488.0
+Gap 0.5888502925451917 %
+-829338.0 -824488.0
+Gap 0.588247422930491 %
+Solving with iLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 900
+Solving with cLBBD2p
+Set parameter MIPGap to value 0
+Set parameter TimeLimit to value 900
