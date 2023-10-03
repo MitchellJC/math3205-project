@@ -4,6 +4,7 @@ Created on Mon Sep  4 11:19:35 2023
 
 @author: mitch
 """
+import os
 import sys
 import time
 import pandas as pd
@@ -15,10 +16,11 @@ from data_gen import generate_data
 from constants import UNDERLINE, LBBD_PLUS, LBBD_1, LBBD_2, TIME_LIMIT
 
 SEEDS = (42, 831, 306, 542, 1)
-NUM_PATIENTS = (5,)
+NUM_PATIENTS = (80,)
 NUM_OR = 5
 GAP = 0.00 # 0.01
-FILE_OUTPUT = False # WARNING! Set to false for use in IPython console (Spyder)
+FILE_OUTPUT = True # WARNING! Set to false for use in IPython console (Spyder)
+SAVE_RESULTS = True
 
 def run_model(model, obj_vals, times, gaps):
     start_time = time.time()
@@ -94,6 +96,9 @@ for num_patients in NUM_PATIENTS:
             run_model(model, data[model_name]['obj_vals'], data[model_name]['times'], 
                       data[model_name]['gaps'])
 
+now = datetime.now()
+formatted_now = now.strftime("%d-%m-%Y_%H-%M-%S")
+
 # Time output
 print("\nTime Output", UNDERLINE)
 columns = {'instance': instance_nums, 'seed': seeds, 
@@ -102,6 +107,8 @@ for model_name in model_names:
     columns[model_name] = data[model_name]['times']
 df = pd.DataFrame(columns)
 print(df.to_string())
+if SAVE_RESULTS:
+    df.to_csv(f'results_data/{formatted_now}_time.csv', index=False)
 
 # Objective output
 print("\nObjective Output", UNDERLINE)
@@ -111,6 +118,8 @@ for model_name in model_names:
     columns[model_name] = data[model_name]['obj_vals']
 df = pd.DataFrame(columns)
 print(df.to_string())
+if SAVE_RESULTS:
+    df.to_csv(f'results_data/{formatted_now}_obj.csv', index=False)
 
 # Gap output
 print("\nGap Output", UNDERLINE)
@@ -120,6 +129,8 @@ for model_name in model_names:
     columns[model_name] = data[model_name]['gaps']
 df = pd.DataFrame(columns)
 print(df.to_string())
+if SAVE_RESULTS:
+    df.to_csv(f'results_data/{formatted_now}_gap.csv', index=False)
 
 # Average gap output
 print("\nAverage Gap Output", UNDERLINE)
@@ -128,6 +139,8 @@ for model_name in model_names:
     columns[model_name] = statistics.mean(data[model_name]['gaps'])
 df = pd.DataFrame(columns)
 print(df.to_string())
+if SAVE_RESULTS:
+    df.to_csv(f'results_data/{formatted_now}_avg_gap.csv', index=False)
 
 # Average time output
 print("\nAverage Time Output", UNDERLINE)
@@ -135,6 +148,8 @@ columns = {'num_patients': NUM_PATIENTS}
 for model_name in model_names:
     qual_times = [t for t in data[model_name]['times'] if t <= TIME_LIMIT]
     columns[model_name] = None if len(qual_times) == 0 else statistics.mean(qual_times)
+if SAVE_RESULTS:
+    df.to_csv(f'results_data/{formatted_now}_avg_time.csv', index=False)
         
 df = pd.DataFrame(columns)
 print(df.to_string())
