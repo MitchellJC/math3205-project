@@ -11,6 +11,9 @@ from constants import (K_1, K_2, TIME_LIMIT, LBBD_1, LBBD_2, LBBD_PLUS, EPS,
                        UNDERLINE)
 from typing import Union
 from utilities import ffd, Bin
+from dataclasses import dataclass, field
+from itertools import count
+from collections import defaultdict
 
 class ORScheduler:
     """Abstract class for OR scheduler methods."""
@@ -67,8 +70,155 @@ class ORScheduler:
         # 1 if patient does not get surgery within time horizon
         self.w = {p: self.model.addVar(vtype=GRB.BINARY) 
                   for p in self.P if p not in self.mand_P}
-        
 
+@dataclass(eq=True, frozen=True)
+class Node:
+    hosp: int
+    day: int
+    time: int
+    id_: int = field(default_factory=count().__next__, hash=False, compare=False)
+
+@dataclass(eq=True, frozen=True)
+class Arc:
+    hosp: int
+    day: int
+    start_time: int
+    end_time: int
+    patient: int
+    id_: int = field(default_factory=count().__next__, hash=False, compare=False)
+
+class NetworkScheduler(ORScheduler):
+    def _define_model(self):
+        min_dur = min(self.T.values())
+        
+        # Define nodes
+        print("Constructing nodes...")
+        self.nodes = set()
+        for h in self.H:
+            for d in self.D:
+                start_node = Node(h, d, 0)
+                self.nodes.add(start_node)
+                end_node = Node(h, d, self.B[h,d])
+                self.nodes.add(end_node)
+                
+                # Add intermediate nodes.
+                for t in range(min_dur, self.B[h,d] - min_dur + 1):
+                    self.nodes.add(Node(h, d, t))
+                    
+        print("Done constructing nodes.")
+        print("Number of Nodes: ", len(self.nodes))
+        
+        # Define arcs
+        print("Constructing arcs...")
+        self.arcs = set()
+        self.from_arcs = defaultdict(lambda: set()) # Cache arcs for speed 
+        self.to_arcs = defaultdict(lambda: set())
+        for h in self.H:
+            for d in self.D:
+                    # Add waiting arcs, ignore tail time gaps
+                    for t in range(min_dur, self.B[h,d] - min_dur):
+                        arc = Arc(h, d, t, t + 1, -1)
+                        self.arcs.add(arc)
+                        self.from_arcs[h, d, t].add(arc)
+                        self.to_arcs[h, d, t + 1].add(arc)
+                    # Add operating arcs
+                    for p in self.P:
+                        # Can operate at start of the day
+                        arc = Arc(h, d, 0, self.T[p], p)
+                        self.arcs.add(arc)
+                        self.from_arcs[h, d, 0].add(arc)
+                        self.to_arcs[h, d, self.T[p]].add(arc)
+                       
+                        # Add arcs in intermediate gap.
+                        for t in range(min_dur, self.B[h, d]):   
+                            if Node(h, d, t + self.T[p]) in self.nodes:
+                                arc = Arc(h, d, t, t + self.T[p], p)
+                                self.arcs.add(arc)
+                                self.from_arcs[h, d, t].add(arc)
+                                self.to_arcs[h, d, t + self.T[p]].add(arc)
+                                
+        print("Done constructing arcs.")
+        print("Number of Arcs: ", len(self.arcs))
+        # Checking code
+        for a in self.arcs:
+            if (Node(a.hosp, a.day, a.start_time) not in self.nodes 
+                or Node(a.hosp, a.day, a.end_time) not in self.nodes):
+                print("missing node", a)
+
+        self.model = gp.Model()
+        self.model.setParam('MIPGap', self.gap)
+        self.model.setParam('TimeLimit', TIME_LIMIT)
+
+        # 1 if arc a turned on
+        self.z = {a.id_: self.model.addVar(vtype=GRB.BINARY) for a in self.arcs}
+
+        # Number of op rooms opened
+        self.y = {(h, d): self.model.addVar(vtype=GRB.INTEGER, lb=0) 
+                  for h in self.H for d in self.D}
+
+        # 1 if patient is operated on in hospital day
+        self.x = {(h, d, p): self.model.addVar(vtype=GRB.BINARY)
+                  for h in self.H for d in self.D for p in self.P}
+
+        # 1 if hospital on day is opened
+        self.u = {(h, d): self.model.addVar(vtype=GRB.BINARY) 
+                  for h in self.H for d in self.D}
+
+        # 1 if patient not operated on in time horizon
+        self.w = {p: self.model.addVar(vtype=GRB.BINARY) 
+                  for p in self.P if p not in self.mand_P}
+            
+        # Objective
+        self.model.setObjective(quicksum(self.G[h, d]*self.u[h, d] 
+                                         for h in self.H for d in self.D)
+                            + quicksum(self.F[h, d]*self.y[h, d] for h in self.H 
+                                       for d in self.D)
+                            + quicksum(K_1*self.rho[p]*(d - self.alpha[p])*self.x[h, d, p] 
+                                      for h in self.H for d in self.D for p in self.P)
+                            + quicksum(K_2*self.rho[p]*(len(self.D) + 1 
+                                                        - self.alpha[p])*self.w[p] 
+                                       for p in self.P if p not in self.mand_P), 
+                            GRB.MINIMIZE)
+
+        # Constraints
+        self.room_flow = {n.id_: self.model.addConstr(
+            quicksum(self.z[a.id_] for a in self.from_arcs[n.hosp, n.day, n.time]) 
+            == quicksum(self.z[a.id_] for a in self.to_arcs[n.hosp, n.day, n.time])) 
+            for n in self.nodes if min_dur <= n.time <= self.B[n.hosp, n.day] - min_dur} 
+
+        self.restrict_ops_by_ors = {(h, d): 
+                                self.model.addConstr(quicksum(self.z[a.id_] 
+                                                              for a in self.arcs 
+                                                if (a.hosp, a.day, a.start_time) 
+                                                == (h, d, 0)) 
+                                <= self.y[h,d]) for d in self.D for h in self.H}    
+
+        self.force_hosp_on = {(h, d): self.model.addConstr(self.y[h, d] 
+                                                           <= len(self.R)*self.u[h,d]) 
+                          for h in self.H for d in self.D}
+
+        self.max_ors = {(h, d): self.model.addConstr(self.y[h, d] <= len(self.R)) 
+                        for d in self.D for h in self.H}
+
+
+        self.is_patient_operated_on = {(h, d, p): self.model.addConstr(
+            quicksum(self.z[a.id_] for a in self.arcs 
+                     if (a.hosp, a.day, a.patient) == (h, d, p)) 
+            == self.x[h, d, p]) for h in self.H for d in self.D for p in self.P}
+            
+        self.patient_once = {p: self.model.addConstr(quicksum(self.x[h, d, p] 
+                                                              for h in self.H 
+                                                              for d in self.D) 
+                            <= 1) for p in self.P}
+            
+        self.must_do_mandatory = {p: self.model.addConstr(
+            quicksum(self.x[h, d, p] for h in self.H for d in self.D) == 1) 
+            for p in self.mand_P}
+            
+        self.turn_on_w = {p: self.model.addConstr(self.w[p] 
+                             <= 1 - quicksum(self.x[h, d, p] 
+                                             for h in self.H for d in self.D)) 
+                      for p in self.P if p not in self.mand_P}
 
 class MIPScheduler(ORScheduler):
     """OR scheduler that uses a pure mixed integer programming routine."""
