@@ -219,6 +219,9 @@ class NetworkScheduler(ORScheduler):
                              <= 1 - quicksum(self.x[h, d, p] 
                                              for h in self.H for d in self.D)) 
                       for p in self.P if p not in self.mand_P}
+        
+    def run_model(self):
+        self.model.optimize()
 
 class MIPScheduler(ORScheduler):
     """OR scheduler that uses a pure mixed integer programming routine."""

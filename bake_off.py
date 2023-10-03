@@ -9,15 +9,16 @@ import time
 import pandas as pd
 import statistics
 from datetime import datetime
-from models import MIPScheduler, BendersLoopScheduler, BendersCallbackScheduler
+from models import MIPScheduler, NetworkScheduler, BendersLoopScheduler, \
+    BendersCallbackScheduler
 from data_gen import generate_data
 from constants import UNDERLINE, LBBD_PLUS, LBBD_1, LBBD_2, TIME_LIMIT
 
 SEEDS = (42, 831, 306, 542, 1)
-NUM_PATIENTS = (80,)
+NUM_PATIENTS = (5,)
 NUM_OR = 5
 GAP = 0.00 # 0.01
-FILE_OUTPUT = True # WARNING! Set to false for use in IPython console (Spyder)
+FILE_OUTPUT = False # WARNING! Set to false for use in IPython console (Spyder)
 
 def run_model(model, obj_vals, times, gaps):
     start_time = time.time()
@@ -36,10 +37,13 @@ instance_nums = []
 seeds = []
 num_patients_full = []
 
-model_names = ('MIP', 'iLBBD1', 'cLBBD1', 'iLBBD2p', 'cLBBD2p', 'cLBBD4p')
+model_names = ('MIP', 'Network', 'iLBBD1', 'cLBBD1', 'iLBBD2p', 'cLBBD2p', 
+               'cLBBD4p')
 models = lambda P, H, R, D, G, F, B, T, rho, alpha, mand_P: {
     'MIP': lambda: MIPScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P, 
                                 gurobi_log=False, gap=GAP),
+    'Network': lambda: NetworkScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
+                                        mand_P, gurobi_log=False, gap=GAP),
     'iLBBD1': lambda: BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
                                            mand_P, verbose=False, 
                                            gurobi_log=False, gap=GAP, 
