@@ -55,4 +55,3 @@ def ffd(items: list[tuple], max_bins: int, bin_size: int) -> list['Bin'] | None:
     
     return open_bins
     
-        

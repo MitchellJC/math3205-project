@@ -14,7 +14,7 @@ from data_gen import generate_data
 from constants import UNDERLINE, LBBD_PLUS, LBBD_1, LBBD_2, TIME_LIMIT
 
 SEEDS = (42, 831, 306, 542, 1)
-NUM_PATIENTS = (60,)
+NUM_PATIENTS = (80,)
 NUM_OR = 5
 GAP = 0.00 # 0.01
 FILE_OUTPUT = True # WARNING! Set to false for use in IPython console (Spyder)

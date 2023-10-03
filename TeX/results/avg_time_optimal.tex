@@ -1,10 +1,11 @@
 \begin{table*}
     \centering
-    \caption{Average time (seconds) until solved to optimality over 5 instances.}
+    \caption{Average time (seconds) until solved to optimality over 5 instances. The number of instances not solved to optimality are superscripted. Non-solved instances are not included in average.}
     \begin{tabular}{rrrrrrrr} \toprule
         $|\mathcal{P}|$ & Pure MIP & Network & iLBBD1 & cLBBD1 & iLBBD2p & cLBBD2p & cLBBD4p \\ \midrule
         20              & 16.06 &         & 1.509 &  0.8829 & 1.431 & 0.8800 & 0.7890 \\
-        40              & X   & X     &   X       & X \\
+        40              & $179.290365^{(2)}$ &    &  $4.428572$ & $1.911088^{(4)}$ & $4.503378^{(1)}$ & $1.910761^{(4)}$ & $1.959761^{(4)}$ \\
+        60 & $30.804891^{(4)}$ &  & $24.4599^{(1)}$ & $10.726104^{(4)}$ & $34.606863^{(2)}$ & $21.455653^{(4)}$ & $25.795459^{(4)}$ \\
         \bottomrule
     \end{tabular}
 \end{table*}
