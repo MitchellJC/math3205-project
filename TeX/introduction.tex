@@ -1,6 +1,6 @@
 Our report is based upon~\cite{roshanaei2017propagating} which we will also refer to as \textit{the original paper} throughout. The paper solves the deterministic distributed  operating room scheduling (DORS) problem using Logic-Based Benders' Decomposition (LBBD) and a cut propagation method. This formulation has been extended upon in a stochastic setting\cite{guo}. We re-implemented the paper and extended the formulation with a new LBBD cut and a network model. We extended implementation by using lazy constraints in Gurobi. Our main goals were to replicate the results found in the original paper and investigate if there was potential improvement to be had by using lazy constraints instead of iteration.
 
-% Overview of models and why they were chosen
+% Overview of models in OG paper
 The original paper contains many variants of models, they provide a pure MIP formulation, and an LBBD formulation with three different types of cuts. For each of these cuts they experiment with a version with and without propagation. For each of these they implement different cut generation schemes which determine how many sub problems to iterate over before re-solving the master problem. We choose some of their models to best achieve our goals. We choose to use the maximal cut generation scheme, iterating over all sub-problems before re-solving the master problem.
 
 % DORS Problem definition.
