@@ -49,6 +49,8 @@ class ORScheduler:
         self.mand_P = mand_P
         self.gurobi_log = gurobi_log
         self.gap = gap
+        self.mp_time = 0
+        self.sp_time = 0
         self._define_model()
         
     def _define_model(self):

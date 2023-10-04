@@ -7,6 +7,7 @@ Created on Mon Sep  4 11:19:35 2023
 import sys
 import time
 import pandas as pd
+import matplotlib.pyplot as plt
 import statistics
 from datetime import datetime
 from models import MIPScheduler, NetworkScheduler, BendersLoopScheduler, \
@@ -14,20 +15,25 @@ from models import MIPScheduler, NetworkScheduler, BendersLoopScheduler, \
 from data_gen import generate_data
 from constants import UNDERLINE, LBBD_PLUS, LBBD_1, LBBD_2, TIME_LIMIT
 
+
 SEEDS = (42, 831, 306, 542, 1)
 NUM_PATIENTS = (20,)
 NUM_OR = 5
 GAP = 0.01 # 0.01
 FILE_OUTPUT = True # WARNING! Set to false for use in IPython console (Spyder)
 SAVE_RESULTS = True
+MAKE_PLOTS = True
 
-def run_model(model, obj_vals, times, gaps):
+def run_model(model, obj_vals, times, gaps, mp_time, sp_time):
     start_time = time.time()
     model.run_model()
     run_time = time.time() - start_time
+    
     obj_vals.append(model.model.objVal)
     times.append(run_time)
     gaps.append(model.model.MIPGap)
+    mp_time.append(model.mp_time)
+    sp_time.append(model.sp_time)
 
 if FILE_OUTPUT:
     now = datetime.now()
@@ -74,7 +80,8 @@ models = lambda P, H, R, D, G, F, B, T, rho, alpha, mand_P: {
 
 data = {}
 for model_name in model_names:
-    data[model_name] = {'obj_vals': [], 'times': [], 'gaps': []}
+    data[model_name] = {'obj_vals': [], 'times': [], 'gaps': [], 'mp_time': [],
+                        'sp_time': []}
 
 # Run models
 for num_patients in NUM_PATIENTS:
@@ -93,7 +100,8 @@ for num_patients in NUM_PATIENTS:
             print(f"Solving with {model_name}")
             model = models(P, H, R, D, G, F, B, T, rho, alpha, mand_P)[model_name]()
             run_model(model, data[model_name]['obj_vals'], data[model_name]['times'], 
-                      data[model_name]['gaps'])
+                      data[model_name]['gaps'], data[model_name]['mp_time'],
+                      data[model_name]['sp_time'])
 
 now = datetime.now()
 formatted_now = now.strftime("%d-%m-%Y_%H-%M-%S")
@@ -147,11 +155,46 @@ columns = {'num_patients': NUM_PATIENTS}
 for model_name in model_names:
     qual_times = [t for t in data[model_name]['times'] if t <= TIME_LIMIT]
     columns[model_name] = None if len(qual_times) == 0 else statistics.mean(qual_times)
+df = pd.DataFrame(columns)
+print(df.to_string())
 if SAVE_RESULTS:
     df.to_csv(f'results_data/{formatted_now}_avg_time.csv', index=False)
         
+# Time in MP output
+print("\nMP Time Output", UNDERLINE)
+columns = {'instance': instance_nums, 'seed': seeds, 
+           'num_patients': num_patients_full}
+for model_name in model_names:
+    columns[model_name] = data[model_name]['mp_time']
 df = pd.DataFrame(columns)
 print(df.to_string())
+if SAVE_RESULTS:
+    df.to_csv(f'results_data/{formatted_now}_mp_time.csv', index=False)
+    
+# Time in SP output
+print("\nSP Time Output", UNDERLINE)
+columns = {'instance': instance_nums, 'seed': seeds, 
+           'num_patients': num_patients_full}
+for model_name in model_names:
+    columns[model_name] = data[model_name]['sp_time']
+df = pd.DataFrame(columns)
+print(df.to_string())
+if SAVE_RESULTS:
+    df.to_csv(f'results_data/{formatted_now}_sp_time.csv', index=False)
+
+# Make time in MP-SP bar plots
+if MAKE_PLOTS:
+    x = model_names[2:]
+    y1 = [statistics.mean(data[model_name]['mp_time']) for model_name in model_names[2:]]
+    y2 = [statistics.mean(data[model_name]['sp_time']) for model_name in model_names[2:]]
+    plt.bar(x, y1, label='Time in MP')
+    plt.bar(x, y2, bottom=y1, label='Time in SP')
+    plt.legend()
+    plt.title(f'Average Time in MP and SP for {NUM_PATIENTS[0]} patients')
+    plt.xlabel('Model')
+    plt.ylabel('Total time (seconds)')
+    plt.ylim([0, plt.gca().get_ylim()[1]*1.25])
+    plt.savefig(f'plots/{formatted_now}({NUM_PATIENTS[0]}_timeinMPSP)')
 
 if FILE_OUTPUT:
     sys.stdout.close()

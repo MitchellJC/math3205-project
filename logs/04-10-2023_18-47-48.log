@@ -1,0 +1,24 @@
+
+================================================================================ 
+ Num patients 20 
+================================================================================
+
+================================================================================ 
+Instance 0 
+================================================================================
+Solving with MIP
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 938386
+Academic license - for non-commercial use only - registered to mitchell.clark1@uq.net.au
+Set parameter MIPGap to value 0.01
+Solving with Network
+Constructing nodes...
+Done constructing nodes.
+Number of Nodes:  4410
+Constructing arcs...
+Done constructing arcs.
+Number of Arcs:  46710
+Set parameter MIPGap to value 0.01
+Set parameter TimeLimit to value 900
+Warning: environment still referenced so free is deferred (Continue to use WLS)
