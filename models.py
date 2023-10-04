@@ -57,7 +57,6 @@ class ORScheduler:
         self.model.setParam('MIPGap', self.gap)
         # self.model.setParam('MIPFocus', 2)
         # self.model.setParam('Heuristics', 0)
-        self.model.setParam('TimeLimit', TIME_LIMIT)
         out_flag = 1 if self.gurobi_log else 0
         self.model.setParam('OutputFlag', out_flag)
         self.model.setParam('TimeLimit', TIME_LIMIT)
@@ -414,7 +413,7 @@ class BendersORScheduler(ORScheduler):
         
         SP.optimize()
         
-        return SP, y_prime
+        return SP, y_prime, x_prime
 
     def solve_sub_problem(self, model: gp.Model, cuts_container: list, h: int, 
                           d: int, lazy: bool = True) -> None:
@@ -427,9 +426,7 @@ class BendersORScheduler(ORScheduler):
             h - Hospital
             d - day
             lazy - True to add constraint to model as lazy constraints.
-        """
-        cuts_added = cuts_container[0]
-        
+        """        
         if self.verbose:
             print("Hospital", h, "Day", d, end=" ")
         
@@ -454,11 +451,15 @@ class BendersORScheduler(ORScheduler):
         if not need_to_continue:
             return
         
-        SP, y_prime = self.solve_sub_ip(P_prime, FFD_upperbound, FFD_soln, h, d)
+        SP, y_prime, x_prime = self.solve_sub_ip(P_prime, FFD_upperbound, 
+                                                 FFD_soln, h, d)
         
         if SP.Status == GRB.OPTIMAL:
             num_open_or = sum(y_prime[r].x for r in self.R)      
             self.sub_solns[h, d] = num_open_or
+            self.sub_room_allocs[h, d] = {r: y_prime[r].x for r in self.R}
+            self.sub_patient_allocs[h, d] = {(p, r): x_prime[p, r].x 
+                                             for p in P_prime for r in self.R}
         
         if self.verbose:
             print()
@@ -509,6 +510,12 @@ class BendersORScheduler(ORScheduler):
             if self.verbose:
                 print(f"Upper bound = Lower bound, {num_open_or}" 
                       + f" = {Y_hat[h, d]}")
+            
+            if num_open_or <= self.sub_solns[h, d]:
+                self.sub_solns[h, d] = num_open_or
+                self.sub_room_allocs[h, d] = {r: y_prime[r].x for r in self.R}
+                self.sub_patient_allocs[h, d] = {(p, r): x_prime[p, r].x 
+                                                 for p in P_prime for r in self.R}
             
         # Optimality cut
         elif num_open_or > Y_hat[h, d] + self.tol:
@@ -587,6 +594,8 @@ class BendersLoopScheduler(BendersORScheduler):
     """OR scheduler that uses Benders' decomposition in a loop."""    
     def run_model(self):
         self.sub_solns = {}
+        self.sub_room_allocs = {}
+        self.sub_patient_allocs = {}
         ub = GRB.INFINITY
         iterations = 0
         start_time = time.time()
@@ -699,6 +708,14 @@ class BendersCallbackScheduler(BendersORScheduler):
         
         self.model._best_found = GRB.INFINITY
         self.sub_solns = {}
+        self.sub_room_allocs = {}
+        self.sub_patient_allocs = {}
         self.ub = GRB.INFINITY
         self.model.optimize(callback)
+        
+        # Ensures optimal sub problem allocation is stored
+        for h in self.H:
+            for d in self.D:
+                self.solve_sub_problem(self.model, [0, 0], h, d, lazy=False)
+        
         
