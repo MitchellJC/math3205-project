@@ -15,7 +15,7 @@ from data_gen import generate_data
 from constants import UNDERLINE, LBBD_PLUS, LBBD_1, LBBD_2, TIME_LIMIT
 
 SEEDS = (42, 831, 306, 542, 1)
-NUM_PATIENTS = (80,)
+NUM_PATIENTS = (40,)
 NUM_OR = 5
 GAP = 0.00 # 0.01
 FILE_OUTPUT = True # WARNING! Set to false for use in IPython console (Spyder)
@@ -38,38 +38,39 @@ instance_nums = []
 seeds = []
 num_patients_full = []
 
-model_names = ('MIP', 'Network', 'iLBBD1', 'cLBBD1', 'iLBBD2p', 'cLBBD2p', 
-               'cLBBD4p')
+# model_names = ('MIP', 'Network', 'iLBBD1', 'cLBBD1', 'iLBBD2p', 'cLBBD2p', 
+#                'cLBBD4p')
+model_names = ('Network',)
 models = lambda P, H, R, D, G, F, B, T, rho, alpha, mand_P: {
-    'MIP': lambda: MIPScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P, 
-                                gurobi_log=False, gap=GAP),
+    # 'MIP': lambda: MIPScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P, 
+    #                             gurobi_log=False, gap=GAP),
     'Network': lambda: NetworkScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
                                         mand_P, gurobi_log=False, gap=GAP),
-    'iLBBD1': lambda: BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
-                                           mand_P, verbose=False, 
-                                           gurobi_log=False, gap=GAP, 
-                                           chosen_lbbd=LBBD_1, 
-                                           use_propagation=False),
-    'cLBBD1': lambda: BendersCallbackScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
-                                               mand_P, verbose=False, 
-                                               gurobi_log=False, gap=GAP,
-                                               chosen_lbbd=LBBD_1,
-                                               use_propagation=False),
-    'iLBBD2p': lambda: BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
-                                            mand_P, verbose=False, 
-                                            gurobi_log=False, gap=GAP, 
-                                            chosen_lbbd=LBBD_2, 
-                                            use_propagation=True),
-    'cLBBD2p': lambda: BendersCallbackScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
-                                               mand_P, verbose=False, 
-                                               gurobi_log=False, gap=GAP,
-                                               chosen_lbbd=LBBD_2,
-                                               use_propagation=True),
-    'cLBBD4p': lambda: BendersCallbackScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
-                                               mand_P, verbose=False, 
-                                               gurobi_log=False, gap=GAP,
-                                               chosen_lbbd=LBBD_PLUS,
-                                               use_propagation=True),
+    # 'iLBBD1': lambda: BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
+    #                                        mand_P, verbose=False, 
+    #                                        gurobi_log=False, gap=GAP, 
+    #                                        chosen_lbbd=LBBD_1, 
+    #                                        use_propagation=False),
+    # 'cLBBD1': lambda: BendersCallbackScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
+    #                                            mand_P, verbose=False, 
+    #                                            gurobi_log=False, gap=GAP,
+    #                                            chosen_lbbd=LBBD_1,
+    #                                            use_propagation=False),
+    # 'iLBBD2p': lambda: BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
+    #                                         mand_P, verbose=False, 
+    #                                         gurobi_log=False, gap=GAP, 
+    #                                         chosen_lbbd=LBBD_2, 
+    #                                         use_propagation=True),
+    # 'cLBBD2p': lambda: BendersCallbackScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
+    #                                            mand_P, verbose=False, 
+    #                                            gurobi_log=False, gap=GAP,
+    #                                            chosen_lbbd=LBBD_2,
+    #                                            use_propagation=True),
+    # 'cLBBD4p': lambda: BendersCallbackScheduler(P, H, R, D, G, F, B, T, rho, alpha, 
+    #                                            mand_P, verbose=False, 
+    #                                            gurobi_log=False, gap=GAP,
+    #                                            chosen_lbbd=LBBD_PLUS,
+    #                                            use_propagation=True),
 }
 
 data = {}
