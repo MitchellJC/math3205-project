@@ -13,10 +13,10 @@ from data_gen import generate_data
 from constants import UNDERLINE, LBBD_2, LBBD_PLUS
 
 SEED = 42
-NUM_PATIENTS = 10
+NUM_PATIENTS = 20
 NUM_OR = 5
 GAP = 0.00
-DISPLAY_ALLOCS = True
+DISPLAY_ALLOCS = False
 
 P, mand_P, H, R, D, rho, alpha, health_status, B, T, G, F = generate_data(
     NUM_PATIENTS, NUM_OR, output_dict=True, verbose=False, seed=SEED)
@@ -26,6 +26,9 @@ callback = BendersCallbackScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P,
                    bend_gap=True)
 
 callback.run_model()
+
+print("Time spent in master problem:", callback.mp_time, "seconds")
+print("Time spent in sub problems:", callback.sp_time, "seconds")
 
 if DISPLAY_ALLOCS:
     print("Mand patients", mand_P)

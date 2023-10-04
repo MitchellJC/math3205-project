@@ -514,8 +514,8 @@ class BendersORScheduler(ORScheduler):
             if num_open_or <= self.sub_solns[h, d]:
                 self.sub_solns[h, d] = num_open_or
                 self.sub_room_allocs[h, d] = {r: y_prime[r].x for r in self.R}
-                self.sub_patient_allocs[h, d] = {(p, r): x_prime[p, r].x 
-                                                 for p in P_prime for r in self.R}
+                self.sub_patient_allocs[h, d] = {(p, r): x_prime[p, r].x if p in P_prime else 0
+                                                 for p in self.P for r in self.R}
             
         # Optimality cut
         elif num_open_or > Y_hat[h, d] + self.tol:
@@ -596,6 +596,9 @@ class BendersLoopScheduler(BendersORScheduler):
         self.sub_solns = {}
         self.sub_room_allocs = {}
         self.sub_patient_allocs = {}
+        self.sp_time = 0
+        self.mp_time = 0
+        
         ub = GRB.INFINITY
         iterations = 0
         start_time = time.time()
@@ -606,8 +609,11 @@ class BendersLoopScheduler(BendersORScheduler):
             
             if self.verbose:
                 print(UNDERLINE)
-                
+            
+            start_master_t = time.time()
             self.model.optimize()
+            end_master_t = time.time()
+            self.mp_time += end_master_t - start_master_t
             
             if self.verbose:
                 print(UNDERLINE)
@@ -615,9 +621,12 @@ class BendersLoopScheduler(BendersORScheduler):
                 print("Curr objVal", self.model.objVal)
             
             cuts_added = [0, 0]
+            start_sub_t = time.time()
             for h in self.H:
                 for d in self.D:
                     self.solve_sub_problem(self.model, cuts_added, h, d, lazy=False)
+            end_sub_t = time.time()
+            self.sp_time += end_sub_t - start_sub_t
                     
             if self.verbose:            
                 print("Feasibility cuts added", cuts_added[0])
@@ -659,7 +668,7 @@ class BendersCallbackScheduler(BendersORScheduler):
         
     def run_model(self):
         def callback(model, where):
-            
+            start_time = time.time()
             if where == GRB.Callback.MIPSOL:
                 cuts_added = [0, 0]
                 for h in self.H:
@@ -705,13 +714,23 @@ class BendersCallbackScheduler(BendersORScheduler):
                 pass
                 model.cbSetSolution()
                 model.cbSetSolution()
+                
+            end_time = time.time()
+            self.sp_time += end_time - start_time
         
-        self.model._best_found = GRB.INFINITY
         self.sub_solns = {}
         self.sub_room_allocs = {}
         self.sub_patient_allocs = {}
+        self.sp_time = 0
+        self.mp_time = 0
+        
+        self.model._best_found = GRB.INFINITY
         self.ub = GRB.INFINITY
+        
+        start_time = time.time()
         self.model.optimize(callback)
+        end_time = time.time()
+        self.mp_time = (end_time - start_time) - self.sp_time
         
         # Ensures optimal sub problem allocation is stored
         for h in self.H:
