@@ -16,14 +16,14 @@ SEEDS = (42, 831, 306, 542, 1)
 NUM_PATIENTS = 20
 NUM_OR = 5
 GAP = 0.00
-DISPLAY_ALLOCS = True
+DISPLAY_ALLOCS = False
 
 P, mand_P, H, R, D, rho, alpha, health_status, B, T, G, F = generate_data(
     NUM_PATIENTS, NUM_OR, output_dict=True, verbose=False, seed=SEEDS[0])
 
 loop = BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P, 
-                   gurobi_log=True, gap=GAP, verbose=False, chosen_lbbd=LBBD_1,
-                   bend_gap=True)
+                   gurobi_log=False, gap=GAP, verbose=False, chosen_lbbd=LBBD_2,
+                   bend_gap=True, use_propagation=True)
 
 loop.run_model()
 

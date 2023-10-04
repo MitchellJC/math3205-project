@@ -23,7 +23,7 @@ P, mand_P, H, R, D, rho, alpha, health_status, B, T, G, F = generate_data(
 
 callback = BendersCallbackScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P, 
                    gurobi_log=True, gap=GAP, verbose=False, chosen_lbbd=LBBD_2,
-                   bend_gap=True)
+                   bend_gap=True, use_propagation=True)
 
 callback.run_model()
 
