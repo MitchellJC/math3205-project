@@ -16,7 +16,7 @@ SEED = 42
 NUM_PATIENTS = 20
 NUM_OR = 5
 GAP = 0.00
-DISPLAY_ALLOCS = False
+DISPLAY_ALLOCS = True
 
 P, mand_P, H, R, D, rho, alpha, health_status, B, T, G, F = generate_data(
     NUM_PATIENTS, NUM_OR, output_dict=True, verbose=False, seed=SEED)

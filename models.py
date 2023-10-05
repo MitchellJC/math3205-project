@@ -251,32 +251,32 @@ class MIPScheduler(ORScheduler):
             GRB.MINIMIZE)
 
         # Constraints
-        mandatory_operations = {p: self.model.addConstr(
+        self.mandatory_operations = {p: self.model.addConstr(
             quicksum(self.x[h, d, p, r] 
                      for h in self.H for d in self.D for r in self.R) == 1) 
             for p in self.mand_P}
 
-        turn_on_w = {p: self.model.addConstr(
+        self.turn_on_w = {p: self.model.addConstr(
             quicksum(self.x[h, d, p, r] 
                      for h in self.H for d in self.D for r in self.R) 
             + self.w[p] == 1) 
             for p in self.P if p not in self.mand_P}
         
-        time_for_op = {(h, d, r): self.model.addConstr(
+        self.time_for_op = {(h, d, r): self.model.addConstr(
             quicksum(self.T[p]*self.x[h, d, p, r] for p in self.P) 
             <= self.B[h, d]*self.y[h, d, r]) 
             for h in self.H for d in self.D for r in self.R}
 
         # Reduces amount of combinations to check
-        OR_symmetries = {(h, d, r): self.model.addConstr(self.y[h, d, r] 
+        self.OR_symmetries = {(h, d, r): self.model.addConstr(self.y[h, d, r] 
                                                          <= self.y[h, d, r - 1]) 
                          for h in self.H for d in self.D for r in self.R[1:]}
 
-        suite_open_before_OR = {(h, d, r): self.model.addConstr(
+        self.suite_open_before_OR = {(h, d, r): self.model.addConstr(
             self.y[h, d, r] <= self.u[h, d]) 
             for h in self.H for d in self.D for r in self.R}
 
-        lp_strengthener = {(h, d, p, r): self.model.addConstr(
+        self.lp_strengthener = {(h, d, p, r): self.model.addConstr(
             self.x[h, d, p, r] <= self.y[h, d, r]) 
             for h in self.H for d in self.D for p in self.P for r in self.R}
         
@@ -395,25 +395,24 @@ class BendersORScheduler(ORScheduler):
         SP.setObjective(quicksum(y_prime[r] for r in self.R), GRB.MINIMIZE)
         
         # Constraints
-        patients_assigned_hosp_get_room = {
-            p: SP.addConstr(quicksum(x_prime[p, r] for r in self.R) == 1) 
+        # Patients_assigned_hosp_get_room 
+        {p: SP.addConstr(quicksum(x_prime[p, r] for r in self.R) == 1) 
             for p in P_prime}
-
-        OR_capacity = {r: SP.addConstr(quicksum(self.T[p]*x_prime[p, r] 
-                                                for p in P_prime) 
-                                       <= self.B[h, d]*y_prime[r]) 
-                       for r in self.R}
         
-        sub_lp_strengthener = {(p, r): SP.addConstr(x_prime[p, r] 
-                                                    <= y_prime[r]) 
-                               for p in P_prime for r in self.R}
+        # OR_capacity
+        {r: SP.addConstr(quicksum(self.T[p]*x_prime[p, r] for p in P_prime) 
+                         <= self.B[h, d]*y_prime[r]) for r in self.R}
         
-        OR_symmetries = {r: SP.addConstr(y_prime[r] <= y_prime[r - 1]) 
-                         for r in self.R[1:]}
+        # sub_lp_strengthener  
+        {(p, r): SP.addConstr(x_prime[p, r] <= y_prime[r]) 
+         for p in P_prime for r in self.R}
         
+        # OR_symmetries
+        {r: SP.addConstr(y_prime[r] <= y_prime[r - 1]) for r in self.R[1:]}
+        
+        # FFD Tightener
         if FFD_upperbound:
-            FFD_tightener = SP.addConstr(quicksum(y_prime[r] for r in self.R)
-                                         <= FFD_upperbound)
+            SP.addConstr(quicksum(y_prime[r] for r in self.R) <= FFD_upperbound)
         
         SP.optimize()
         
@@ -461,10 +460,6 @@ class BendersORScheduler(ORScheduler):
         
         if SP.Status == GRB.OPTIMAL:
             num_open_or = sum(y_prime[r].x for r in self.R)      
-            self.sub_solns[h, d] = num_open_or
-            self.sub_room_allocs[h, d] = {r: y_prime[r].x for r in self.R}
-            self.sub_patient_allocs[h, d] = {(p, r): x_prime[p, r].x 
-                                             for p in P_prime for r in self.R}
         
         if self.verbose:
             print()
@@ -475,7 +470,8 @@ class BendersORScheduler(ORScheduler):
             
             if self.verbose:
                 print("Infeasible, status code:", SP.Status)
-                
+            
+            # LBBD1
             if self.chosen_lbbd == LBBD_1:
                 if self.use_propagation:
                     [add_constr(quicksum(1 - self.x[h_prime, d_prime, p] 
@@ -485,6 +481,8 @@ class BendersORScheduler(ORScheduler):
                 else:
                     add_constr(quicksum(1 - self.x[h, d, p] for p in P_prime) 
                                  >= 1) 
+                    
+            # LBBD2
             elif self.chosen_lbbd == LBBD_2:
                 if self.use_propagation:
                     [add_constr(self.y[h_prime, d_prime] >= len(self.R) + 1 
@@ -495,6 +493,8 @@ class BendersORScheduler(ORScheduler):
                 else:
                     add_constr(self.y[h, d] >= len(self.R) + 1 
                                  - quicksum(1 - self.x[h, d, p] for p in P_prime))
+                    
+            # LBBD4
             elif self.chosen_lbbd == LBBD_PLUS:
                 max_dur = max(self.T[curr_p] for curr_p in P_prime)
                 P_longer = [p for p in self.P if p not in P_prime and
@@ -517,7 +517,7 @@ class BendersORScheduler(ORScheduler):
                       + f" = {Y_hat[h, d]}")
             
             # Save sub problem allocation
-            if save_soln and num_open_or <= self.sub_solns[h, d]:
+            if save_soln:
                 self.sub_solns[h, d] = num_open_or
                 self.sub_room_allocs[h, d] = {r: y_prime[r].x for r in self.R}
                 self.sub_patient_allocs[h, d] = {(p, r): x_prime[p, r].x if p 
@@ -536,7 +536,7 @@ class BendersORScheduler(ORScheduler):
         
         # Ignore, no cut needed
         elif num_open_or < Y_hat[h, d] - self.tol:
-            # This branch is allowed to happen!
+            # This branch is allowed to happen for lazy!
             # MIPSOL is just a new incumbent but not necessarily optimal.
             if self.verbose:
                 print(f"Upper bound > Lower bound, {num_open_or}" 
@@ -570,29 +570,29 @@ class BendersORScheduler(ORScheduler):
                      for p in self.P if p not in self.mand_P), GRB.MINIMIZE)
 
         # Constraints
-        mandatory_operations = {p: self.model.addConstr(
+        self.mandatory_operations = {p: self.model.addConstr(
             quicksum(self.x[h, d, p] for h in self.H for d in self.D) == 1) 
             for p in self.mand_P}
 
-        turn_on_w = {p: self.model.addConstr(
+        self.turn_on_w = {p: self.model.addConstr(
             quicksum(self.x[h, d, p] for h in self.H for d in self.D) 
             + self.w[p] == 1) 
             for p in self.P if p not in self.mand_P}
 
-        lp_strengthener = {(h, d, p): self.model.addConstr(self.x[h, d, p] 
+        self.lp_strengthener = {(h, d, p): self.model.addConstr(self.x[h, d, p] 
                                                            <= self.u[h, d]) 
                            for h in self.H for d in self.D for p in self.P}
 
-        time_for_ops_in_hosp = {(h, d): self.model.addConstr(
+        self.time_for_ops_in_hosp = {(h, d): self.model.addConstr(
             quicksum(self.T[p]*self.x[h, d, p] for p in self.P) 
             <= len(self.R)*self.B[h, d]*self.u[h, d]) 
             for h in self.H for d in self.D}
 
-        no_single_long_op = {(h, d, p): self.model.addConstr(
+        self.no_single_long_op = {(h, d, p): self.model.addConstr(
             self.T[p]*self.x[h, d, p] <= self.B[h, d]) 
                              for h in self.H for d in self.D for p in self.P}
 
-        num_or_lb = {(h, d): self.model.addConstr(self.y[h, d]*self.B[h, d] 
+        self.num_or_lb = {(h, d): self.model.addConstr(self.y[h, d]*self.B[h, d] 
                                           >= quicksum(self.T[p]*self.x[h, d, p] 
                                                       for p in self.P))
                     for h in self.H for d in self.D}
@@ -697,45 +697,45 @@ class BendersCallbackScheduler(BendersORScheduler):
                 if self.verbose:
                     print("Feasibility cuts added", cuts_added[0])
                     print("Optimality cuts added", cuts_added[1])
+                    
+                end_time = time.time()
+                self.sp_time += end_time - start_time
                 
-                # Check gap and store solution suggestion
-                if cuts_added[0] == 0 and cuts_added[1] != 0:
-                    x_hat = model.cbGetSolution(self.x)
-                    u_hat = model.cbGetSolution(self.u)
-                    w_hat = model.cbGetSolution(self.w)
+                # # Check gap and store solution suggestion
+                # if cuts_added[0] == 0 and cuts_added[1] != 0:
+                #     x_hat = model.cbGetSolution(self.x)
+                #     u_hat = model.cbGetSolution(self.u)
+                #     w_hat = model.cbGetSolution(self.w)
                     
-                    sub_obj_val = (
-                        sum(self.G[h, d]*u_hat[h, d] 
-                             for h in self.H for d in self.D) 
-                        + sum(self.F[h, d]*self.sub_solns[h, d] 
-                              for h in self.H for d in self.D)
-                        + sum(K_1*self.rho[p]*(d - self.alpha[p])*x_hat[h, d, p] 
-                             for h in self.H for d in self.D for p in self.P)
-                        + sum(K_2*self.rho[p]*(len(self.D) + 1 - self.alpha[p])*w_hat[p]
-                             for p in self.P if p not in self.mand_P)
-                    )
-                    self.ub = min(self.ub, sub_obj_val)
-                    master_obj_val = model.cbGet(GRB.Callback.MIPSOL_OBJ)
+                #     sub_obj_val = (
+                #         sum(self.G[h, d]*u_hat[h, d] 
+                #              for h in self.H for d in self.D) 
+                #         + sum(self.F[h, d]*self.sub_solns[h, d] 
+                #               for h in self.H for d in self.D)
+                #         + sum(K_1*self.rho[p]*(d - self.alpha[p])*x_hat[h, d, p] 
+                #              for h in self.H for d in self.D for p in self.P)
+                #         + sum(K_2*self.rho[p]*(len(self.D) + 1 - self.alpha[p])*w_hat[p]
+                #              for p in self.P if p not in self.mand_P)
+                #     )
+                #     self.ub = min(self.ub, sub_obj_val)
+                #     master_obj_val = model.cbGet(GRB.Callback.MIPSOL_OBJ)
                     
-                    if self.bend_gap:
-                        print(master_obj_val, self.ub)
-                        print("Gap", 100*abs(master_obj_val 
-                                             - self.ub)
-                              /abs(sub_obj_val), "%")
+                #     if self.bend_gap:
+                #         print(master_obj_val, self.ub)
+                #         print("Gap", 100*abs(master_obj_val 
+                #                              - self.ub)
+                #               /abs(sub_obj_val), "%")
                     
-            # Suggest solution.
-            if (where == GRB.Callback.MIPNODE 
-                and model.cbGet(GRB.Callback.MIPNODE_STATUS) == GRB.OPTIMAL 
-                and model._best_found 
-                < model.cbGet(GRB.Callback.MIPNODE_OBJBST) - self.tol):
-                # TODO Can only suggest solution if all sub problems are 
-                # feasible
-                pass
-                model.cbSetSolution()
-                model.cbSetSolution()
-                
-            end_time = time.time()
-            self.sp_time += end_time - start_time
+            # # Suggest solution.
+            # if (where == GRB.Callback.MIPNODE 
+            #     and model.cbGet(GRB.Callback.MIPNODE_STATUS) == GRB.OPTIMAL 
+            #     and model._best_found 
+            #     < model.cbGet(GRB.Callback.MIPNODE_OBJBST) - self.tol):
+            #     # TODO Can only suggest solution if all sub problems are 
+            #     # feasible
+            #     pass
+            #     model.cbSetSolution()
+            #     model.cbSetSolution()
         
         self.sub_solns = {}
         self.sub_room_allocs = {}
