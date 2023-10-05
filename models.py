@@ -637,7 +637,8 @@ class BendersLoopScheduler(BendersORScheduler):
             start_sub_t = time.time()
             for h in self.H:
                 for d in self.D:
-                    self.solve_sub_problem(self.model, cuts_added, h, d, lazy=False)
+                    self.solve_sub_problem(self.model, cuts_added, h, d, lazy=False,
+                                           save_soln=True)
             end_sub_t = time.time()
             self.sp_time += end_sub_t - start_sub_t
             
@@ -648,11 +649,6 @@ class BendersLoopScheduler(BendersORScheduler):
                 
             # Check gap and store solution suggestion if
             if cuts_added[0] == 0:
-                # Run sub problems and save
-                for h in self.H:
-                    for d in self.D:
-                        self.solve_sub_problem(self.model, cuts_added, h, d, 
-                                               lazy=False, save_soln=True)
                 x_hat = self.x
                 u_hat = self.u
                 w_hat = self.w
