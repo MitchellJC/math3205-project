@@ -17,12 +17,12 @@ from constants import UNDERLINE, LBBD_PLUS, LBBD_1, LBBD_2, TIME_LIMIT
 
 
 SEEDS = (42, 831, 306, 542, 1)
-NUM_PATIENTS = (20,)
+NUM_PATIENTS = (3,)
 NUM_OR = 5
 GAP = 0.01 # 0.01
-FILE_OUTPUT = True # WARNING! Set to false for use in IPython console (Spyder)
-SAVE_RESULTS = True
-MAKE_PLOTS = True
+FILE_OUTPUT = False # WARNING! Set to false for use in IPython console (Spyder)
+SAVE_RESULTS = False
+MAKE_PLOTS = False
 
 def run_model(model, obj_vals, times, gaps, mp_time, sp_time):
     start_time = time.time()
@@ -31,7 +31,7 @@ def run_model(model, obj_vals, times, gaps, mp_time, sp_time):
     
     obj_vals.append(model.model.objVal)
     times.append(run_time)
-    gaps.append(model.model.MIPGap)
+    gaps.append(model.run_gap)
     mp_time.append(model.mp_time)
     sp_time.append(model.sp_time)
 

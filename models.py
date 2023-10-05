@@ -223,6 +223,7 @@ class NetworkScheduler(ORScheduler):
         
     def run_model(self):
         self.model.optimize()
+        self.run_gap = self.model.MIPGap
 
 class MIPScheduler(ORScheduler):
     """OR scheduler that uses a pure mixed integer programming routine."""
@@ -281,6 +282,7 @@ class MIPScheduler(ORScheduler):
         
     def run_model(self):
         self.model.optimize()
+        self.run_gap = self.model.MIPGap
         
 class BendersORScheduler(ORScheduler):
     """Abstract class for OR schedulers using Benders' Decomposition."""
@@ -418,7 +420,7 @@ class BendersORScheduler(ORScheduler):
         return SP, y_prime, x_prime
 
     def solve_sub_problem(self, model: gp.Model, cuts_container: list, h: int, 
-                          d: int, lazy: bool = True) -> None:
+                          d: int, lazy: bool = True, save_soln: bool = False) -> None:
         """Solve the hospital-day sub-problem. Adds Bender's cuts to master problem
         as required.
         
@@ -428,6 +430,7 @@ class BendersORScheduler(ORScheduler):
             h - Hospital
             d - day
             lazy - True to add constraint to model as lazy constraints.
+            save_soln - True to save sub problem allocations
         """        
         if self.verbose:
             print("Hospital", h, "Day", d, end=" ")
@@ -513,10 +516,12 @@ class BendersORScheduler(ORScheduler):
                 print(f"Upper bound = Lower bound, {num_open_or}" 
                       + f" = {Y_hat[h, d]}")
             
-            if num_open_or <= self.sub_solns[h, d]:
+            # Save sub problem allocation
+            if save_soln and num_open_or <= self.sub_solns[h, d]:
                 self.sub_solns[h, d] = num_open_or
                 self.sub_room_allocs[h, d] = {r: y_prime[r].x for r in self.R}
-                self.sub_patient_allocs[h, d] = {(p, r): x_prime[p, r].x if p in P_prime else 0
+                self.sub_patient_allocs[h, d] = {(p, r): x_prime[p, r].x if p 
+                                                 in P_prime else 0
                                                  for p in self.P for r in self.R}
             
         # Optimality cut
@@ -600,11 +605,14 @@ class BendersLoopScheduler(BendersORScheduler):
         self.sub_patient_allocs = {}
         self.sp_time = 0
         self.mp_time = 0
+        self.run_gap = GRB.INFINITY
         
         ub = GRB.INFINITY
         iterations = 0
         start_time = time.time()
-        while time.time() - start_time <= TIME_LIMIT:
+        
+        while time.time() - start_time <= TIME_LIMIT and self.run_gap > self.gap:
+            # Iteration output
             if self.verbose:
                 print("Iteration", iterations)
             iterations += 1
@@ -612,16 +620,19 @@ class BendersLoopScheduler(BendersORScheduler):
             if self.verbose:
                 print(UNDERLINE)
             
+            # Solve master problem
             start_master_t = time.time()
             self.model.optimize()
             end_master_t = time.time()
             self.mp_time += end_master_t - start_master_t
             
+            # Master problem obj val output
             if self.verbose:
                 print(UNDERLINE)
             if self.verbose:
                 print("Curr objVal", self.model.objVal)
             
+            # Solve each sub problem
             cuts_added = [0, 0]
             start_sub_t = time.time()
             for h in self.H:
@@ -629,13 +640,19 @@ class BendersLoopScheduler(BendersORScheduler):
                     self.solve_sub_problem(self.model, cuts_added, h, d, lazy=False)
             end_sub_t = time.time()
             self.sp_time += end_sub_t - start_sub_t
-                    
+            
+            # Cut info outputs
             if self.verbose:            
                 print("Feasibility cuts added", cuts_added[0])
                 print("Optimality cuts added", cuts_added[1])
                 
-            # Check gap and store solution suggestion
-            if cuts_added[0] == 0 and cuts_added[1] != 0:
+            # Check gap and store solution suggestion if
+            if cuts_added[0] == 0:
+                # Run sub problems and save
+                for h in self.H:
+                    for d in self.D:
+                        self.solve_sub_problem(self.model, cuts_added, h, d, 
+                                               lazy=False, save_soln=True)
                 x_hat = self.x
                 u_hat = self.u
                 w_hat = self.w
@@ -652,12 +669,12 @@ class BendersLoopScheduler(BendersORScheduler):
                 )
                 ub = min(ub, sub_obj_val)
                 master_obj_val = self.model.objVal
+                self.run_gap = abs(master_obj_val - ub)/abs(ub)
                 
+                # Display Benders gap output
                 if self.bend_gap:
                     print(master_obj_val, ub)
-                    print("Gap", 100*abs(master_obj_val 
-                                         - ub)
-                          /abs(ub), "%")
+                    print("Gap", self.run_gap)
                
             if cuts_added[0] + cuts_added[1] == 0:
                 break
@@ -734,9 +751,12 @@ class BendersCallbackScheduler(BendersORScheduler):
         end_time = time.time()
         self.mp_time = (end_time - start_time) - self.sp_time
         
+        self.run_gap = self.model.MIPGap
+        
         # Ensures optimal sub problem allocation is stored
         for h in self.H:
             for d in self.D:
-                self.solve_sub_problem(self.model, [0, 0], h, d, lazy=False)
+                self.solve_sub_problem(self.model, [0, 0], h, d, lazy=False,
+                                       save_soln=True)
         
         
