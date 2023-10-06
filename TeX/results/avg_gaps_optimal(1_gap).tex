@@ -1,0 +1,12 @@
+\begin{table*}
+    \centering
+    \caption{Average gap over 5 instances after trying to solve to optimality with a 1\% gap. MIPGap is reported for pure MIP, Network and callback implementations of LBBD.\@ Gap between master problem lowerbound and best sub problem upperbound is report for iterative implementations of LBBD.}
+    \begin{tabular}{rrrrrrrr} \toprule
+        $|\mathcal{P}|$ & Pure MIP & Network & iLBBD1 & cLBBD1 & iLBBD2p & cLBBD2p & cLBBD4p \\ \midrule
+        20 & 0.009675&  0.00903&     0.0 & 0.007989&      0.0 & 0.009242 & 0.009166 \\
+        40&  0.009005&  0.005333&  2.000000e+99&  0.008768&  2.000000e+99&  0.008798&  0.008963 \\
+        60&  0.007684&  0.007727&  0.002791&  0.008142&  2.000000e+99&  0.007041&  0.009207\\
+        80&  0.007875&  0.008781&  0.003236&  0.00983 & 0.004335&  0.008632&  0.007431\\
+        \bottomrule
+    \end{tabular}
+\end{table*}
