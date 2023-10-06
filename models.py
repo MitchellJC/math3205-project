@@ -460,6 +460,13 @@ class BendersORScheduler(ORScheduler):
         
         if SP.Status == GRB.OPTIMAL:
             num_open_or = sum(y_prime[r].x for r in self.R)      
+            # Save sub problem allocation
+            if save_soln:
+                self.sub_solns[h, d] = num_open_or
+                self.sub_room_allocs[h, d] = {r: y_prime[r].x for r in self.R}
+                self.sub_patient_allocs[h, d] = {(p, r): x_prime[p, r].x if p 
+                                                 in P_prime else 0
+                                                 for p in self.P for r in self.R}
         
         if self.verbose:
             print()
@@ -516,14 +523,6 @@ class BendersORScheduler(ORScheduler):
                 print(f"Upper bound = Lower bound, {num_open_or}" 
                       + f" = {Y_hat[h, d]}")
             
-            # Save sub problem allocation
-            if save_soln:
-                self.sub_solns[h, d] = num_open_or
-                self.sub_room_allocs[h, d] = {r: y_prime[r].x for r in self.R}
-                self.sub_patient_allocs[h, d] = {(p, r): x_prime[p, r].x if p 
-                                                 in P_prime else 0
-                                                 for p in self.P for r in self.R}
-            
         # Optimality cut
         elif num_open_or > Y_hat[h, d] + self.tol:
             cuts_container[1] += 1
@@ -541,7 +540,7 @@ class BendersORScheduler(ORScheduler):
             if self.verbose:
                 print(f"Upper bound > Lower bound, {num_open_or}" 
                       + f" < {Y_hat[h, d]}")
-            if not lazy:
+            if not lazy and self.gap == 0:
                 raise RuntimeError("Sub problem < Master problem!, "
                                         + f"{num_open_or} < {self.y[h, d].x}")
                 

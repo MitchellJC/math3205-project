@@ -1,0 +1,160 @@
+
+================================================================================ 
+ Num patients 40 
+================================================================================
+
+================================================================================ 
+Instance 0 
+================================================================================
+Solving with MIP
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 938386
+Academic license - for non-commercial use only - registered to mitchell.clark1@uq.net.au
+Set parameter MIPGap to value 0.01
+Solving with Network
+Constructing nodes...
+Done constructing nodes.
+Number of Nodes:  4380
+Constructing arcs...
+Done constructing arcs.
+Number of Arcs:  80565
+Set parameter MIPGap to value 0.01
+Set parameter TimeLimit to value 900
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (win64)
+
+CPU model: AMD Ryzen 5 5625U with Radeon Graphics, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Academic license - for non-commercial use only - registered to mitchell.clark1@uq.net.au
+Optimize a model with 5075 rows, 81233 columns and 238658 nonzeros
+Model fingerprint: 0x5586751d
+Variable types: 0 continuous, 81233 integer (81218 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 5e+00]
+  Objective range  [4e+02, 3e+04]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+Presolve removed 2335 rows and 9432 columns
+Presolve time: 1.86s
+Presolved: 2740 rows, 71801 columns, 212027 nonzeros
+Variable types: 0 continuous, 71801 integer (71801 binary)
+Found heuristic solution: objective -107116.0000
+Found heuristic solution: objective -142150.0000
+Found heuristic solution: objective -169684.0000
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+Concurrent spin time: 0.20s
+
+Solved with primal simplex
+
+Root relaxation: objective -5.037812e+05, 32397 iterations, 1.54 seconds (1.74 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 -503781.20    0  121 -169684.00 -503781.20   197%     -    4s
+H    0     0                    -489414.0000 -503781.20  2.94%     -    4s
+H    0     0                    -497645.0000 -503661.85  1.21%     -    5s
+     0     0 -503661.85    0  155 -497645.00 -503661.85  1.21%     -    5s
+H    0     0                    -503151.0000 -503661.85  0.10%     -    8s
+
+Cutting planes:
+  Cover: 2
+  Clique: 16
+  StrongCG: 1
+  Zero half: 6
+  RLT: 4
+
+Explored 1 nodes (34056 simplex iterations) in 8.16 seconds (7.96 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 6: -503151 -497645 -489414 ... -107116
+
+Optimal solution found (tolerance 1.00e-02)
+Best objective -5.031510000000e+05, best bound -5.036610000000e+05, gap 0.1014%
+Solving with iLBBD1
+Set parameter MIPGap to value 0.01
+-499841.0 -495357.0
+Gap 0.009052057405063419
+Solving with cLBBD1
+Set parameter MIPGap to value 0.01
+Solving with iLBBD2p
+Set parameter MIPGap to value 0.01
+-500351.0 -495867.0
+Gap 0.009042747349591726
+Solving with cLBBD2p
+Set parameter MIPGap to value 0.01
+Solving with cLBBD4p
+Set parameter MIPGap to value 0.01
+
+================================================================================ 
+Instance 1 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0.01
+Solving with Network
+Constructing nodes...
+Done constructing nodes.
+Number of Nodes:  5010
+Constructing arcs...
+Done constructing arcs.
+Number of Arcs:  104025
+Set parameter MIPGap to value 0.01
+Set parameter TimeLimit to value 900
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (win64)
+
+CPU model: AMD Ryzen 5 5625U with Radeon Graphics, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Academic license - for non-commercial use only - registered to mitchell.clark1@uq.net.au
+Optimize a model with 5705 rows, 104695 columns and 308410 nonzeros
+Model fingerprint: 0x48dee69e
+Variable types: 0 continuous, 104695 integer (104680 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 5e+00]
+  Objective range  [3e+02, 2e+04]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+Found heuristic solution: objective -41575.00000
+Presolve removed 2675 rows and 8532 columns
+Presolve time: 2.63s
+Presolved: 3030 rows, 96163 columns, 284819 nonzeros
+Variable types: 0 continuous, 96163 integer (96163 binary)
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+Concurrent spin time: 0.43s
+
+Solved with primal simplex
+Extra simplex iterations after uncrush: 14
+
+Root relaxation: objective -3.692203e+05, 33377 iterations, 2.11 seconds (2.13 work units)
+Total elapsed time = 5.01s
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 -369220.26    0   81 -41575.000 -369220.26   788%     -    5s
+H    0     0                    -363320.0000 -369220.26  1.62%     -    5s
+     0     0 -369220.26    0   81 -363320.00 -369220.26  1.62%     -    7s
+     0     0 -369220.26    0   87 -363320.00 -369220.26  1.62%     -   15s
+     0     0 -369153.17    0  179 -363320.00 -369153.17  1.61%     -   18s
+H    0     0                    -367748.0000 -369153.17  0.38%     -   24s
+
+Cutting planes:
+  Cover: 3
+  Clique: 45
+  RLT: 1
+
+Explored 1 nodes (79553 simplex iterations) in 24.38 seconds (26.89 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 3: -367748 -363320 -41575 
+
+Optimal solution found (tolerance 1.00e-02)
+Best objective -3.677480000000e+05, best bound -3.691530000000e+05, gap 0.3821%
+Solving with iLBBD1
+Set parameter MIPGap to value 0.01
+Warning: environment still referenced so free is deferred (Continue to use WLS)

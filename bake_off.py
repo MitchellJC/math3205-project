@@ -16,15 +16,13 @@ from data_gen import generate_data
 from constants import UNDERLINE, LBBD_PLUS, LBBD_1, LBBD_2, TIME_LIMIT
 
 
-# SEEDS = (42, 831, 306, 542, 1)
-SEEDS = (42,)
-
+SEEDS = (42, 831, 306, 542, 1)
 NUM_PATIENTS = (40,)
 NUM_OR = 5
 GAP = 0.01 # 0.01
-FILE_OUTPUT = False # WARNING! Set to false for use in IPython console (Spyder)
-SAVE_RESULTS = False
-MAKE_PLOTS = False
+FILE_OUTPUT = True # WARNING! Set to false for use in IPython console (Spyder)
+SAVE_RESULTS = True
+MAKE_PLOTS = True
 
 def run_model(model, obj_vals, times, gaps, mp_time, sp_time):
     start_time = time.time()

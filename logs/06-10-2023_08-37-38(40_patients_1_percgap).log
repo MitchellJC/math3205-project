@@ -1,0 +1,490 @@
+
+================================================================================ 
+ Num patients 40 
+================================================================================
+
+================================================================================ 
+Instance 0 
+================================================================================
+Solving with MIP
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 938386
+Academic license - for non-commercial use only - registered to mitchell.clark1@uq.net.au
+Set parameter MIPGap to value 0.01
+Solving with Network
+Constructing nodes...
+Done constructing nodes.
+Number of Nodes:  4380
+Constructing arcs...
+Done constructing arcs.
+Number of Arcs:  80565
+Set parameter MIPGap to value 0.01
+Set parameter TimeLimit to value 900
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (win64)
+
+CPU model: AMD Ryzen 5 5625U with Radeon Graphics, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Academic license - for non-commercial use only - registered to mitchell.clark1@uq.net.au
+Optimize a model with 5075 rows, 81233 columns and 238658 nonzeros
+Model fingerprint: 0x5586751d
+Variable types: 0 continuous, 81233 integer (81218 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 5e+00]
+  Objective range  [4e+02, 3e+04]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+Presolve removed 2335 rows and 9432 columns
+Presolve time: 1.94s
+Presolved: 2740 rows, 71801 columns, 212027 nonzeros
+Variable types: 0 continuous, 71801 integer (71801 binary)
+Found heuristic solution: objective -107116.0000
+Found heuristic solution: objective -142150.0000
+Found heuristic solution: objective -169684.0000
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+Concurrent spin time: 0.21s
+
+Solved with primal simplex
+
+Root relaxation: objective -5.037812e+05, 32397 iterations, 1.58 seconds (1.74 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 -503781.20    0  121 -169684.00 -503781.20   197%     -    4s
+H    0     0                    -489414.0000 -503781.20  2.94%     -    4s
+H    0     0                    -497645.0000 -503661.85  1.21%     -    5s
+     0     0 -503661.85    0  155 -497645.00 -503661.85  1.21%     -    5s
+H    0     0                    -503151.0000 -503661.85  0.10%     -    8s
+
+Cutting planes:
+  Cover: 2
+  Clique: 16
+  StrongCG: 1
+  Zero half: 6
+  RLT: 4
+
+Explored 1 nodes (34056 simplex iterations) in 8.42 seconds (7.96 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 6: -503151 -497645 -489414 ... -107116
+
+Optimal solution found (tolerance 1.00e-02)
+Best objective -5.031510000000e+05, best bound -5.036610000000e+05, gap 0.1014%
+Solving with iLBBD1
+Set parameter MIPGap to value 0.01
+-499841.0 -495357.0
+Gap 0.009052057405063419
+Solving with cLBBD1
+Set parameter MIPGap to value 0.01
+Solving with iLBBD2p
+Set parameter MIPGap to value 0.01
+-500351.0 -495867.0
+Gap 0.009042747349591726
+Solving with cLBBD2p
+Set parameter MIPGap to value 0.01
+Solving with cLBBD4p
+Set parameter MIPGap to value 0.01
+
+================================================================================ 
+Instance 1 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0.01
+Solving with Network
+Constructing nodes...
+Done constructing nodes.
+Number of Nodes:  5010
+Constructing arcs...
+Done constructing arcs.
+Number of Arcs:  104025
+Set parameter MIPGap to value 0.01
+Set parameter TimeLimit to value 900
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (win64)
+
+CPU model: AMD Ryzen 5 5625U with Radeon Graphics, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Academic license - for non-commercial use only - registered to mitchell.clark1@uq.net.au
+Optimize a model with 5705 rows, 104695 columns and 308410 nonzeros
+Model fingerprint: 0x48dee69e
+Variable types: 0 continuous, 104695 integer (104680 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 5e+00]
+  Objective range  [3e+02, 2e+04]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+Found heuristic solution: objective -41575.00000
+Presolve removed 2675 rows and 8532 columns
+Presolve time: 2.59s
+Presolved: 3030 rows, 96163 columns, 284819 nonzeros
+Variable types: 0 continuous, 96163 integer (96163 binary)
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+Concurrent spin time: 0.42s
+
+Solved with primal simplex
+Extra simplex iterations after uncrush: 14
+
+Root relaxation: objective -3.692203e+05, 33377 iterations, 2.02 seconds (2.13 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 -369220.26    0   81 -41575.000 -369220.26   788%     -    5s
+H    0     0                    -363320.0000 -369220.26  1.62%     -    5s
+     0     0 -369220.26    0   81 -363320.00 -369220.26  1.62%     -    6s
+     0     0 -369220.26    0   87 -363320.00 -369220.26  1.62%     -   15s
+     0     0 -369153.17    0  179 -363320.00 -369153.17  1.61%     -   18s
+H    0     0                    -367748.0000 -369153.17  0.38%     -   24s
+
+Cutting planes:
+  Cover: 3
+  Clique: 45
+  RLT: 1
+
+Explored 1 nodes (79553 simplex iterations) in 24.16 seconds (26.89 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 3: -367748 -363320 -41575 
+
+Optimal solution found (tolerance 1.00e-02)
+Best objective -3.677480000000e+05, best bound -3.691530000000e+05, gap 0.3821%
+Solving with iLBBD1
+Set parameter MIPGap to value 0.01
+Solving with cLBBD1
+Set parameter MIPGap to value 0.01
+Solving with iLBBD2p
+Set parameter MIPGap to value 0.01
+Solving with cLBBD2p
+Set parameter MIPGap to value 0.01
+Solving with cLBBD4p
+Set parameter MIPGap to value 0.01
+
+================================================================================ 
+Instance 2 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0.01
+Solving with Network
+Constructing nodes...
+Done constructing nodes.
+Number of Nodes:  4500
+Constructing arcs...
+Done constructing arcs.
+Number of Arcs:  91635
+Set parameter MIPGap to value 0.01
+Set parameter TimeLimit to value 900
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (win64)
+
+CPU model: AMD Ryzen 5 5625U with Radeon Graphics, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Academic license - for non-commercial use only - registered to mitchell.clark1@uq.net.au
+Optimize a model with 5195 rows, 92304 columns and 271749 nonzeros
+Model fingerprint: 0x2707260a
+Variable types: 0 continuous, 92304 integer (92289 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 5e+00]
+  Objective range  [3e+02, 3e+04]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+Presolve removed 2124 rows and 6400 columns
+Presolve time: 2.12s
+Presolved: 3071 rows, 85904 columns, 254003 nonzeros
+Variable types: 0 continuous, 85904 integer (85904 binary)
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+   41452   -3.8548021e+05   0.000000e+00   1.316266e+08      5s
+   64122   -3.8623845e+05   0.000000e+00   0.000000e+00      6s
+Concurrent spin time: 0.74s
+
+Solved with primal simplex
+   64979   -3.8623845e+05   0.000000e+00   0.000000e+00      7s
+Extra simplex iterations after uncrush: 857
+
+Root relaxation: objective -3.862385e+05, 64979 iterations, 3.83 seconds (4.26 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 -386238.45    0   68          - -386238.45      -     -    6s
+H    0     0                    -166151.0000 -386238.45   132%     -    7s
+H    0     0                    -296932.0000 -386238.45  30.1%     -    7s
+H    0     0                    -379237.0000 -386238.45  1.85%     -    8s
+H    0     0                    -379439.0000 -386238.45  1.79%     -    8s
+     0     0 -386238.23    0  107 -379439.00 -386238.23  1.79%     -    9s
+     0     0 -386238.23    0  119 -379439.00 -386238.23  1.79%     -    9s
+H    0     0                    -383287.0000 -386238.23  0.77%     -   18s
+
+Cutting planes:
+  Cover: 1
+  Clique: 5
+  Zero half: 3
+  RLT: 2
+
+Explored 1 nodes (66504 simplex iterations) in 18.35 seconds (18.95 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 5: -383287 -379439 -379237 ... -166151
+
+Optimal solution found (tolerance 1.00e-02)
+Best objective -3.832870000000e+05, best bound -3.862380000000e+05, gap 0.7699%
+Solving with iLBBD1
+Set parameter MIPGap to value 0.01
+-383385.0 -379296.0
+Gap 0.010780498607947355
+-383385.0 -383385.0
+Gap 0.0
+Solving with cLBBD1
+Set parameter MIPGap to value 0.01
+Solving with iLBBD2p
+Set parameter MIPGap to value 0.01
+-383335.0 -379246.0
+Gap 0.010781919914778271
+-383235.0 -383235.0
+Gap 0.0
+Solving with cLBBD2p
+Set parameter MIPGap to value 0.01
+Solving with cLBBD4p
+Set parameter MIPGap to value 0.01
+
+================================================================================ 
+Instance 3 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0.01
+Solving with Network
+Constructing nodes...
+Done constructing nodes.
+Number of Nodes:  3930
+Constructing arcs...
+Done constructing arcs.
+Number of Arcs:  70365
+Set parameter MIPGap to value 0.01
+Set parameter TimeLimit to value 900
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (win64)
+
+CPU model: AMD Ryzen 5 5625U with Radeon Graphics, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Academic license - for non-commercial use only - registered to mitchell.clark1@uq.net.au
+Optimize a model with 4625 rows, 71031 columns and 208506 nonzeros
+Model fingerprint: 0x2ebbfe19
+Variable types: 0 continuous, 71031 integer (71016 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 5e+00]
+  Objective range  [3e+02, 3e+04]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+Presolve removed 2200 rows and 11897 columns
+Presolve time: 1.57s
+Presolved: 2425 rows, 59134 columns, 174345 nonzeros
+Variable types: 0 continuous, 59134 integer (59134 binary)
+Found heuristic solution: objective -199864.0000
+Found heuristic solution: objective -203565.0000
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+Concurrent spin time: 0.26s
+
+Solved with primal simplex
+
+Root relaxation: objective -4.148848e+05, 37209 iterations, 1.49 seconds (1.68 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 -414884.79    0   91 -203565.00 -414884.79   104%     -    3s
+H    0     0                    -412326.0000 -414884.79  0.62%     -    3s
+
+Explored 1 nodes (38834 simplex iterations) in 3.94 seconds (3.77 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 3: -412326 -203565 -199864 
+
+Optimal solution found (tolerance 1.00e-02)
+Best objective -4.123260000000e+05, best bound -4.148840000000e+05, gap 0.6204%
+Solving with iLBBD1
+Set parameter MIPGap to value 0.01
+-411574.0 -406849.0
+Gap 0.011613645357368458
+-411041.0 -411041.0
+Gap 0.0
+Solving with cLBBD1
+Set parameter MIPGap to value 0.01
+Solving with iLBBD2p
+Set parameter MIPGap to value 0.01
+-411574.0 -406849.0
+Gap 0.011613645357368458
+-411574.0 -411574.0
+Gap 0.0
+Solving with cLBBD2p
+Set parameter MIPGap to value 0.01
+Solving with cLBBD4p
+Set parameter MIPGap to value 0.01
+
+================================================================================ 
+Instance 4 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0.01
+Solving with Network
+Constructing nodes...
+Done constructing nodes.
+Number of Nodes:  4650
+Constructing arcs...
+Done constructing arcs.
+Number of Arcs:  94335
+Set parameter MIPGap to value 0.01
+Set parameter TimeLimit to value 900
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (win64)
+
+CPU model: AMD Ryzen 5 5625U with Radeon Graphics, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Academic license - for non-commercial use only - registered to mitchell.clark1@uq.net.au
+Optimize a model with 5345 rows, 95004 columns and 279699 nonzeros
+Model fingerprint: 0xbe8a8848
+Variable types: 0 continuous, 95004 integer (94989 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 5e+00]
+  Objective range  [3e+02, 3e+04]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+Presolve removed 2422 rows and 8968 columns
+Presolve time: 2.15s
+Presolved: 2923 rows, 86036 columns, 254547 nonzeros
+Variable types: 0 continuous, 86036 integer (86036 binary)
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+   41425   -4.0481400e+05   0.000000e+00   0.000000e+00      5s
+Concurrent spin time: 0.55s
+
+Solved with primal simplex
+   41432   -4.0481400e+05   0.000000e+00   0.000000e+00      6s
+Extra simplex iterations after uncrush: 7
+
+Root relaxation: objective -4.048140e+05, 41432 iterations, 2.48 seconds (2.69 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 -404814.00    0  117          - -404814.00      -     -    5s
+H    0     0                    -115178.0000 -404814.00   251%     -    6s
+H    0     0                    -226928.0000 -404814.00  78.4%     -    6s
+H    0     0                    -398536.0000 -404814.00  1.58%     -    7s
+H    0     0                    -398885.0000 -404814.00  1.49%     -    8s
+     0     0 -404800.81    0  117 -398885.00 -404800.81  1.48%     -    9s
+H    0     0                    -399631.0000 -404800.81  1.29%     -   13s
+H    0     0                    -399860.0000 -404800.81  1.24%     -   14s
+     0     0 -404664.84    0  177 -399860.00 -404664.84  1.20%     -   14s
+     0     0 -404664.84    0  112 -399860.00 -404664.84  1.20%     -   21s
+     0     0 -404664.84    0   99 -399860.00 -404664.84  1.20%     -   23s
+     0     0 -404664.84    0  175 -399860.00 -404664.84  1.20%     -   31s
+     0     0 -404660.43    0  164 -399860.00 -404660.43  1.20%     -   32s
+H    0     0                    -401477.0000 -404660.43  0.79%     -   32s
+     0     0 -404660.43    0  169 -401477.00 -404660.43  0.79%     -   32s
+
+Cutting planes:
+  Cover: 1
+  Clique: 28
+  Zero half: 16
+  RLT: 3
+
+Explored 1 nodes (107233 simplex iterations) in 32.52 seconds (32.30 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 7: -401477 -399860 -399631 ... -115178
+
+Optimal solution found (tolerance 1.00e-02)
+Best objective -4.014770000000e+05, best bound -4.046600000000e+05, gap 0.7928%
+Solving with iLBBD1
+Set parameter MIPGap to value 0.01
+-401603.0 -401603.0
+Gap 0.0
+Solving with cLBBD1
+Set parameter MIPGap to value 0.01
+Solving with iLBBD2p
+Set parameter MIPGap to value 0.01
+-402126.0 -397943.0
+Gap 0.01051155567505899
+-402387.0 -397943.0
+Gap 0.011167428501066735
+-402666.0001737575 -398482.9995192847
+Gap 0.01049731270723974
+-401876.0 -398482.9995192847
+Gap 0.00851479356662265
+Solving with cLBBD2p
+Set parameter MIPGap to value 0.01
+Solving with cLBBD4p
+Set parameter MIPGap to value 0.01
+
+Time Output 
+================================================================================
+   instance  seed  num_patients        MIP    Network      iLBBD1      cLBBD1     iLBBD2p     cLBBD2p     cLBBD4p
+0         0    42            40  20.568676   8.451329   47.497328   41.998363   58.237408  900.828435  900.833128
+1         1   831            40   3.592783  24.210712  900.242324  250.211541  900.325873  169.299937   20.070232
+2         2   306            40   0.400547  18.396840    0.312330    0.707995    0.219095    0.597121    0.645272
+3         3   542            40   0.468446   3.950750    1.320674    0.221890    0.701190    0.222897    0.216087
+4         4     1            40   2.211860  32.601628   66.467237    1.210248  150.246105   14.721689    3.376990
+
+Objective Output 
+================================================================================
+   instance  seed  num_patients       MIP   Network    iLBBD1    cLBBD1   iLBBD2p   cLBBD2p   cLBBD4p
+0         0    42            40 -498746.0 -503151.0 -499841.0 -498825.0 -500351.0 -498116.0 -498216.0
+1         1   831            40 -366247.0 -367748.0 -366817.0 -365439.0 -366817.0 -365739.0 -365540.0
+2         2   306            40 -383537.0 -383287.0 -383385.0 -383537.0 -383235.0 -383537.0 -383537.0
+3         3   542            40 -411535.0 -412326.0 -411041.0 -411524.0 -411574.0 -411524.0 -411524.0
+4         4     1            40 -401603.0 -401477.0 -401603.0 -401603.0 -401876.0 -401603.0 -401603.0
+
+Gap Output 
+================================================================================
+   instance  seed  num_patients       MIP   Network         iLBBD1    cLBBD1        iLBBD2p   cLBBD2p   cLBBD4p
+0         0    42            40  0.009533  0.001014   9.052057e-03  0.009969   9.042747e-03  0.011210  0.011037
+1         1   831            40  0.009788  0.003821  1.000000e+100  0.009465  1.000000e+100  0.008637  0.009561
+2         2   306            40  0.007686  0.007699   0.000000e+00  0.005973   0.000000e+00  0.005973  0.005973
+3         3   542            40  0.008451  0.006204   0.000000e+00  0.008437   0.000000e+00  0.008437  0.008437
+4         4     1            40  0.009564  0.007928   0.000000e+00  0.009995   8.514794e-03  0.009731  0.009808
+
+Average Gap Output 
+================================================================================
+   num_patients       MIP   Network        iLBBD1    cLBBD1       iLBBD2p   cLBBD2p   cLBBD4p
+0            40  0.009005  0.005333  2.000000e+99  0.008768  2.000000e+99  0.008798  0.008963
+
+Average Time Output 
+================================================================================
+   num_patients       MIP    Network     iLBBD1     cLBBD1    iLBBD2p    cLBBD2p   cLBBD4p
+0            40  5.448462  17.522252  28.899392  58.870008  52.350949  46.210411  6.077145
+
+MP Time Output 
+================================================================================
+   instance  seed  num_patients  MIP  Network      iLBBD1      cLBBD1     iLBBD2p     cLBBD2p     cLBBD4p
+0         0    42            40    0        0   23.778484    8.340447   43.351084  777.256954  627.903075
+1         1   831            40    0        0  753.898866  105.750543  837.378721  111.831090    9.379620
+2         2   306            40    0        0    0.075003    0.042862    0.062979    0.072615    0.098068
+3         3   542            40    0        0    0.441261    0.015645    0.151665    0.009536    0.020955
+4         4     1            40    0        0   50.815826    0.423607  131.464795    4.888341    0.731796
+
+SP Time Output 
+================================================================================
+   instance  seed  num_patients  MIP  Network      iLBBD1      cLBBD1    iLBBD2p     cLBBD2p     cLBBD4p
+0         0    42            40    0        0   23.703201   33.619146  14.886324  123.513239  272.862180
+1         1   831            40    0        0  146.310923  144.413298  62.931519   57.421494   10.642207
+2         2   306            40    0        0    0.237327    0.616916   0.156117    0.477423    0.504500
+3         3   542            40    0        0    0.879413    0.176592   0.549525    0.180304    0.164292
+4         4     1            40    0        0   15.635765    0.713794  18.779067    9.796153    2.610029

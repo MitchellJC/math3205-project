@@ -1,0 +1,161 @@
+
+================================================================================ 
+ Num patients 20 
+================================================================================
+
+================================================================================ 
+Instance 0 
+================================================================================
+Solving with MIP
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 938386
+Academic license - for non-commercial use only - registered to mitchell.clark1@uq.net.au
+Set parameter MIPGap to value 0.01
+Solving with Network
+Constructing nodes...
+Done constructing nodes.
+Number of Nodes:  4410
+Constructing arcs...
+Done constructing arcs.
+Number of Arcs:  46710
+Set parameter MIPGap to value 0.01
+Set parameter TimeLimit to value 900
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (win64)
+
+CPU model: AMD Ryzen 5 5625U with Radeon Graphics, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Academic license - for non-commercial use only - registered to mitchell.clark1@uq.net.au
+Optimize a model with 4765 rows, 47059 columns and 136444 nonzeros
+Model fingerprint: 0xb5cb9e91
+Variable types: 0 continuous, 47059 integer (47044 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 5e+00]
+  Objective range  [6e+02, 3e+04]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+Presolve removed 2105 rows and 6110 columns
+Presolve time: 0.95s
+Presolved: 2660 rows, 40949 columns, 119869 nonzeros
+Variable types: 0 continuous, 40949 integer (40949 binary)
+Found heuristic solution: objective -60534.00000
+Found heuristic solution: objective -90044.00000
+Found heuristic solution: objective -136614.0000
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+Concurrent spin time: 0.03s
+
+Solved with primal simplex
+Extra simplex iterations after uncrush: 13
+
+Root relaxation: objective -3.145772e+05, 10675 iterations, 0.38 seconds (0.36 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 -314577.18    0   54 -136614.00 -314577.18   130%     -    1s
+H    0     0                    -310317.0000 -314577.18  1.37%     -    1s
+H    0     0                    -311521.0000 -314577.18  0.98%     -    2s
+
+Explored 1 nodes (11693 simplex iterations) in 2.08 seconds (1.73 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 5: -311521 -310317 -136614 ... -60534
+
+Optimal solution found (tolerance 1.00e-02)
+Best objective -3.115210000000e+05, best bound -3.145770000000e+05, gap 0.9810%
+Solving with iLBBD1
+Set parameter MIPGap to value 0.01
+-312169.0 -312169.0
+Gap 0.0
+Solving with cLBBD1
+Set parameter MIPGap to value 0.01
+Solving with iLBBD2p
+Set parameter MIPGap to value 0.01
+-312419.0 -312419.0
+Gap 0.0
+Solving with cLBBD2p
+Set parameter MIPGap to value 0.01
+Solving with cLBBD4p
+Set parameter MIPGap to value 0.01
+
+================================================================================ 
+Instance 1 
+================================================================================
+Solving with MIP
+Set parameter MIPGap to value 0.01
+Solving with Network
+Constructing nodes...
+Done constructing nodes.
+Number of Nodes:  3630
+Constructing arcs...
+Done constructing arcs.
+Number of Arcs:  30330
+Set parameter MIPGap to value 0.01
+Set parameter TimeLimit to value 900
+Gurobi Optimizer version 10.0.1 build v10.0.1rc0 (win64)
+
+CPU model: AMD Ryzen 5 5625U with Radeon Graphics, instruction set [SSE2|AVX|AVX2]
+Thread count: 6 physical cores, 12 logical processors, using up to 12 threads
+
+Academic license - for non-commercial use only - registered to mitchell.clark1@uq.net.au
+Optimize a model with 3985 rows, 30680 columns and 88085 nonzeros
+Model fingerprint: 0x4183606d
+Variable types: 0 continuous, 30680 integer (30665 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 5e+00]
+  Objective range  [3e+02, 2e+04]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 5e+00]
+Found heuristic solution: objective -20875.00000
+Presolve removed 2615 rows and 13692 columns
+Presolve time: 0.57s
+Presolved: 1370 rows, 16988 columns, 49274 nonzeros
+Variable types: 0 continuous, 16988 integer (16988 binary)
+
+Root relaxation: objective -1.903860e+05, 9274 iterations, 0.52 seconds (0.61 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 -190386.04    0   47 -20875.000 -190386.04   812%     -    1s
+H    0     0                    -181200.0000 -190386.04  5.07%     -    1s
+H    0     0                    -184409.0000 -190386.04  3.24%     -    1s
+     0     0 -190386.04    0   82 -184409.00 -190386.04  3.24%     -    1s
+H    0     0                    -184786.0000 -190386.04  3.03%     -    2s
+H    0     0                    -184803.0000 -190386.04  3.02%     -    2s
+     0     0 -190386.04    0   46 -184803.00 -190386.04  3.02%     -    2s
+H    0     0                    -187135.0000 -190386.04  1.74%     -    2s
+     0     0 -190386.04    0   59 -187135.00 -190386.04  1.74%     -    2s
+     0     0 -190386.04    0   48 -187135.00 -190386.04  1.74%     -    2s
+     0     0 -190386.04    0   69 -187135.00 -190386.04  1.74%     -    2s
+     0     0 -190379.91    0   52 -187135.00 -190379.91  1.73%     -    2s
+     0     0 -190379.91    0   52 -187135.00 -190379.91  1.73%     -    2s
+H    0     0                    -187235.0000 -190379.91  1.68%     -    3s
+     0     2 -190245.07    0   51 -187235.00 -190245.07  1.61%     -    3s
+H   31    38                    -187989.0000 -190245.07  1.20%  73.1    5s
+  1292   907 -188599.65   56   52 -187989.00 -190245.07  1.20%  13.2   12s
+  1309   918 -189072.82   56   56 -187989.00 -190217.34  1.19%  13.0   15s
+  2115  1218 -188583.33   29   42 -187989.00 -190144.68  1.15%  21.9   20s
+  5018  2827 -188875.67  498   45 -187989.00 -190119.53  1.13%  12.9   25s
+
+Cutting planes:
+  Gomory: 6
+  Clique: 80
+  StrongCG: 1
+  Inf proof: 8
+  Zero half: 7
+  RLT: 2
+
+Explored 6360 nodes (90420 simplex iterations) in 29.24 seconds (34.25 work units)
+Thread count was 12 (of 12 available processors)
+
+Solution count 8: -187989 -187235 -187135 ... -20875
+
+Optimal solution found (tolerance 1.00e-02)
+Best objective -1.879890000000e+05, best bound -1.891650000000e+05, gap 0.6256%
+Solving with iLBBD1
+Set parameter MIPGap to value 0.01
+Warning: environment still referenced so free is deferred (Continue to use WLS)
