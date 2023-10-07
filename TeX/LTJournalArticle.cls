@@ -31,7 +31,7 @@
 \ProcessOptions\relax % Process class options
 
 \LoadClass[twocolumn]{article} % Load the base class
-
+% \LoadClass{article}
 %----------------------------------------------------------------------------------------
 %	REQUIRED PACKAGES AND MISC CONFIGURATIONS
 %----------------------------------------------------------------------------------------
