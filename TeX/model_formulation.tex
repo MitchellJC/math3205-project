@@ -1,14 +1,13 @@
-\subsection*{Master Problem} 
+\subsection{Master Problem} 
 
 The following is the LBBD formulation of the problem.
 For a pure IP formulation refer to \cite{roshanaei2017propagating}. We will first outline
 the formulation of the master problem. The master problem handles assignment of patients
 to hospital-days.
 
-\subsubsection*{Sets:}
-\leavevmode
-\newline
 \begin{table}[H]
+% \captionsetup{font={Large,sf}}
+\caption*{\bf{SETS}}
 \resizebox{0.45\textwidth}{!}{
 \begin{tabular}{ll}
     $\mathcal{P}$ &  Set of patients $p \in \mathcal{P}$\\
@@ -18,12 +17,12 @@ to hospital-days.
     $\mathcal{R}_{h} $ & Set of ORs in each hospital's surgical suite, $r \in \mathcal{R}_{h}$\\
 \end{tabular}
 }
+
 \end{table}
 
-\subsubsection*{Data:}
-\leavevmode
-\newline
 \begin{table}[H]
+\caption*{\bf{DATA}}
+\label{tab:MPdata}
 \resizebox{0.45\textwidth}{!}{
 \begin{tabular}{ll}
     $G_{hd}$ & Cost of opening the surgical suite in hosptial h on\\
@@ -43,11 +42,9 @@ to hospital-days.
 \end{tabular}
 }
 \end{table}
-\subsubsection*{Variables:}
-\leavevmode
-\newline
 \begin{table}[H]
-
+\caption*{\bf{VARIABLES}}
+\label{tab:MPvariables}
 \resizebox{0.45\textwidth}{!}{
 \begin{tabular}{ll}
     $x_{hdp} $ & 1 if patient p is assigned to hospital h on day d\\
@@ -60,6 +57,7 @@ to hospital-days.
     & $\quad$ 0 otherwise\\ 
 \end{tabular}
 }
+\label{MP:variables}
 \end{table}
 \leavevmode
 % \newline
@@ -70,53 +68,52 @@ The objective function balances the minimisation of costs associated with openin
  and ORs and maximising the reward of assigning patients to surgeries. 
 \begin{align}
 \operatorname{minimize} \bigg( &\sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} G_{hd} U_{hd} 
- + \sum\limits_{h \in \mathcal{H}}\sum\limits_{d \in \mathcal{D}} F_{hd} y_{hd}
-\\ &+ \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} \sum\limits_{p \in \mathcal{P}} \notag
-\kappa_{1} [\rho_{p} (d - \alpha_{p}) x_{hdp}]
+ + \sum\limits_{h \in \mathcal{H}}\sum\limits_{d \in \mathcal{D}} F_{hd} y_{hd} \label{eq:MPobjective}
+\\ &+ \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} \sum\limits_{p \in \mathcal{P}}  
+\kappa_{1} [\rho_{p} (d - \alpha_{p}) x_{hdp}]\notag
 \\ &+ \sum\limits_{p \in \mathcal{P} \setminus \lbrace \mathcal{P}{'} \rbrace } \kappa_{2} [\rho_{p}( \mathcal{D} + 1 -\alpha_{p} ) w_{p}]
-\bigg)\notag
+\bigg) \notag
 \end{align}
 
 \subsubsection*{Constraints} The constraints for the MP are formulated as follows.
 \begin{align}
     \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}}x_{hdp} = 1 
-        && \forall p \in \mathcal{P}' \label{con1}\\
+        && \forall p \in \mathcal{P}' \label{MPcon1}\\
     \sum\limits_{h \in athcal{H}} \sum\limits_{d \in \mathcal{D}} x_{hdp} + w_p = 1
-        && \forall p \in \mathcal{P} \backslash \{\mathcal{P}'\}\label{con2}\\
+        && \forall p \in \mathcal{P} \backslash \{\mathcal{P}'\}\label{MPcon2}\\
     x_{hdp} \leq u_{hd}
-        && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{con3}\\
+        && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{MPcon3}\\
     \sum\limits_{p \in \mathcal{P}}T_px_{hdp} \leq |\mathcal{R}_h|B_{hd}u_{hd}
-        && \forall h \in \mathcal{H}, d \in \mathcal{D} \label{con4}\\
+        && \forall h \in \mathcal{H}, d \in \mathcal{D} \label{MPcon4}\\
     T_p\,x_{hdp} \leq B_{hd} 
-        && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{con5}\\
+        && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{MPcon5}\\
      \frac{\sum_{p \in \mathcal{P}}T_px_{hdp}}{B_{hd}} \leq y_{hd}
-        && \forall h \in \mathcal{H}, d\in \mathcal{D} \label{con6}\\
+        && \forall h \in \mathcal{H}, d\in \mathcal{D} \label{MPcon6}\\
         y_{hd} \leq |\mathcal{R}_h|
-        && \forall h\in\mathcal{H}, d \in \mathcal{D} \label{con7}\\
+        && \forall h\in\mathcal{H}, d \in \mathcal{D} \label{MPcon7}\\
         u_{hd}, x_{hdp} \in \{ 0,1\}
-        && \forall h\in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{con8}\\
+        && \forall h\in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{MPcon8}\\
         w_p \in \{0,1\}
-        && \forall p \in \mathcal{P} \backslash\{\mathcal{P}'\}\label{con9}
+        && \forall p \in \mathcal{P} \backslash\{\mathcal{P}'\}\label{MPcon9}
 \end{align}
-Constraint (\ref{con1}) ensures all mandatory patients are assigned in the planning 
-horizon. Constraint (\ref{con2}) ensures that variables $x_{hdp}$ and $u_{hd}$ are not
-turned on simultaneously. Constraint (\ref{con3}) ensures that if a patient is assigned
-a hospital-day then that hospital-day is open. (\ref*{con4}) ensures that surgery time 
+Constraint (\ref{MPcon1}) ensures all mandatory patients are assigned in the planning 
+horizon. Constraint (\ref{MPcon2}) ensures that variables $x_{hdp}$ and $u_{hd}$ are not
+turned on simultaneously. Constraint (\ref{MPcon3}) ensures that if a patient is assigned
+a hospital-day then that hospital-day is open. (\ref*{MPcon4}) ensures that surgery time 
 of patients assigned to a hospital-day does not exceed the available surgery time in
-that hospital day. (\ref*{con5}) ensures an individuals surgery time does not exceed 
-the hospital-day's available time. (\ref*{con6}) ensures $y_{hd}$ gives a lower bound 
-on the number of operating rooms. (\ref*{con7}) ensures $y_{hd}$ does not exceed the
-number of operating rooms available on a hospital-day. Constraints (\ref*{con8}) -- (\ref*{con9}) simply restrict
+that hospital day. (\ref*{MPcon5}) ensures an individuals surgery time does not exceed 
+the hospital-day's available time. (\ref*{MPcon6}) ensures $y_{hd}$ gives a lower bound 
+on the number of operating rooms. (\ref*{MPcon7}) ensures $y_{hd}$ does not exceed the
+number of operating rooms available on a hospital-day. Constraints (\ref*{MPcon8}) -- (\ref*{MPcon9}) simply restrict
 variables to binary.
 
 \subsection{Subproblems}
 Given a solution to the master problem $(\widehat{Y}^{(i)}_{hd}, \widehat{\mathcal{P}}^{(i)}_{hd})$ the 
 subproblem minimises the number of ORs to open for a given hospital day. Each subproblem is
-formulated as follows. 
-\subsubsection*{Additional Variables}
-\leavevmode
-\newline
+formulated as follows.
+
 \begin{table}[H]
+    \caption*{\bf{ADDITIONAL VARIABLES}}
     \resizebox{0.45\textwidth}{!}{
         \begin{tabular}{ll}
             $y_r$ & $\in \mathbb{Z}^+$, number of open operating rooms. \\
@@ -142,3 +139,123 @@ Constraint (\ref*{SPcon1}) ensures that each patient is assigned to only one ope
 Constraint (\ref*{SPcon2}) ensures that no OR is overcapacitated. Constraint (\ref*{SPcon3})
 ensures that patients are assigned to open ORs. Constraint (\ref*{SPcon4}) breaks symmtry
 among ORs.
+
+\subsection{Benders Cuts}
+There are multiple forms of benders cuts outlined in \cite{roshanaei2017propagating}. We will discuss
+pertinent forms based on their performance as discussed in \cite{roshanaei2017propagating}. These are 
+the LBBD1 and LBBD2 benders cuts. In order to describe these cut types, we will first discuss the 
+first-fit decreasing heuristic algorithm (FFD) as this is used to determine feasibility of SPs. 
+
+\subsubsection{First-fit decreasing heuristic algorithm}
+Since the SP packing problem can be difficult to solve, we can first find a feasible solution 
+($\overline{F}^{(i)}_{hd}$) using a FFD heuristic. This process is faster than other techniques
+such as integer and constraint programming. Moreover, we have the following relationship 
+between the FFD, MP and SP solutions;
+\begin{equation}
+    \tilde{Y}^{(i)}_{hd} \leq \overline{Y}^{(i)}_{hd} \leq \overline{F}^{(i)}_{hd}
+\end{equation}
+We can use the FFD solution $\left(\overline{F}^{(i)}_{hd}\right)$ to find an optimal SP solution 
+$\left(\overline{Y}^{(i)_{hd}}\right)$ without explicitly solving the SP. Moreover, if 
+$\overline{F}^{(i)}_{hd} \neq \tilde{Y}^{(i)}_{hd}$ then when solving the SP we can use 
+$\operatorname{min}\{\overline{F}^{(i)}_{hd},\, |\mathcal{R}_h|\}$ as an upper bound. 
+
+\subsubsection{LBBD1}
+LBBD1 \cite{roshanaei2017propagating} utilises both feasibility and optimality cuts to 
+correct the MP to find a solution. If the SP is infeasible the following "no good" cut 
+is added to the MP which requires at least one patient be removed from 
+$\tilde{\mathcal{P}}^{(i)}_{hd}$.
+\begin{align}
+    \sum\limits_{p \in \tilde{\mathcal{P}}^{(i)}_{hd}}(1-x_{hdp})\geq 1 
+        && \forall (h,d) \in \mathcal{U}_{hd}^{(i)}
+\end{align}
+Where $\mathcal{U}_{hd}^{(i)}$ is the set of infeasible SPs at this stage of solving the MP.
+If the SP is optimal, that is $\tilde{Y}^{(i)}_{hd} = \overline{Y}^{(i)}_{hd}$, no cuts
+are required. However, if the this is not the case, an optimality cut must be added.
+
+\subsubsection{LBBD2}
+
+\subsection{Network Problem}
+We also give the formulation of the problem as a network. The problem contains the sets
+and data of the master problem previously outlined with the addition of the following 
+sets and data. 
+\begin{table}[H]
+    % \captionsetup{font={Large,sf}}
+    \caption*{\bf{SETS}}
+    \resizebox{0.4\textwidth}{!}{
+    \begin{tabular}{ll}
+        $\mathcal{N}$ &  Set of nodes $n \in \mathcal{N}$\\
+        $\mathcal{N^\prime}$ & Set of nodes $n \in \mathcal{N}$ \\
+        & $\operatorname{s.t.} \operatorname{minDur} \leq n[time] \leq B_{n[time],n[day]} - \operatorname{minDur} $ \\
+        $\mathcal{A}$ &  Set of arcs $a \in \mathcal{A}$\\
+    \end{tabular}
+    }
+    \end{table}
+    \begin{table}[H]
+        % \captionsetup{font={Large,sf}}
+        \caption*{\bf{DATA}}
+        \resizebox{0.35\textwidth}{!}{
+        \begin{tabular}{ll}
+            $t_n$ & Arcs that enter node $n \in \mathcal{N}$ \\
+            $f_n$ & Arcs that leave node $n \in \mathcal{N}$\\
+            $\operatorname{minDur}$ & minimum surgery duration
+        \end{tabular}
+        }
+        \end{table}
+    The variables are also shared with the master problem with the addition of the following variable. 
+\begin{table}[H]
+    \caption*{\bf{VARIABLES}}
+    \label{tab:NETvariables}
+    \resizebox{0.4\textwidth}{!}{
+    \begin{tabular}{ll}
+        $z_{a}$ & 1 if arc a is turned on, 0 otherwise.
+    \end{tabular}
+    }
+    \end{table}
+
+    \subsubsection*{Objective}
+    The objective function is identical to master problem objective given in \ref{eq:MPobjective}.
+    \begin{align}
+    \operatorname{minimize} \bigg( &\sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} G_{hd} U_{hd} 
+     + \sum\limits_{h \in \mathcal{H}}\sum\limits_{d \in \mathcal{D}} F_{hd} y_{hd}
+    \\ &+ \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} \sum\limits_{p \in \mathcal{P}}  \label{MP:objective}
+    \kappa_{1} [\rho_{p} (d - \alpha_{p}) x_{hdp}]
+    \\ &+ \sum\limits_{p \in \mathcal{P} \setminus \lbrace \mathcal{P}{'} \rbrace } \kappa_{2} [\rho_{p}( \mathcal{D} + 1 -\alpha_{p} ) w_{p}]
+    \bigg) \notag
+    \end{align}
+    
+    \subsubsection*{Constraints} The constraints for the network formulation are given as follows,
+    \begin{align}
+        \sum\limits_{a \in f_n} z_a = \sum\limits_{a \in t_n} z_a 
+            && \forall n \in \mathcal{N}\label{NETcon:room_flow}\\
+        \sum\limits_{a \in \mathcal{A}}
+            &&\\
+        \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}}x_{hdp} = 1 
+            && \forall p \in \mathcal{P}' \label{con1}\\
+        \sum\limits_{h \in athcal{H}} \sum\limits_{d \in \mathcal{D}} x_{hdp} + w_p = 1
+            && \forall p \in \mathcal{P} \backslash \{\mathcal{P}'\}\label{con2}\\
+        x_{hdp} \leq u_{hd}
+            && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{con3}\\
+        \sum\limits_{p \in \mathcal{P}}T_px_{hdp} \leq |\mathcal{R}_h|B_{hd}u_{hd}
+            && \forall h \in \mathcal{H}, d \in \mathcal{D} \label{con4}\\
+        T_p\,x_{hdp} \leq B_{hd} 
+            && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{con5}\\
+         \frac{\sum_{p \in \mathcal{P}}T_px_{hdp}}{B_{hd}} \leq y_{hd}
+            && \forall h \in \mathcal{H}, d\in \mathcal{D} \label{con6}\\
+            y_{hd} \leq |\mathcal{R}_h|
+            && \forall h\in\mathcal{H}, d \in \mathcal{D} \label{con7}\\
+            u_{hd}, x_{hdp} \in \{ 0,1\}
+            && \forall h\in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{con8}\\
+            w_p \in \{0,1\}
+            && \forall p \in \mathcal{P} \backslash\{\mathcal{P}'\}\label{con9}
+    \end{align}
+
+    Constraint (\ref{con1}) ensures all mandatory patients are assigned in the planning 
+    horizon. Constraint (\ref{con2}) ensures that variables $x_{hdp}$ and $u_{hd}$ are not
+    turned on simultaneously. Constraint (\ref{con3}) ensures that if a patient is assigned
+    a hospital-day then that hospital-day is open. (\ref*{con4}) ensures that surgery time 
+    of patients assigned to a hospital-day does not exceed the available surgery time in
+    that hospital day. (\ref*{con5}) ensures an individuals surgery time does not exceed 
+    the hospital-day's available time. (\ref*{con6}) ensures $y_{hd}$ gives a lower bound 
+    on the number of operating rooms. (\ref*{con7}) ensures $y_{hd}$ does not exceed the
+    number of operating rooms available on a hospital-day. Constraints (\ref*{con8}) -- (\ref*{con9}) simply restrict
+    variables to binary.

@@ -30,8 +30,9 @@
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}} % Pass through any extra options specified to the base class
 \ProcessOptions\relax % Process class options
 
+% \LoadClass{article} % Load the base class
 \LoadClass[twocolumn]{article} % Load the base class
-% \LoadClass{article}
+
 %----------------------------------------------------------------------------------------
 %	REQUIRED PACKAGES AND MISC CONFIGURATIONS
 %----------------------------------------------------------------------------------------
@@ -64,8 +65,8 @@
 \usepackage[utf8]{inputenc} % Required for inputting international characters
 \usepackage[T1]{fontenc} % Output font encoding for international characters
 
-\usepackage[sc]{mathpazo} % Use the Palatino font
-
+% \usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage{lmodern} % Use the latin modern
 \linespread{1.05} % Increase line spacing slightly
 
 \usepackage{microtype} % Slightly tweak font spacing for aesthetics
