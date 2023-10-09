@@ -146,7 +146,7 @@ pertinent forms based on their performance as discussed in the original paper. T
 the LBBD1 and LBBD2 benders cuts. In order to describe these cut types, we will first discuss the 
 first-fit decreasing heuristic algorithm (FFD) as this is used to determine optimality of SPs. 
 
-\subsubsection{First-fit decreasing heuristic algorithm}
+\subsubsection*{First-fit decreasing heuristic algorithm}
 Since the SP packing problem can be difficult to solve, we can first find a feasible solution 
 ($\overline{F}^{(i)}_{hd}$) using a FFD heuristic. This process is faster than other techniques
 such as integer and constraint programming. Moreover, we have the following relationship 
@@ -180,33 +180,38 @@ LBBD2 differs from LBBD1 in its feasibility cut which is given as follows:
 \begin{align*}
     y_{hd} \geq (|\mathcal{R}_h| + 1) - \sum\limits_{p \in \hat{\mathcal{P}}_{hd}^{(i)}}(1-x_{hdp}) && (h,d) \in \overline{\mathcal{U}}^{(i)}.
 \end{align*}
-If $\overline{Y}_{hd}^{(i)} = |\mathcal{R}_h|$ and the SP is infeasible then this cut simply removes one patient from $\overline{\mathcal{P}}_{hd}^{(i)}$. However, if $\hat{Y}_{hd}^{(i)} \le |\mathcal{R}_h$ and the SP is infeasible then the cut either removes two patients from $\overline{\mathcal{P}}_{hd}^{(i)}$, or removes one patient and/or opens at least one more OR.
-\subsection{Cut Propagation}
+If $\overline{Y}_{hd}^{(i)} = |\mathcal{R}_h|$ and the SP is infeasible then this cut simply removes one patient from $\overline{\mathcal{P}}_{hd}^{(i)}$. However, if $\hat{Y}_{hd}^{(i)} \le |\mathcal{R}_h|$ and the SP is infeasible then the cut either removes two patients from $\overline{\mathcal{P}}_{hd}^{(i)}$, or removes one patient and/or opens at least one more OR.
+\subsubsection{Cut Propagation}
 The original paper utilises cut propagation for LBBDs in order to generate multiple cuts for each infeasible SP. This is done by recognising that an infeasible set of patients for a particular hospital-day cannot be packed into a hospital-day with less or equal OR time.
 \subsection{Network Problem}
 We also give the formulation of the problem as a network. The problem contains the sets
 and data of the master problem previously outlined with the addition of the following 
-sets and data. 
+sets and data. Nodes represent hospital-day-time, where time is in minute intervals. Arcs represent assignment of patients to operating rooms.
 \begin{table}[H]
     % \captionsetup{font={Large,sf}}
     \caption*{\bf{SETS}}
     \resizebox{0.4\textwidth}{!}{
     \begin{tabular}{ll}
-        $\mathcal{N}$ &  Set of nodes $n \in \mathcal{N}$\\
+        $\mathcal{N}$ &  Set of nodes $n \in \mathcal{N}$ for each hospital-day-minute\\
         $\mathcal{N^\prime}$ & Set of nodes $n \in \mathcal{N}$ \\
         & $\operatorname{s.t.} \operatorname{minDur} \leq n[time] \leq B_{n[time],n[day]} - \operatorname{minDur} $ \\
-        $\mathcal{A}$ &  Set of arcs $a \in \mathcal{A}$\\
+        $\mathcal{A}$ &  Set of arcs $a \in \mathcal{A}$ between nodes $n \in N$\\
     \end{tabular}
     }
     \end{table}
     \begin{table}[H]
         % \captionsetup{font={Large,sf}}
         \caption*{\bf{DATA}}
-        \resizebox{0.35\textwidth}{!}{
+        \resizebox{0.45\textwidth}{!}{
         \begin{tabular}{ll}
             $t_n$ & Arcs that enter node $n \in \mathcal{N}$ \\
             $f_n$ & Arcs that leave node $n \in \mathcal{N}$\\
-            $\operatorname{minDur}$ & minimum surgery duration
+            $h_a$ & Hospital associated with arc $a \in \mathcal{A}$\\
+            $d_a$ & Day associated with arc $a \in \mathcal{A}$ \\
+            $\operatorname{patient}_a$ & Patient associated with arc $a \in \mathcal{A}$\\
+            $\operatorname{start}_a$ & Start time of arc $a \in \mathcal{A}$\\
+            $\operatorname{end}_a$ & End time of arc $a \in \mathcal{A}$\\
+            $\operatorname{minDur}$ & minimum surgery duration 
         \end{tabular}
         }
         \end{table}
@@ -232,31 +237,28 @@ sets and data.
     \bigg) \notag
     \end{align}
     
-    \subsubsection*{Constraints} NOT FINISHED The constraints for the network formulation are given as follows,
+    \subsubsection*{Constraints} The constraints for the network formulation are given as follows,
     \begin{align}
         \sum\limits_{a \in f_n} z_a = \sum\limits_{a \in t_n} z_a 
-            && \forall n \in \mathcal{N}\label{NETcon:room_flow}\\
-        \sum\limits_{a \in \mathcal{A}}
-            &&\\
+            && \forall n \in \mathcal{N}^\prime \label{NETcon1:room_flow}\\
+        \sum\limits_{\substack{a \in \mathcal{A} | \\ (h_a, d_a, \operatorname{start}_a) \\= (h,d,0)}}z_a \leq y_{hd}
+            && \forall d \in \mathcal{D} \forall h \in \mathcal{H}\label{NETcon2:restrict_ops_by_ors}\\
+        \sum\limits_{\substack{a \in \mathcal{A} |\\ (h_a,d_a,\operatorname{patient}_a)\\ =(h,d,p)}}z_a= x_{hdp}
+            && \forall h \in \mathcal{H}, \forall d \in \mathcal{D}, \forall p \in \mathcal{P}  \label{NETcon3:is_patient_operated_on} \\
         \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}}x_{hdp} = 1 
-            && \forall p \in \mathcal{P}' \label{con1}\\
-        \sum\limits_{h \in athcal{H}} \sum\limits_{d \in \mathcal{D}} x_{hdp} + w_p = 1
-            && \forall p \in \mathcal{P} \backslash \{\mathcal{P}'\}\label{con2}\\
+            && \forall p \in \mathcal{P}' \label{NETcon4:must_do_mandatory}\\
+        \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}} x_{hdp} + w_p = 1
+            && \forall p \in \mathcal{P} \backslash \{\mathcal{P}'\}\label{NETcon5:turn_on_w}\\
         x_{hdp} \leq u_{hd}
-            && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{con3}\\
-        \sum\limits_{p \in \mathcal{P}}T_px_{hdp} \leq |\mathcal{R}_h|B_{hd}u_{hd}
-            && \forall h \in \mathcal{H}, d \in \mathcal{D} \label{con4}\\
-        T_p\,x_{hdp} \leq B_{hd} 
-            && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{con5}\\
-         \frac{\sum_{p \in \mathcal{P}}T_px_{hdp}}{B_{hd}} \leq y_{hd}
-            && \forall h \in \mathcal{H}, d\in \mathcal{D} \label{con6}\\
+            && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{NETcon5:force_hosp_on}\\
             y_{hd} \leq |\mathcal{R}_h|
-            && \forall h\in\mathcal{H}, d \in \mathcal{D} \label{con7}\\
+            && \forall h\in\mathcal{H}, d \in \mathcal{D} \label{NETcon6:max_OR}\\
             u_{hd}, x_{hdp} \in \{ 0,1\}
             && \forall h\in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{con8}\\
             w_p \in \{0,1\}
             && \forall p \in \mathcal{P} \backslash\{\mathcal{P}'\}\label{con9}
     \end{align}
+    Constraint
 
     Constraint (\ref{con1}) ensures all mandatory patients are assigned in the planning 
     horizon. Constraint (\ref{con2}) ensures that variables $x_{hdp}$ and $u_{hd}$ are not
