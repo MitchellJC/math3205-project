@@ -695,42 +695,6 @@ class BendersCallbackScheduler(BendersORScheduler):
                     
                 end_time = time.time()
                 self.sp_time += end_time - start_time
-                
-                # # Check gap and store solution suggestion
-                # if cuts_added[0] == 0 and cuts_added[1] != 0:
-                #     x_hat = model.cbGetSolution(self.x)
-                #     u_hat = model.cbGetSolution(self.u)
-                #     w_hat = model.cbGetSolution(self.w)
-                    
-                #     sub_obj_val = (
-                #         sum(self.G[h, d]*u_hat[h, d] 
-                #              for h in self.H for d in self.D) 
-                #         + sum(self.F[h, d]*self.sub_solns[h, d] 
-                #               for h in self.H for d in self.D)
-                #         + sum(K_1*self.rho[p]*(d - self.alpha[p])*x_hat[h, d, p] 
-                #              for h in self.H for d in self.D for p in self.P)
-                #         + sum(K_2*self.rho[p]*(len(self.D) + 1 - self.alpha[p])*w_hat[p]
-                #              for p in self.P if p not in self.mand_P)
-                #     )
-                #     self.ub = min(self.ub, sub_obj_val)
-                #     master_obj_val = model.cbGet(GRB.Callback.MIPSOL_OBJ)
-                    
-                #     if self.bend_gap:
-                #         print(master_obj_val, self.ub)
-                #         print("Gap", 100*abs(master_obj_val 
-                #                              - self.ub)
-                #               /abs(sub_obj_val), "%")
-                    
-            # # Suggest solution.
-            # if (where == GRB.Callback.MIPNODE 
-            #     and model.cbGet(GRB.Callback.MIPNODE_STATUS) == GRB.OPTIMAL 
-            #     and model._best_found 
-            #     < model.cbGet(GRB.Callback.MIPNODE_OBJBST) - self.tol):
-            #     # TODO Can only suggest solution if all sub problems are 
-            #     # feasible
-            #     pass
-            #     model.cbSetSolution()
-            #     model.cbSetSolution()
         
         self.sub_solns = {}
         self.sub_room_allocs = {}
