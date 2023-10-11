@@ -13,7 +13,7 @@ from data_gen import generate_data
 from constants import UNDERLINE, LBBD_2, LBBD_PLUS
 
 SEED = 42
-NUM_PATIENTS = 40
+NUM_PATIENTS = 60
 NUM_OR = 5
 GAP = 0.00
 DISPLAY_ALLOCS = True

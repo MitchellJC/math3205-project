@@ -451,10 +451,12 @@ class BendersORScheduler(ORScheduler):
         P_prime = [p for p in self.P if x_hat[h, d, p] > 0.5]
         P_prime_set = frozenset(P_prime)
         
-        
+        # Use saved sub problem solution if available
         if (h, d, P_prime_set) in self.cache:
             SP, y_prime, x_prime = self.cache[h, d, P_prime_set]
             dont_cut = True
+            
+        # Otherwise solve sub problem MIP.
         else:
             dont_cut = False
             
