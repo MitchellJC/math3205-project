@@ -27,6 +27,7 @@ loop = BendersLoopScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P,
 
 loop.run_model()
 
+print("Objective value:", loop.model.objVal)
 print("Time spent in master problem:", loop.mp_time, "seconds")
 print("Time spent in sub problems:", loop.sp_time, "seconds")
 

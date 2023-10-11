@@ -27,6 +27,7 @@ callback = BendersCallbackScheduler(P, H, R, D, G, F, B, T, rho, alpha, mand_P,
 
 callback.run_model()
 
+print("Objective value:", callback.model.objVal)
 print("Time spent in master problem:", callback.mp_time, "seconds")
 print("Time spent in sub problems:", callback.sp_time, "seconds")
 
