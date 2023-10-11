@@ -449,16 +449,26 @@ class BendersORScheduler(ORScheduler):
                 
         # Set of patients assigned to this hospital and day.
         P_prime = [p for p in self.P if x_hat[h, d, p] > 0.5]
+        P_prime_set = frozenset(P_prime)
         
-        need_to_continue, FFD_upperbound, FFD_soln = \
-            self.precompute_ffd(Y_hat, P_prime, h, d)
-        if not need_to_continue:
-            return
         
-        SP, y_prime, x_prime = self.solve_sub_ip(P_prime, FFD_upperbound, 
+        if (h, d, P_prime_set) in self.cache:
+            SP, y_prime, x_prime = self.cache[h, d, P_prime_set]
+            dont_cut = True
+        else:
+            dont_cut = False
+            
+            need_to_continue, FFD_upperbound, FFD_soln = \
+                self.precompute_ffd(Y_hat, P_prime, h, d)
+            if not need_to_continue:
+                return
+        
+            SP, y_prime, x_prime = self.solve_sub_ip(P_prime, FFD_upperbound, 
                                                  FFD_soln, h, d)
         
         if SP.Status == GRB.OPTIMAL:
+            self.cache[h, d, P_prime_set] = SP, y_prime, x_prime
+            
             num_open_or = sum(y_prime[r].x for r in self.R)      
             # Save sub problem allocation
             if save_soln:
@@ -470,6 +480,9 @@ class BendersORScheduler(ORScheduler):
         
         if self.verbose:
             print()
+        
+        if dont_cut:
+            return
         
         # Feasbility cut
         if SP.Status != GRB.OPTIMAL:
@@ -602,6 +615,8 @@ class BendersLoopScheduler(BendersORScheduler):
         self.sub_solns = {}
         self.sub_room_allocs = {}
         self.sub_patient_allocs = {}
+        self.cache = {}
+        
         self.sp_time = 0
         self.mp_time = 0
         self.run_gap = GRB.INFINITY
@@ -699,6 +714,7 @@ class BendersCallbackScheduler(BendersORScheduler):
         self.sub_solns = {}
         self.sub_room_allocs = {}
         self.sub_patient_allocs = {}
+        self.cache = {}
         self.sp_time = 0
         self.mp_time = 0
         
