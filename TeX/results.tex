@@ -1,5 +1,5 @@
 % Runtime specifications
-Models were run on a Windows 11 computer with a AMD Ryzen 5 5625U 2.3GHz processor with 16 GB of RAM\@. Gurobi version 10.0.1 was used with Python version 3.9.16. 
+Models were run on a Windows 11 computer with an AMD Ryzen 5 5625U 2.3GHz processor with 16 GB of RAM\@. Gurobi version 10.0.1 was used with Python version 3.9.16. 
 
 We aimed to compare 7 models: The pure MIP, the network model, an iterative LBBD1 (iLBBD1), LBBD1 using lazy constraints (cLBBD1), iterative LBBD2 with propagation (iLBBD2p), LBBD2 with lazy constraints and propagation (cLBBD2p) and LBBD4 with lazy constraints and propagation (cLBBD4). The pure MIP was used as a baseline.\ iLBBD1 and cLBBD1  were chosen to be used as baseline LBBD models. LBBD2 with propagation was chosen as it was one of the best performers in the original paper, we intended to use it as the main comparison to the network model and our new cut. We chose to collect results for LBBD4 only using propagation and lazy constraints as we believed this would give us the best results while adhering to the project time constraints.
 
