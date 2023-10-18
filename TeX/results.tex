@@ -21,6 +21,38 @@ The 7 models were solved to a 1\% gap on each of the 5 instances, the average ti
 
 \input{results/avg_time_optimal(1_gap).tex}
 
-\input{results/avg_gaps_optimal(1_gap).tex} 
+% \input{results/avg_gaps_optimal(1_gap).tex} 
 
 We can see from Table~\ref{tab:avgTimeOpt1Perc} that now only going to a 1\%, most models are able to complete for most instances for number of patients up to 80. The pure MIP and the network model were the most robust across all number of patients. The least robust model across all number of patients was iLBBD2p. For 20 patients iLBBD1 solved the fastest on average. For all other number of patients the pure MIP solved the fastest. Overall, lazy constraint implementations were slightly better than there iterative counterparts.\ cLBBD2p performed better than iLBBD2p for 20, 40 and 60 patients.\ cLBBD1 performed better than iLBBD1 for 40 and 60 patients. 
+
+The time in the average time in the master problem and sub problem when trying to solve to a 1\% gap was plotted for different patient set sizes and can be seen in Figure~\ref{fig:MPSPtime}.
+
+\begin{figure*}
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{plots/(20_timeinMPSP).png}
+        \caption{$|P|=20$}\label{fig:p=20}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{plots/(40_timeinMPSP).png}
+        \caption{$|P|=40$}\label{fig:p=40}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{plots/(60_timeinMPSP).png}
+        \caption{$|P|=60$}\label{fig:p=60}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{plots/(80_timeinMPSP).png}
+        \caption{$|P|=80$}\label{fig:p=80}
+    \end{subfigure}
+    \caption{Average time in master problem (MP) and sub problem (SP) for different patient set sizes.}\label{fig:MPSPtime}
+\end{figure*}
+
+From Figure~\ref{fig:p=20} we can see that that iterative variants of LBBD a high proportion of their time in the master problem and the lazy constraint implementations spent a high proportion of their time in the sub problems. This is expected for the iterative implementation a large amount of time would be spent re-building the master problem branch and bround tree on every iteration. This is expected for the sub problem as we need to solve the sub problem for every incumbent solution, this is remedied slightly by 
