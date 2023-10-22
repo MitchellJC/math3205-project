@@ -17,10 +17,10 @@ We can see from Table~\ref{tab:avgTimeOpt} that all models struggled solving to 
 
 Table~\ref{tab:avgGapOpt} shows that although not many instances solved to optimality, by the end of the prescribed time limit, the optimality gaps were very small. All optimality gaps had reached at least 1\% or lower. In fact, increasing the number of patients did not appear to have a large negative effect on the final optimality gaps, giving merit to the scalability of all models in term of achieving a small gap in under 15 minutes for increasing number of patients. Interestingly, nearly all gaps for number of patients greater than 20 were of the same magnitude, it seems there is a is some threshold that the model can reach very quickly but closing the last slice of gap becomes very difficult. These results gave more motivation to investigate solving to a 1\% gap.
 
-The 7 models were solved to a 1\% gap on each of the 5 instances, the average time to solve can be seen in Table~\ref{tab:avgTimeOpt1Perc} and the average gaps can be seen in Table~\ref{tab:avgGapOpt1Perc}.
+The 7 models were solved to a 1\% gap on each of the 5 instances, the average time to solve can be seen in Table~\ref{tab:avgTimeOpt1Perc}.
+%  and the average gaps can be seen in Table~\ref{tab:avgGapOpt1Perc}.
 
 \input{results/avg_time_optimal(1_gap).tex}
-
 % \input{results/avg_gaps_optimal(1_gap).tex} 
 
 We can see from Table~\ref{tab:avgTimeOpt1Perc} that now only going to a 1\%, most models are able to complete for most instances for number of patients up to 80. The pure MIP and the network model were the most robust across all number of patients. The least robust model across all number of patients was iLBBD2p. For 20 patients iLBBD1 solved the fastest on average. For all other number of patients the pure MIP solved the fastest. Overall, lazy constraint implementations were slightly better than there iterative counterparts.\ cLBBD2p performed better than iLBBD2p for 20, 40 and 60 patients.\ cLBBD1 performed better than iLBBD1 for 40 and 60 patients. 
@@ -29,25 +29,25 @@ The time in the average time in the master problem and sub problem when trying t
 
 \begin{figure*}
     \centering
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.42\textwidth}
         \centering
         \includegraphics[width=\textwidth]{plots/(20_timeinMPSP).png}
         \caption{$|P|=20$}\label{fig:p=20}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.42\textwidth}
         \centering
         \includegraphics[width=\textwidth]{plots/(40_timeinMPSP).png}
         \caption{$|P|=40$}\label{fig:p=40}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.42\textwidth}
         \centering
         \includegraphics[width=\textwidth]{plots/(60_timeinMPSP).png}
         \caption{$|P|=60$}\label{fig:p=60}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[b]{0.45\textwidth}
+    \begin{subfigure}[b]{0.42\textwidth}
         \centering
         \includegraphics[width=\textwidth]{plots/(80_timeinMPSP).png}
         \caption{$|P|=80$}\label{fig:p=80}
@@ -55,4 +55,4 @@ The time in the average time in the master problem and sub problem when trying t
     \caption{Average time in master problem (MP) and sub problem (SP) for different patient set sizes.}\label{fig:MPSPtime}
 \end{figure*}
 
-From Figure~\ref{fig:p=20} we can see that that iterative variants of LBBD a high proportion of their time in the master problem and the lazy constraint implementations spent a high proportion of their time in the sub problems. This is expected for the iterative implementation a large amount of time would be spent re-building the master problem branch and bround tree on every iteration. This is expected for the sub problem as we need to solve the sub problem for every incumbent solution, this is remedied slightly by 
+From Figure~\ref{fig:p=20} we can see that that iterative variants of LBBD a high proportion of their time in the master problem and the lazy constraint implementations spent a high proportion of their time in the sub problems. This is expected for the iterative implementation a large amount of time would be spent re-building the master problem branch and bround tree on every iteration. This is expected for the sub problem as we need to solve the sub problem for every incumbent solution, even though this was tried to be remedied slightly by caching of sub problems.  
