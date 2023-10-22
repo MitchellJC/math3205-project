@@ -79,7 +79,7 @@ The objective function balances the minimisation of costs associated with openin
 \begin{align}
     \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}}x_{hdp} = 1 
         && \forall p \in \mathcal{P}' \label{MPcon1}\\
-    \sum\limits_{h \in athcal{H}} \sum\limits_{d \in \mathcal{D}} x_{hdp} + w_p = 1
+    \sum\limits_{h \in mathcal{H}} \sum\limits_{d \in \mathcal{D}} x_{hdp} + w_p = 1
         && \forall p \in \mathcal{P} \backslash \{\mathcal{P}'\}\label{MPcon2}\\
     x_{hdp} \leq u_{hd}
         && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{MPcon3}\\
@@ -87,7 +87,7 @@ The objective function balances the minimisation of costs associated with openin
         && \forall h \in \mathcal{H}, d \in \mathcal{D} \label{MPcon4}\\
     T_p\,x_{hdp} \leq B_{hd} 
         && \forall h \in \mathcal{H}, d \in \mathcal{D}, p \in \mathcal{P}\label{MPcon5}\\
-     \frac{\sum_{p \in \mathcal{P}}T_px_{hdp}}{B_{hd}} \leq y_{hd}
+     \sum_{p \in \mathcal{P}}T_px_{hdp} \leq B_{hd}y_{hd}
         && \forall h \in \mathcal{H}, d\in \mathcal{D} \label{MPcon6}\\
         y_{hd} \leq |\mathcal{R}_h|
         && \forall h\in\mathcal{H}, d \in \mathcal{D} \label{MPcon7}\\
