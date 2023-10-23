@@ -45,16 +45,17 @@ to hospital-days.
 \begin{table}[H]
 \caption*{\bf{VARIABLES}}
 \label{tab:MPvariables}
-\resizebox{0.45\textwidth}{!}{
+\resizebox{0.5\textwidth}{!}{
 \begin{tabular}{ll}
-    $x_{hdp} $ & 1 if patient p is assigned to hospital h on day d\\
-    & $\quad$, 0 otherwise\\
+    $x_{hdp} $ & 1 if patient p is assigned to hospital h on \\
+    & $\quad$day d, 0 otherwise.\\
     $u_{hd} $ & 1 if the surgical suite in hospital h is opened\\
-    & $\quad$ on day d, 0 otherwise\\
-    $y_{hd} $ & $\in \mathbb{Z}^+$,  lower bound on number of operating rooms \\
-    & $\quad$ open in hospital h on day d \\
+    \vspace{10pt}
+    & $\quad$ on day d, 0 otherwise.\\
+    $y_{hd} $ & $\in \mathbb{Z}^+$,  lower bound on number of operating\\ rooms 
+    & $\quad$ open in hospital h on day d. \\
     $w_{p}$ & 1 if patient p is not scheduled this horizon,\\
-    & $\quad$ 0 otherwise\\ 
+    & $\quad$ 0 otherwise.\\ 
 \end{tabular}
 }
 \label{MP:variables}
@@ -152,7 +153,7 @@ Since the SP packing problem can be difficult to solve, we can first find a feas
 such as integer and constraint programming. Moreover, we have the following relationship 
 between the FFD, MP and SP solutions;
 \begin{equation}
-    \tilde{Y}^{(i)}_{hd} \leq \overline{Y}^{(i)}_{hd} \leq \overline{F}^{(i)}_{hd}
+    \hat{Y}^{(i)}_{hd} \leq \overline{Y}^{(i)}_{hd} \leq \overline{F}^{(i)}_{hd}
 \end{equation}
 We can use the FFD solution $\left(\overline{F}^{(i)}_{hd}\right)$ to find an optimal SP solution 
 $\left(\overline{Y}^{(i)_{hd}}\right)$ without explicitly solving the SP. Moreover, if 
@@ -181,16 +182,26 @@ LBBD2 differs from LBBD1 in its feasibility cut which is given as follows:
     y_{hd} \geq (|\mathcal{R}_h| + 1) - \sum\limits_{p \in \hat{\mathcal{P}}_{hd}^{(i)}}(1-x_{hdp}) && (h,d) \in \overline{\mathcal{U}}^{(i)}.
 \end{align*}
 If $\overline{Y}_{hd}^{(i)} = |\mathcal{R}_h|$ and the SP is infeasible then this cut simply removes one patient from $\overline{\mathcal{P}}_{hd}^{(i)}$. However, if $\hat{Y}_{hd}^{(i)} \le |\mathcal{R}_h|$ and the SP is infeasible then the cut either removes two patients from $\overline{\mathcal{P}}_{hd}^{(i)}$, or removes one patient and/or opens at least one more OR.
+\subsubsection{LBBD4}
+We implement an improvement upon LBBD2 in addition to the original paper. This cut is describe as follows:
+\begin{align*}
+    \operatorname{maxDur} = \max\limits_{p \in \hat{\mathcal{P}}^{(i)}_{hd}}\{T[p]\},
+\end{align*}
+\begin{align*}
+    y_{hd} \geq (|R_h| + 1) - \sum\limits_{p \in \mathcal{P}}(1-x_{hdp}) + \sum\limits_{\substack{p \in \mathcal{P}\backslash\hat{\mathcal{P}}^{(i)}_{hd} \big|\\
+    T_p \geq \operatorname{maxDur}}}x_{hdp}.
+\end{align*}
+This cut has the same function as LBBD2 with the addition that it prescribes that any new patients that take the place of a removed patient must have an operation duration less than the maximum operation duration of patients for this sub problem.
 \subsubsection{Cut Propagation}
 The original paper utilises cut propagation for LBBDs in order to generate multiple cuts for each infeasible SP. This is done by recognising that an infeasible set of patients for a particular hospital-day cannot be packed into a hospital-day with less or equal OR time.
 \subsection{Network Problem}
-We also give the formulation of the problem as a network. The problem contains the sets
+In addition to the original paper, we give a network formulation of the problem. The problem contains the sets
 and data of the master problem previously outlined with the addition of the following 
 sets and data. Nodes represent hospital-day-time, where time is in minute intervals. Arcs represent assignment of patients to operating rooms.
 \begin{table}[H]
     % \captionsetup{font={Large,sf}}
     \caption*{\bf{SETS}}
-    \resizebox{0.4\textwidth}{!}{
+    \resizebox{0.5\textwidth}{!}{
     \begin{tabular}{ll}
         $\mathcal{N}$ &  Set of nodes $n \in \mathcal{N}$ for each hospital-day-minute\\
         $\mathcal{N^\prime}$ & Set of nodes $n \in \mathcal{N}$ \\
@@ -242,7 +253,7 @@ sets and data. Nodes represent hospital-day-time, where time is in minute interv
         \sum\limits_{a \in f_n} z_a = \sum\limits_{a \in t_n} z_a 
             && \forall n \in \mathcal{N}^\prime \label{NETcon1:room_flow}\\
         \sum\limits_{\substack{a \in \mathcal{A} | \\ (h_a, d_a, \operatorname{start}_a) \\= (h,d,0)}}z_a \leq y_{hd}
-            && \forall d \in \mathcal{D} \forall h \in \mathcal{H}\label{NETcon2:restrict_ops_by_ors}\\
+            && \forall d \in \mathcal{D}, \forall h \in \mathcal{H}\label{NETcon2:restrict_ops_by_ors}\\
         \sum\limits_{\substack{a \in \mathcal{A} |\\ (h_a,d_a,\operatorname{patient}_a)\\ =(h,d,p)}}z_a= x_{hdp}
             && \forall h \in \mathcal{H}, \forall d \in \mathcal{D}, \forall p \in \mathcal{P}  \label{NETcon3:is_patient_operated_on} \\
         \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}}x_{hdp} = 1 
@@ -258,15 +269,4 @@ sets and data. Nodes represent hospital-day-time, where time is in minute interv
             w_p \in \{0,1\}
             && \forall p \in \mathcal{P} \backslash\{\mathcal{P}'\}\label{con9}
     \end{align}
-    Constraint
-
-    Constraint (\ref{con1}) ensures all mandatory patients are assigned in the planning 
-    horizon. Constraint (\ref{con2}) ensures that variables $x_{hdp}$ and $u_{hd}$ are not
-    turned on simultaneously. Constraint (\ref{con3}) ensures that if a patient is assigned
-    a hospital-day then that hospital-day is open. (\ref*{con4}) ensures that surgery time 
-    of patients assigned to a hospital-day does not exceed the available surgery time in
-    that hospital day. (\ref*{con5}) ensures an individuals surgery time does not exceed 
-    the hospital-day's available time. (\ref*{con6}) ensures $y_{hd}$ gives a lower bound 
-    on the number of operating rooms. (\ref*{con7}) ensures $y_{hd}$ does not exceed the
-    number of operating rooms available on a hospital-day. Constraints (\ref*{con8}) -- (\ref*{con9}) simply restrict
-    variables to binary.
+    We will only give descriptions of constraints unique to the network problem. Constraint \ref{NETcon1:room_flow} ensures conservation of flow between all nodes. Constraint \ref{NETcon2:restrict_ops_by_ors} ensures that if an arc is turned on, then the surgical suite relating to that arc must be open at that time to accommodate it. Constraint \ref{NETcon3:is_patient_operated_on} assigned patients to arcs.
