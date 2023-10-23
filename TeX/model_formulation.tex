@@ -17,9 +17,8 @@ to hospital-days.
     $\mathcal{R}_{h} $ & Set of ORs in each hospital's surgical suite, $r \in \mathcal{R}_{h}$\\
 \end{tabular}
 }
-
 \end{table}
-
+% \vfill
 \begin{table}[H]
 \caption*{\bf{DATA}}
 \label{tab:MPdata}
@@ -42,6 +41,7 @@ to hospital-days.
 \end{tabular}
 }
 \end{table}
+% \vspace{-15em}
 \begin{table}[H]
 \caption*{\bf{VARIABLES}}
 \label{tab:MPvariables}
@@ -60,11 +60,8 @@ to hospital-days.
 }
 \label{MP:variables}
 \end{table}
-\leavevmode
-% \newline
-% %setting up the master problem
+% \vspace{-15em}
 \subsubsection*{Objective}
-
 The objective function balances the minimisation of costs associated with opening hospitals
  and ORs and maximising the reward of assigning patients to surgeries. 
 \begin{align}
@@ -75,7 +72,7 @@ The objective function balances the minimisation of costs associated with openin
 \\ &+ \sum\limits_{p \in \mathcal{P} \setminus \lbrace \mathcal{P}{'} \rbrace } \kappa_{2} [\rho_{p}( \mathcal{D} + 1 -\alpha_{p} ) w_{p}]
 \bigg) \notag
 \end{align}
-
+\vfill
 \subsubsection*{Constraints} The constraints for the MP are formulated as follows.
 \begin{align}
     \sum\limits_{h \in \mathcal{H}} \sum\limits_{d \in \mathcal{D}}x_{hdp} = 1 
