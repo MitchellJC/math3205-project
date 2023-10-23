@@ -663,7 +663,7 @@ class BendersLoopScheduler(BendersORScheduler):
                 print("Feasibility cuts added", cuts_added[0])
                 print("Optimality cuts added", cuts_added[1])
                 
-            # Check gap and store solution suggestion if
+            # Check gap
             if cuts_added[0] == 0:
                 x_hat = self.x
                 u_hat = self.u

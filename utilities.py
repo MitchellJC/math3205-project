@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
 
+__author__ = 'Mitchell Clark'
+
 class Bin:
     def __init__(self, size):
         """Initialise new bin."""
