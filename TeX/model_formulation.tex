@@ -99,7 +99,7 @@ horizon. Constraint (\ref{MPcon2}) ensures that variables $x_{hdp}$ and $u_{hd}$
 turned on simultaneously. Constraint (\ref{MPcon3}) ensures that if a patient is assigned
 a hospital-day then that hospital-day is open. (\ref*{MPcon4}) ensures that surgery time 
 of patients assigned to a hospital-day does not exceed the available surgery time in
-that hospital day. (\ref*{MPcon5}) ensures an individuals surgery time does not exceed 
+that hospital day. (\ref*{MPcon5}) ensures an individual's surgery time does not exceed 
 the hospital-day's available time. (\ref*{MPcon6}) ensures $y_{hd}$ gives a lower bound 
 on the number of operating rooms. (\ref*{MPcon7}) ensures $y_{hd}$ does not exceed the
 number of operating rooms available on a hospital-day. Constraints (\ref*{MPcon8}) -- (\ref*{MPcon9}) simply restrict
@@ -107,7 +107,7 @@ variables to binary.
 
 \subsection{Subproblems}
 Given a solution to the master problem $(\widehat{Y}^{(i)}_{hd}, \widehat{\mathcal{P}}^{(i)}_{hd})$ the 
-subproblem minimises the number of ORs to open for a given hospital day. Each subproblem is
+sub problem minimises the number of ORs to open for a given hospital day. Each sub problem is
 formulated as follows.
 
 \begin{table}[H]
@@ -135,7 +135,7 @@ With constraints given as follows:
 \end{align}
 Constraint (\ref*{SPcon1}) ensures that each patient is assigned to only one operating room.
 Constraint (\ref*{SPcon2}) ensures that no OR is overcapacitated. Constraint (\ref*{SPcon3})
-ensures that patients are assigned to open ORs. Constraint (\ref*{SPcon4}) breaks symmtry
+ensures that patients are assigned to open ORs. Constraint (\ref*{SPcon4}) breaks symmetry
 among ORs.
 
 \subsection{Benders Cuts}
@@ -146,7 +146,7 @@ first-fit decreasing heuristic algorithm (FFD) as this is used to determine opti
 
 \subsubsection*{First-fit decreasing heuristic algorithm}
 Since the SP packing problem can be difficult to solve, we can first find a feasible solution 
-($\overline{F}^{(i)}_{hd}$) using a FFD heuristic. This process is faster than other techniques
+($\overline{F}^{(i)}_{hd}$) using the FFD heuristic. This process is faster than other techniques
 such as integer and constraint programming. Moreover, we have the following relationship 
 between the FFD, MP and SP solutions;
 \begin{equation}
@@ -168,7 +168,7 @@ $\tilde{\mathcal{P}}^{(i)}_{hd}$.
 \end{align}
 Where $\mathcal{U}_{hd}^{(i)}$ is the set of infeasible SPs at this stage of solving the MP.
 If the SP is optimal, that is $\tilde{Y}^{(i)}_{hd} = \overline{Y}^{(i)}_{hd}$, no cuts
-are required. However, if the this is not the case, the following optimality cut is added:
+are required. However, if this is not the case, the following optimality cut is added:
 \begin{align*}
     y_{hd} \geq \overline{Y}_{hd}^{(i)} - \sum\limits_{p \in \hat{\mathcal{P}}}(1-x_{hdp}) && \forall (h,d) \in \overline{\mathcal{J}}^{(i)}.
 \end{align*}
@@ -180,7 +180,7 @@ LBBD2 differs from LBBD1 in its feasibility cut which is given as follows:
 \end{align*}
 If $\overline{Y}_{hd}^{(i)} = |\mathcal{R}_h|$ and the SP is infeasible then this cut simply removes one patient from $\overline{\mathcal{P}}_{hd}^{(i)}$. However, if $\hat{Y}_{hd}^{(i)} \le |\mathcal{R}_h|$ and the SP is infeasible then the cut either removes two patients from $\overline{\mathcal{P}}_{hd}^{(i)}$, or removes one patient and/or opens at least one more OR.
 \subsubsection{LBBD4}
-We implement an improvement upon LBBD2 in addition to the original paper. This cut is describe as follows:
+We implement an improvement upon LBBD2 in addition to the original paper. We refer to this cut as LBBD4 to differentiate it from LBBD3 given in the original paper. This cut is described as follows:
 \begin{align*}
     \operatorname{maxDur} = \max\limits_{p \in \hat{\mathcal{P}}^{(i)}_{hd}}\{T[p]\},
 \end{align*}

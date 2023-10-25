@@ -1,0 +1,2 @@
+{"rule":"SOME_OF_THE","sentence":"^\\QDiscretizing time further into periods may remedy some of the scaling issues found with all models when solving to optimality, this would sacrifice accuracy for speed, although this can already be done by simply using a larger gap.\\E$"}
+{"rule":"SOME_OF_THE","sentence":"^\\QSurprisingly, even with this shortcoming the network model was still able to be more robust than some of the Benders' Decomposition implementations when solving to a 1% gap.\\E$"}
