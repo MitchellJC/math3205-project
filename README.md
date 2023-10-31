@@ -1,4 +1,6 @@
 # math3205-project
+## The Project
+This repository contains code for solving the Deterministic Operating Room Scheduling (DORS) problem.
 ## Running the Project
 To run all models and generate summary outputs of time taken and final gaps use bake_off.py, script parameters are found at the top of file.
 
